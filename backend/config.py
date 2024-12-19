@@ -7,12 +7,13 @@ library_path = os.path.dirname(os.path.abspath(__file__))
 
 class settingsModel(BaseSettings):
     backendUrl: str = "http://localhost:6789"
+    outputPath: str = ""
     SOUND_DEVICE: int = 0
     energy_threshold: int = 40
     record_timeout: int = 2
     phrase_timeout: int = 3
 
-    ENV: str = "development"
+    ENV: str = "production"
     LOGGING: bool = True
 
     model_config = SettingsConfigDict(
