@@ -18,13 +18,17 @@ const toolbarVars = {
   rounded: "rounded-md",
 };
 
+interface file {
+  fullPath: String;
+  fileName: String;
+}
+
 declare global {
   interface Window {
     showOpenFilePicker: () => Promise<[FileSystemFileHandle]>;
     pywebview: {
       api: {
         spawnFileDialog: () => string[];
-        test: () => string[];
         killWindow: () => void;
         spawnSettingsWindow: () => void;
         killSettingsWindow: () => void;
@@ -37,11 +41,6 @@ declare global {
       };
     };
   }
-}
-
-interface file {
-  fullPath: String;
-  fileName: String;
 }
 
 export default function Home() {
