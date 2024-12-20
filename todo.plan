@@ -4,6 +4,12 @@ TODO Backend
 
 TODO Frontend
     TODO Settings Page
+        TODO Default Open location
+        TODO Dark/Light Mode
+        TODO Overwrite files automatically
+        TODO Default Save location
+        
     TODO Whisper Settings
     TODO Frontend Layout
-    TODO 
+    TODO File exists dialog
+    DONE File Menu
