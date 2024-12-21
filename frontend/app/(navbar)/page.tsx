@@ -1,10 +1,18 @@
 "use client";
 import { Funnel_Display } from "next/font/google";
-import { Plus, Trash } from "lucide-react";
+import { TrashIcon, CircleSlashIcon, PlusIcon } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 import Link from "next/link";
 import { useState, useEffect, useRef } from "react";
@@ -23,6 +31,18 @@ interface file {
   fullPath: String;
   fileName: String;
 }
+interface modelSize {
+  modelName: String;
+  suggestedVRAM: number;
+}
+var modelSizes = [
+  { modelName: "tiny", suggestedVRAM: 1 },
+  { modelName: "base", suggestedVRAM: 1 },
+  { modelName: "small", suggestedVRAM: 2 },
+  { modelName: "medium", suggestedVRAM: 5 },
+  { modelName: "large", suggestedVRAM: 10 },
+  { modelName: "turbo", suggestedVRAM: 6 },
+];
 
 declare global {
   interface Window {
@@ -95,7 +115,7 @@ export default function Home() {
             className=""
             onClick={() => removeFile(file.fullPath)}
           >
-            <Trash
+            <TrashIcon
               strokeWidth={3}
               size={24}
               className="hover:text-accent-foreground"
@@ -105,14 +125,27 @@ export default function Home() {
       </div>
     );
   }
+  function mapModelSizes(Size: any, index: number) {
+    // Index is here to stop the warning about needing a key
+
+    return (
+      <SelectItem
+        value={`${Size.modelName}`}
+        className={`${funnelDisplay.className}`}
+        key={index}
+      >
+        {Size.modelName}
+      </SelectItem>
+    );
+  }
 
   return (
     <div>
-      <main className="flex flex-row space-x-2 bg-slate-50 p-4 dark:bg-slate-950">
+      <main className="flex flex-row space-x-4 bg-slate-50 p-4 dark:bg-slate-950">
         {/* File Menu */}
         <div className="flex">
           <div
-            className={`h-[80vh] w-[50vw] bg-[#D9D9D9] ${toolbarVars.rounded}`}
+            className={`flex h-[94vh] w-[50vw] flex-col bg-[#D9D9D9] ${toolbarVars.rounded}`}
           >
             <div
               className={`flex items-center justify-between bg-[#F4A259] pr-2 text-black ${funnelDisplay.className} text-xl font-bold ${toolbarVars.height} ${toolbarVars.rounded}`}
@@ -124,31 +157,81 @@ export default function Home() {
                   className="p-2"
                   onClick={returnPathDirectories}
                 >
-                  <Plus
+                  <PlusIcon
                     strokeWidth={3}
                     size={24}
                     className="hover:text-accent-foreground"
                   />
-                  <p className={`${funnelDisplay.className} text-lg font-bold`}>
+                  <p className={`${funnelDisplay.className} text-xl font-bold`}>
                     Add New
                   </p>
                 </Button>
                 <Button variant="ghost" className="p-2" onClick={clearFiles}>
-                  <Trash
+                  <TrashIcon
                     strokeWidth={3}
                     size={24}
                     className="hover:text-accent-foreground"
                   />
-                  <p className={`${funnelDisplay.className} text-lg font-bold`}>
+                  <p className={`${funnelDisplay.className} text-xl font-bold`}>
                     Remove All
                   </p>
                 </Button>
               </div>
             </div>
-            <div className={`space-y-2 p-3 ${funnelDisplay.className}`}>
-              {files.map((file, index) => {
-                return mapFiles(file, index);
-              })}
+            <ScrollArea
+              className={`w-full flex-grow p-3 ${funnelDisplay.className}`}
+            >
+              <div className="space-y-2">
+                {files.map((file, index) => {
+                  return mapFiles(file, index);
+                })}
+              </div>
+            </ScrollArea>
+          </div>
+        </div>
+        <div className="flex">
+          <div
+            className={`w-50vw-minus-7rem h-[80vh] bg-[#D9D9D9] ${toolbarVars.rounded}`}
+          >
+            <div
+              className={`flex items-center justify-between bg-[#8CB369] pr-2 text-black ${funnelDisplay.className} text-xl font-bold ${toolbarVars.height} ${toolbarVars.rounded}`}
+            >
+              <p className="pl-4">Settings</p>
+              <div>
+                <Button
+                  variant="ghost"
+                  className="p-2"
+                  onClick={returnPathDirectories}
+                >
+                  <CircleSlashIcon
+                    strokeWidth={3}
+                    size={24}
+                    className="hover:text-accent-foreground"
+                  />
+                  <p className={`${funnelDisplay.className} text-xl font-bold`}>
+                    Reset
+                  </p>
+                </Button>
+              </div>
+            </div>
+            <div
+              className={`h-full space-y-2 p-3 text-black ${funnelDisplay.className}`}
+            >
+              <div className="flex items-center space-x-2">
+                <Label htmlFor="email" className="text-lg font-bold">
+                  Model Size:
+                </Label>
+                <Select>
+                  <SelectTrigger className="w-[180px] border-2 border-black">
+                    <SelectValue placeholder="Size" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {modelSizes.map((size, index) => {
+                      return mapModelSizes(size, index);
+                    })}
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
           </div>
         </div>
