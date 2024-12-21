@@ -58,6 +58,7 @@ export default {
       },
       spacing: {
         "50vw-minus-2rem": "calc(50vw - 2rem)",
+        "50vw-minus-7rem": "calc(50vw - 7rem)",
       },
     },
   },

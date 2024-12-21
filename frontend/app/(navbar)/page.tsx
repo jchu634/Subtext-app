@@ -125,18 +125,8 @@ export default function Home() {
       </div>
     );
   }
-  function mapModelSizes(Size: any, index: number) {
-    // Index is here to stop the warning about needing a key
-
-    return (
-      <SelectItem
-        value={`${Size.modelName}`}
-        className={`${funnelDisplay.className}`}
-        key={index}
-      >
-        {Size.modelName}
-      </SelectItem>
-    );
+  function resetSettings() {
+    // #TODO
   }
 
   return (
@@ -198,11 +188,7 @@ export default function Home() {
             >
               <p className="pl-4">Settings</p>
               <div>
-                <Button
-                  variant="ghost"
-                  className="p-2"
-                  onClick={returnPathDirectories}
-                >
+                <Button variant="ghost" className="p-2" onClick={resetSettings}>
                   <CircleSlashIcon
                     strokeWidth={3}
                     size={24}
@@ -226,9 +212,15 @@ export default function Home() {
                     <SelectValue placeholder="Size" />
                   </SelectTrigger>
                   <SelectContent>
-                    {modelSizes.map((size, index) => {
-                      return mapModelSizes(size, index);
-                    })}
+                    {modelSizes.map((size, index) => (
+                      <SelectItem
+                        value={`${size.modelName}`}
+                        className={`${funnelDisplay.className}`}
+                        key={index}
+                      >
+                        {size.modelName}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
