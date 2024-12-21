@@ -4,6 +4,7 @@ import { Plus, Trash } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 import Link from "next/link";
 import { useState, useEffect, useRef } from "react";
@@ -14,7 +15,7 @@ const funnelDisplay = Funnel_Display({
 });
 
 const toolbarVars = {
-  height: "h-12",
+  height: "h-10",
   rounded: "rounded-md",
 };
 
@@ -83,7 +84,7 @@ export default function Home() {
 
     return (
       <div
-        className="flex h-10 w-full min-w-0 items-center justify-between rounded-md bg-[#5E5E5E] pl-2"
+        className="w-50vw-minus-2rem flex h-10 items-center justify-between rounded-md bg-[#5E5E5E] pl-2"
         key={index}
       >
         <p className="w-4/5 truncate">{file.fileName}</p>
@@ -107,7 +108,7 @@ export default function Home() {
 
   return (
     <div>
-      <main className="flex flex-row bg-slate-50 p-4 dark:bg-slate-950">
+      <main className="flex flex-row space-x-2 bg-slate-50 p-4 dark:bg-slate-950">
         {/* File Menu */}
         <div className="flex">
           <div
