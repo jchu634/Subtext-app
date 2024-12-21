@@ -82,7 +82,7 @@ class Api():
 
     def spawnFileDialog(self):
         # show an "Open" dialog box and return the path to the selected file
-        multipleFilenames = crossfiledialog.open_multiple()
+        multipleFilenames = crossfiledialog.open_multiple(title="Select multiple files", start_dir="C:/Documents")
         return multipleFilenames
 
     def test(self):
@@ -101,12 +101,12 @@ if __name__ == "__main__":
         print("Main Window is Closed")
         try:
             print("Terminating Settings Window")
-            # api_instance.killSettingsWindow()
+            api_instance.killSettingsWindow()
         except Exception as e:
             print(e)
 
     window = webview.create_window(
-        "Whisper Subtitler", f"{Settings.backendUrl}", js_api=api_instance, background_color="#5B8E7D", frameless=True, easy_drag=True)
+        "Whisper Subtitler", f"{Settings.backendUrl}", js_api=api_instance, background_color="#5B8E7D", frameless=True, easy_drag=True, min_size=(660, 400), width=880)
     window.events.closed += on_closed
 
     webview.start(private_mode=False)  # Persist settings
