@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Toggle } from "@/components/ui/toggle";
 import {
   Select,
   SelectContent,
@@ -14,8 +15,26 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-import Link from "next/link";
 import { useState, useEffect, useRef } from "react";
+
+import { createStore } from "@xstate/store";
+import { useSelector } from "@xstate/store/react";
+
+export const store = createStore({
+  context: { extendedSubtitlesFormats: false, name: "David" },
+  // Transitions
+  on: {
+    toggleExtentedSubtitles: {
+      extendedSubtitlesFormats: (context) => !context.extendedSubtitlesFormats,
+    },
+    changeName: {
+      name: (context, event: { newName: string }) => event.newName,
+    },
+  },
+});
+
+export const useExtendedSubtitlesFormats = () =>
+  useSelector(store, (state) => state.context.extendedSubtitlesFormats);
 
 const funnelDisplay = Funnel_Display({
   variable: "--font-funnel",
@@ -44,6 +63,9 @@ var modelSizes = [
   { modelName: "turbo", suggestedVRAM: 6 },
 ];
 
+var subtitleFormats = ["SRT", "ASS", "WebVTT"];
+var extendedSubtitlesFormats = ["MPL2", "TMP", "SAMI", "TTML", "MicroDVD"];
+
 declare global {
   interface Window {
     showOpenFilePicker: () => Promise<[FileSystemFileHandle]>;
@@ -65,9 +87,13 @@ declare global {
     };
   }
 }
-
 export default function Home() {
   const [files, setFiles] = useState<file[]>([]);
+
+  const useExtendedFormats = useSelector(
+    store,
+    (state) => state.context.extendedSubtitlesFormats,
+  );
 
   async function returnPathDirectories() {
     const handle = await window.pywebview.api.spawnFileDialog();
@@ -206,11 +232,14 @@ export default function Home() {
               className={`h-full space-y-2 p-3 text-black ${funnelDisplay.className}`}
             >
               <div className="flex items-center space-x-2">
-                <Label htmlFor="email" className="text-lg font-bold">
+                <Label htmlFor="modelSize" className="text-lg font-bold">
                   Model Size:
                 </Label>
                 <Select>
-                  <SelectTrigger className="w-[180px] border-2 border-black">
+                  <SelectTrigger
+                    id="modelSize"
+                    className="w-[180px] border-2 border-black"
+                  >
                     <SelectValue placeholder="Size" />
                   </SelectTrigger>
                   <SelectContent>
@@ -225,6 +254,24 @@ export default function Home() {
                     ))}
                   </SelectContent>
                 </Select>
+              </div>
+              <div className="flex items-center space-x-2">
+                <Label htmlFor="subtitleFormat" className="text-lg font-bold">
+                  Output Subtitle Format(s):
+                </Label>
+                <div id="subtitleFormat">
+                  {subtitleFormats.map((format, index) => (
+                    <Toggle key={index}>{format}</Toggle>
+                  ))}
+                  {useExtendedFormats}
+                  {useExtendedFormats && (
+                    <>
+                      {extendedSubtitlesFormats.map((format, index) => (
+                        <Toggle key={index}>{format}</Toggle>
+                      ))}
+                    </>
+                  )}
+                </div>
               </div>
             </div>
           </div>
