@@ -1,5 +1,5 @@
 TODO Backend
-    TODO Whisper Processing
+    TODO Whisper Processing Endpoint
 
 
 TODO Frontend
@@ -11,8 +11,12 @@ TODO Frontend
         
     TODO Whisper Settings
         PROGRESS Whisper size
-        TODO Output Format
+        PROGRESS SRT Formats
+        TODO Embed Subtitles in Video Option
 
     DONE Frontend Layout
+    PROGRESS File Menu
     TODO File exists dialog
-    DONE File Menu
+    TODO File Checkbox
+    TODO File removal confirmation
+    
