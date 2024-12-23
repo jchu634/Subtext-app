@@ -106,9 +106,11 @@ if __name__ == "__main__":
             print(e)
 
     window = webview.create_window(
-        "Whisper Subtitler", f"{Settings.backendUrl}", js_api=api_instance, background_color="#5B8E7D", frameless=True, easy_drag=True, min_size=(660, 400), width=880)
+        "Whisper Subtitler", f"{Settings.backendUrl}", js_api=api_instance, background_color="#5B8E7D", min_size=(660, 400), width=880)
     window.events.closed += on_closed
-
-    webview.start(private_mode=False)  # Persist settings
+    if Settings.ENV == "development":
+        webview.start(private_mode=False, debug=True)  # Persist settings
+    else:
+        webview.start(private_mode=False)  # Persist settings
 
     os._exit(0)
