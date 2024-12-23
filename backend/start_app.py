@@ -42,17 +42,31 @@ class SettingsWindowApi():
 class Api():
     def __init__(self, settings_window=None):
         self.settings_window = settings_window
+        self.maximised = False
+        self.prevSize = None
 
     def log(self, value):
         print(value)
 
-    def killWindow(self):
+    def closeWindow(self):
         if self.settings_window:
             self.settings_window.destroy()
             self.settings_window = None
         window.destroy()
         sys.exit()
         os._exit(0)
+
+    def minimiseWindow(self):
+        window.minimize()
+
+    def maximiseWindow(self):
+        if self.maximised:
+            self.maximised = False
+            window.resize(self.prevSize[0], self.prevSize[1])
+        else:
+            self.maximised = True
+            self.prevSize = (window.width, window.height)
+            window.maximize()
 
     def spawnSettingsWindow(self):
         if self.settings_window:
