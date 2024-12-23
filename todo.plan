@@ -5,13 +5,16 @@ TODO Backend
 TODO Frontend
     TODO Settings Page
         TODO Default Open location
-        TODO Dark/Light Mode
+        DONE Dark/Light Mode
         TODO Overwrite files automatically
         TODO Default Save location
+        DONE Enable Extended Subtitle Formats
+
         
     TODO Whisper Settings
         PROGRESS Whisper size
-        PROGRESS SRT Formats
+        DONE Subtitle Formats
+        DONE Extended Subtitle Formats
         TODO Embed Subtitles in Video Option
 
     DONE Frontend Layout
