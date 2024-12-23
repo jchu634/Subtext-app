@@ -5,7 +5,6 @@ import threading
 import uvicorn
 import os
 
-import crossfiledialog
 from config import Settings
 
 app = create_app()
@@ -81,12 +80,11 @@ class Api():
             print(e)
 
     def spawnFileDialog(self):
-        # show an "Open" dialog box and return the path to the selected file
-        multipleFilenames = crossfiledialog.open_multiple(title="Select multiple files", start_dir="C:/Documents")
-        return multipleFilenames
+        multipleFilenames = window.create_file_dialog(
+            webview.OPEN_DIALOG, allow_multiple=True
+        )
 
-    def test(self):
-        return ["test", "test1"]
+        return multipleFilenames
 
 
 if __name__ == "__main__":

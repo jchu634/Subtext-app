@@ -1,5 +1,3 @@
-crossfiledialog
-PyWin32
 Uvicorn
 pydantic_settings
 pywebview
