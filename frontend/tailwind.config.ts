@@ -57,8 +57,10 @@ export default {
         sm: "calc(var(--radius) - 4px)",
       },
       spacing: {
-        "50vw-minus-2rem": "calc(50vw - 2rem)",
-        "50vw-minus-7rem": "calc(50vw - 7rem)",
+        windowWidth: "calc(50vw - 2rem)",
+        settingsWidth: "calc(50vw - 7rem)",
+        fileHeight: "calc(100vh - 70px)",
+        sidebarHeight: "calc(100vh - 36px)",
       },
     },
   },

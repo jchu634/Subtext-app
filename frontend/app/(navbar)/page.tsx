@@ -50,7 +50,9 @@ declare global {
     pywebview: {
       api: {
         spawnFileDialog: () => string[];
-        killWindow: () => void;
+        closeWindow: () => void;
+        minimiseWindow: () => void;
+        maximiseWindow: () => void;
         spawnSettingsWindow: () => void;
         killSettingsWindow: () => void;
         createToastOnMainWindow: (
@@ -104,7 +106,7 @@ export default function Home() {
 
     return (
       <div
-        className="w-50vw-minus-2rem flex h-10 items-center justify-between rounded-md bg-[#5E5E5E] pl-2"
+        className="w-windowWidth flex h-10 items-center justify-between rounded-md bg-[#5E5E5E] pl-2"
         key={index}
       >
         <p className="w-4/5 truncate">{file.fileName}</p>
@@ -135,7 +137,7 @@ export default function Home() {
         {/* File Menu */}
         <div className="flex">
           <div
-            className={`flex h-[94vh] w-[50vw] flex-col bg-[#D9D9D9] ${toolbarVars.rounded}`}
+            className={`h-fileHeight flex w-[50vw] flex-col bg-[#D9D9D9] ${toolbarVars.rounded}`}
           >
             <div
               className={`flex items-center justify-between bg-[#F4A259] pr-2 text-black ${funnelDisplay.className} text-xl font-bold ${toolbarVars.height} ${toolbarVars.rounded}`}
@@ -181,7 +183,7 @@ export default function Home() {
         </div>
         <div className="flex">
           <div
-            className={`w-50vw-minus-7rem h-[80vh] bg-[#D9D9D9] ${toolbarVars.rounded}`}
+            className={`w-settingsWidth h-[80vh] bg-[#D9D9D9] ${toolbarVars.rounded}`}
           >
             <div
               className={`flex items-center justify-between bg-[#8CB369] pr-2 text-black ${funnelDisplay.className} text-xl font-bold ${toolbarVars.height} ${toolbarVars.rounded}`}
