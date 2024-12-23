@@ -12,7 +12,7 @@ import {
 export default function Home() {
   const { setTheme } = useTheme();
   return (
-    <div className="bg-white p-2 dark:bg-black">
+    <div className="h-screen w-screen bg-white p-4 dark:bg-black">
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <div>

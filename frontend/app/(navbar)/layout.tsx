@@ -1,4 +1,5 @@
 import Navbar from "@/components/navbar";
+import Menu from "@/components/menu";
 import "@/styles/globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 
@@ -19,7 +20,10 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <Navbar />
-          <div>{children}</div>
+          <div className="flex flex-col">
+            <Menu />
+            {children}
+          </div>
         </ThemeProvider>
       </body>
     </html>
