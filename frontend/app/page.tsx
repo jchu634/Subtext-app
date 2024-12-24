@@ -3,7 +3,7 @@ import { Funnel_Display } from "next/font/google";
 import { TrashIcon, CircleSlashIcon, PlusIcon } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
+import { InvertedCheckbox, Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Toggle } from "@/components/ui/toggle";
@@ -75,6 +75,8 @@ declare global {
 }
 export default function Home() {
   const [files, setFiles] = useState<file[]>([]);
+  const [selectedFiles, setSelectedFiles] = useState<Set<string>>(new Set());
+  const [lastCheckedIndex, setLastCheckedIndex] = useState<number | null>(null);
 
   const useExtendedFormats = useSelector(
     store,
@@ -113,14 +115,51 @@ export default function Home() {
     );
   }
 
-  function mapFiles(file: any, index: number) {
-    // Index is here to stop the warning about needing a key
+  function handleCheckboxChange(
+    fullPath: string,
+    index: number,
+    event: React.MouseEvent<HTMLButtonElement>,
+  ) {
+    const isShiftPressed = event.shiftKey;
+    const newSelected = new Set(selectedFiles);
 
+    if (isShiftPressed && lastCheckedIndex !== null) {
+      const start = Math.min(lastCheckedIndex, index);
+      const end = Math.max(lastCheckedIndex, index);
+
+      files.slice(start, end + 1).forEach((file) => {
+        if (selectedFiles.has(files[lastCheckedIndex].fullPath.toString())) {
+          newSelected.add(file.fullPath.toString());
+        } else {
+          newSelected.delete(file.fullPath.toString());
+        }
+      });
+    } else {
+      if (newSelected.has(fullPath.toString())) {
+        newSelected.delete(fullPath.toString());
+      } else {
+        newSelected.add(fullPath.toString());
+      }
+    }
+
+    setSelectedFiles(newSelected);
+    setLastCheckedIndex(index);
+  }
+
+  function mapFiles(file: any, index: number) {
     return (
       <div
         className="w-windowWidth flex h-10 items-center justify-between rounded-md bg-[#5E5E5E] pl-2"
         key={index}
       >
+        <InvertedCheckbox
+          id={`file-${index}`}
+          className="border-none bg-white data-[state=checked]:bg-white dark:data-[state=checked]:bg-primary"
+          checked={selectedFiles.has(file.fullPath.toString())}
+          onClick={(e) =>
+            handleCheckboxChange(file.fullPath.toString(), index, e)
+          }
+        />
         <p className="w-4/5 truncate">{file.fileName}</p>
         <div className="pl-2 pr-1">
           <Button
@@ -153,7 +192,6 @@ export default function Home() {
         >
           <ResizablePanel defaultSize={60} minSize={30}>
             {/* File Menu */}
-
             <div
               className={`h-fileHeight flex flex-col bg-[#D9D9D9] ${toolbarVars.rounded}`}
             >
@@ -206,6 +244,7 @@ export default function Home() {
           <ResizableHandle withHandle />
           <ResizablePanel defaultSize={40} minSize={30}>
             <div className={`h-[80vh] bg-[#D9D9D9] ${toolbarVars.rounded}`}>
+              {/* Settings Menu */}
               <div
                 className={`flex items-center justify-between bg-[#8CB369] pr-2 text-black ${funnelDisplay.className} text-xl font-bold ${toolbarVars.height} ${toolbarVars.rounded}`}
               >
