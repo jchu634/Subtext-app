@@ -222,7 +222,7 @@ export default function Home() {
               </ScrollArea>
             </div>
           </ResizablePanel>
-          <ResizableHandle />
+          <ResizableHandle withHandle />
           <ResizablePanel defaultSize={40} minSize={30}>
             <div className={`h-[80vh] bg-[#D9D9D9] ${toolbarVars.rounded}`}>
               <div
