@@ -149,32 +149,30 @@ export default function Home() {
   function mapFiles(file: any, index: number) {
     return (
       <div
-        className="flex h-10 w-full items-center justify-between space-x-2 rounded-md bg-[#5E5E5E] px-2"
+        className="grid h-11 w-full grid-cols-[auto_1fr_auto] items-center gap-2 rounded-md bg-[#5E5E5E] px-2"
         key={index}
       >
         <InvertedCheckbox
           id={`file-${index}`}
-          className="border-none bg-white data-[state=checked]:bg-white dark:data-[state=checked]:bg-primary"
+          className="flex-none border-none bg-white data-[state=checked]:bg-white dark:data-[state=checked]:bg-primary"
           checked={selectedFiles.has(file.fullPath.toString())}
           onClick={(e) =>
             handleCheckboxChange(file.fullPath.toString(), index, e)
           }
         />
-        <p className="w-4/5 truncate">{file.fileName}</p>
-        <div className="pl-2 pr-1">
-          <Button
-            variant="ghost"
-            size="icon"
-            className=""
-            onClick={() => removeFile(file.fullPath)}
-          >
-            <TrashIcon
-              strokeWidth={3}
-              size={24}
-              className="hover:text-accent-foreground"
-            />
-          </Button>
-        </div>
+        <p className="truncate px-2">{file.fileName}</p>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="flex-none"
+          onClick={() => removeFile(file.fullPath)}
+        >
+          <TrashIcon
+            strokeWidth={3}
+            size={24}
+            className="hover:text-accent-foreground"
+          />
+        </Button>
       </div>
     );
   }
