@@ -5,7 +5,7 @@ import { Cog } from "lucide-react";
 import { useTheme } from "next-themes";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { store } from "@/app/page";
+import { store } from "@/components/settingsStore";
 import {
   Dialog,
   DialogContent,
@@ -64,7 +64,6 @@ export function SettingsDialog() {
               id="viewModeToggle"
               defaultValue={theme}
               value={theme}
-              // onValueChange={(value) => handleThemeChange(value)}
               onValueChange={(value) => {
                 if (value) {
                   setTheme(value);

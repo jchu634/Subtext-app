@@ -22,24 +22,8 @@ import {
 
 import { useState } from "react";
 
-import { createStore } from "@xstate/store";
 import { useSelector } from "@xstate/store/react";
-
-export const store = createStore({
-  context: { extendedSubtitlesFormats: false, name: "David" },
-  // Transitions
-  on: {
-    toggleExtentedSubtitles: {
-      extendedSubtitlesFormats: (context) => !context.extendedSubtitlesFormats,
-    },
-    changeName: {
-      name: (context, event: { newName: string }) => event.newName,
-    },
-  },
-});
-
-export const useExtendedSubtitlesFormats = () =>
-  useSelector(store, (state) => state.context.extendedSubtitlesFormats);
+import { store } from "@/components/settingsStore";
 
 const funnelDisplay = Funnel_Display({
   variable: "--font-funnel",
