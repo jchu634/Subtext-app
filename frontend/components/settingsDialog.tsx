@@ -6,6 +6,7 @@ import { useTheme } from "next-themes";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { store } from "@/components/settingsStore";
+import { useSelector } from "@xstate/store/react";
 import {
   Dialog,
   DialogContent,
@@ -24,6 +25,10 @@ const funnelDisplay = Funnel_Display({
 
 export function SettingsDialog() {
   const { theme, setTheme } = useTheme();
+  const useExtendedFormats = useSelector(
+    store,
+    (state) => state.context.extendedSubtitlesFormats,
+  );
 
   return (
     <div>
@@ -48,6 +53,7 @@ export function SettingsDialog() {
               Enable Extended Subtitle Formats
             </Label>
             <Switch
+              defaultChecked={useExtendedFormats}
               onClick={() => store.send({ type: "toggleExtentedSubtitles" })}
               className="outline outline-1 outline-gray-700 dark:bg-slate-200 dark:data-[state=checked]:bg-orange-400"
             ></Switch>
