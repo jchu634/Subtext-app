@@ -61,7 +61,7 @@ declare global {
     pywebview: {
       api: {
         spawnMultipleFileDialog: () => string[];
-        spawnFolderDialog: () => void;
+        spawnFolderDialog: () => string;
 
         /* Unused Functions*/
         minimiseWindow: () => void;

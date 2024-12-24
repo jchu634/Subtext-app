@@ -24,11 +24,25 @@ const funnelDisplay = Funnel_Display({
   subsets: ["latin"],
 });
 
+async function returnPathDirectories() {
+  const folder = await window.pywebview.api.spawnFolderDialog();
+  if (typeof folder == null) {
+    // User cancelled operation
+    return;
+  }
+  store.send({ type: "changeSaveLocation", newLocation: folder });
+  return folder;
+}
+
 export function SettingsDialog() {
   const { theme, setTheme } = useTheme();
   const useExtendedFormats = useSelector(
     store,
     (state) => state.context.extendedSubtitlesFormats,
+  );
+  const saveLocation = useSelector(
+    store,
+    (state) => state.context.saveLocation,
   );
 
   return (
@@ -48,14 +62,16 @@ export function SettingsDialog() {
           </DialogHeader>
 
           <div className="flex flex-row items-center space-x-2">
-            <Label htmlFor="defaultSaveLocation">Default Save Location:</Label>
+            <Label htmlFor="defaultSaveLocation">Save Location:</Label>
             <p
               className={`${funnelDisplay.className} rounded-md border border-black p-1`}
             >
-              test
+              {saveLocation.length == 0 ? "Default" : saveLocation}
             </p>
 
-            <Button id="defaultSaveLocation">Browse</Button>
+            <Button id="defaultSaveLocation" onClick={returnPathDirectories}>
+              Browse
+            </Button>
           </div>
 
           <div
