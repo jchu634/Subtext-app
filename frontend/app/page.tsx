@@ -14,8 +14,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
+} from "@/components/ui/resizable";
 
-import { useState, useEffect, useRef } from "react";
+import { useState } from "react";
 
 import { createStore } from "@xstate/store";
 import { useSelector } from "@xstate/store/react";
@@ -160,128 +165,144 @@ export default function Home() {
   return (
     <div>
       <main className="flex flex-row space-x-4 bg-slate-50 p-4 dark:bg-slate-950">
-        {/* File Menu */}
-        <div className="flex">
-          <div
-            className={`h-fileHeight flex w-[50vw] flex-col bg-[#D9D9D9] ${toolbarVars.rounded}`}
-          >
+        <ResizablePanelGroup
+          direction="horizontal"
+          className="w-full space-x-4"
+          autoSaveId={"persistence"}
+        >
+          <ResizablePanel defaultSize={60} minSize={30}>
+            {/* File Menu */}
+
             <div
-              className={`flex items-center justify-between bg-[#F4A259] pr-2 text-black ${funnelDisplay.className} text-xl font-bold ${toolbarVars.height} ${toolbarVars.rounded}`}
+              className={`h-fileHeight flex flex-col bg-[#D9D9D9] ${toolbarVars.rounded}`}
             >
-              <p className="pl-4">Files</p>
-              <div>
-                <Button
-                  variant="ghost"
-                  className="p-2"
-                  onClick={returnPathDirectories}
-                >
-                  <PlusIcon
-                    strokeWidth={3}
-                    size={24}
-                    className="hover:text-accent-foreground"
-                  />
-                  <p className={`${funnelDisplay.className} text-xl font-bold`}>
-                    Add New
-                  </p>
-                </Button>
-                <Button variant="ghost" className="p-2" onClick={clearFiles}>
-                  <TrashIcon
-                    strokeWidth={3}
-                    size={24}
-                    className="hover:text-accent-foreground"
-                  />
-                  <p className={`${funnelDisplay.className} text-xl font-bold`}>
-                    Remove All
-                  </p>
-                </Button>
-              </div>
-            </div>
-            <ScrollArea
-              className={`w-full flex-grow p-3 ${funnelDisplay.className}`}
-            >
-              <div className="space-y-2">
-                {files.map((file, index) => {
-                  return mapFiles(file, index);
-                })}
-              </div>
-            </ScrollArea>
-          </div>
-        </div>
-        <div className="flex">
-          <div
-            className={`w-settingsWidth h-[80vh] bg-[#D9D9D9] ${toolbarVars.rounded}`}
-          >
-            <div
-              className={`flex items-center justify-between bg-[#8CB369] pr-2 text-black ${funnelDisplay.className} text-xl font-bold ${toolbarVars.height} ${toolbarVars.rounded}`}
-            >
-              <p className="pl-4">Settings</p>
-              <div>
-                <Button variant="ghost" className="p-2" onClick={resetSettings}>
-                  <CircleSlashIcon
-                    strokeWidth={3}
-                    size={24}
-                    className="hover:text-accent-foreground"
-                  />
-                  <p className={`${funnelDisplay.className} text-xl font-bold`}>
-                    Reset
-                  </p>
-                </Button>
-              </div>
-            </div>
-            <div
-              className={`h-full space-y-2 p-3 text-black ${funnelDisplay.className}`}
-            >
-              <div className="flex items-center space-x-2">
-                <Label htmlFor="modelSize" className="text-lg font-bold">
-                  Model Size:
-                </Label>
-                <Select>
-                  <SelectTrigger
-                    id="modelSize"
-                    className="w-[180px] border-2 border-black"
+              <div
+                className={`flex items-center justify-between bg-[#F4A259] pr-2 text-black ${funnelDisplay.className} text-xl font-bold ${toolbarVars.height} ${toolbarVars.rounded}`}
+              >
+                <p className="pl-4">Files</p>
+                <div>
+                  <Button
+                    variant="ghost"
+                    className="p-2"
+                    onClick={returnPathDirectories}
                   >
-                    <SelectValue placeholder="Size" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {modelSizes.map((size, index) => (
-                      <SelectItem
-                        value={`${size.modelName}`}
-                        className={`${funnelDisplay.className}`}
-                        key={index}
-                      >
-                        {size.modelName}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                    <PlusIcon
+                      strokeWidth={3}
+                      size={24}
+                      className="hover:text-accent-foreground"
+                    />
+                    <p
+                      className={`${funnelDisplay.className} text-xl font-bold`}
+                    >
+                      Add New
+                    </p>
+                  </Button>
+                  <Button variant="ghost" className="p-2" onClick={clearFiles}>
+                    <TrashIcon
+                      strokeWidth={3}
+                      size={24}
+                      className="hover:text-accent-foreground"
+                    />
+                    <p
+                      className={`${funnelDisplay.className} text-xl font-bold`}
+                    >
+                      Remove All
+                    </p>
+                  </Button>
+                </div>
               </div>
-              <div className="flex items-center space-x-2">
-                <Label htmlFor="embedSubtitles" className="text-lg font-bold">
-                  Embed Subtitles into Video
-                </Label>
-                <Checkbox id="embedSubtitles" defaultChecked={true} />
+              <ScrollArea
+                className={`w-full flex-grow p-3 ${funnelDisplay.className}`}
+              >
+                <div className="space-y-2">
+                  {files.map((file, index) => {
+                    return mapFiles(file, index);
+                  })}
+                </div>
+              </ScrollArea>
+            </div>
+          </ResizablePanel>
+          <ResizableHandle />
+          <ResizablePanel defaultSize={40} minSize={30}>
+            <div className={`h-[80vh] bg-[#D9D9D9] ${toolbarVars.rounded}`}>
+              <div
+                className={`flex items-center justify-between bg-[#8CB369] pr-2 text-black ${funnelDisplay.className} text-xl font-bold ${toolbarVars.height} ${toolbarVars.rounded}`}
+              >
+                <p className="pl-4">Settings</p>
+                <div>
+                  <Button
+                    variant="ghost"
+                    className="p-2"
+                    onClick={resetSettings}
+                  >
+                    <CircleSlashIcon
+                      strokeWidth={3}
+                      size={24}
+                      className="hover:text-accent-foreground"
+                    />
+                    <p
+                      className={`${funnelDisplay.className} text-xl font-bold`}
+                    >
+                      Reset
+                    </p>
+                  </Button>
+                </div>
               </div>
-              <div className="flex items-center space-x-2">
-                <Label htmlFor="subtitleFormat" className="text-lg font-bold">
-                  Output Subtitle Format(s):
-                </Label>
-                <div id="subtitleFormat" className="space-x-1 space-y-1">
-                  {subtitleFormats.map((format, index) => (
-                    <Toggle key={index}>{format}</Toggle>
-                  ))}
-                  {useExtendedFormats}
-                  {useExtendedFormats && (
-                    <>
-                      {extendedSubtitlesFormats.map((format, index) => (
-                        <Toggle key={index}>{format}</Toggle>
+              <div
+                className={`h-full space-y-4 p-3 text-black ${funnelDisplay.className}`}
+              >
+                <div className="flex items-center space-x-2">
+                  <Label htmlFor="modelSize" className="text-lg font-bold">
+                    Model Size:
+                  </Label>
+                  <Select>
+                    <SelectTrigger
+                      id="modelSize"
+                      className="w-[180px] border-2 border-black"
+                    >
+                      <SelectValue placeholder="Size" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {modelSizes.map((size, index) => (
+                        <SelectItem
+                          value={`${size.modelName}`}
+                          className={`${funnelDisplay.className}`}
+                          key={index}
+                        >
+                          {size.modelName}
+                        </SelectItem>
                       ))}
-                    </>
-                  )}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Label htmlFor="embedSubtitles" className="text-lg font-bold">
+                    Embed Subtitles into Video
+                  </Label>
+                  <Checkbox id="embedSubtitles" defaultChecked={true} />
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Label htmlFor="subtitleFormat" className="text-lg font-bold">
+                    Output Subtitle Format(s):
+                  </Label>
+                  <div id="subtitleFormat" className="space-x-1 space-y-1">
+                    {subtitleFormats.map((format, index) => (
+                      <Toggle key={index}>{format}</Toggle>
+                    ))}
+                    {useExtendedFormats}
+                    {useExtendedFormats && (
+                      <>
+                        {extendedSubtitlesFormats.map((format, index) => (
+                          <Toggle key={index}>{format}</Toggle>
+                        ))}
+                      </>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        </div>
+          </ResizablePanel>
+        </ResizablePanelGroup>
       </main>
     </div>
   );

@@ -20,7 +20,7 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <Navbar />
-          <div className="flex flex-col">
+          <div className="flex w-full flex-col">
             <Menu />
             {children}
           </div>
