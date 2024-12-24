@@ -93,12 +93,17 @@ class Api():
         except Exception as e:
             print(e)
 
-    def spawnFileDialog(self):
+    def spawnMultipleFileDialog(self):
         multipleFilenames = window.create_file_dialog(
             webview.OPEN_DIALOG, allow_multiple=True
         )
-
         return multipleFilenames
+
+    def spawnFolderDialog(self):
+        folder = window.create_file_dialog(
+            webview.FOLDER_DIALOG
+        )
+        return folder
 
 
 if __name__ == "__main__":

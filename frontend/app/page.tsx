@@ -60,8 +60,10 @@ declare global {
     showOpenFilePicker: () => Promise<[FileSystemFileHandle]>;
     pywebview: {
       api: {
-        spawnFileDialog: () => string[];
-        closeWindow: () => void;
+        spawnMultipleFileDialog: () => string[];
+        spawnFolderDialog: () => void;
+
+        /* Unused Functions*/
         minimiseWindow: () => void;
         maximiseWindow: () => void;
         spawnSettingsWindow: () => void;
@@ -85,7 +87,7 @@ export default function Home() {
   );
 
   async function returnPathDirectories() {
-    const handle = await window.pywebview.api.spawnFileDialog();
+    const handle = await window.pywebview.api.spawnMultipleFileDialog();
 
     if (handle.length == 0) {
       // User cancelled, or otherwise failed to open a file.
