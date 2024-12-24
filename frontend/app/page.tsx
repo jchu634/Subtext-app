@@ -149,7 +149,7 @@ export default function Home() {
   function mapFiles(file: any, index: number) {
     return (
       <div
-        className="w-windowWidth flex h-10 items-center justify-between rounded-md bg-[#5E5E5E] pl-2"
+        className="flex h-10 w-full items-center justify-between space-x-2 rounded-md bg-[#5E5E5E] px-2"
         key={index}
       >
         <InvertedCheckbox
@@ -178,6 +178,7 @@ export default function Home() {
       </div>
     );
   }
+
   function resetSettings() {
     // #TODO
   }
@@ -230,9 +231,7 @@ export default function Home() {
                   </Button>
                 </div>
               </div>
-              <ScrollArea
-                className={`w-full flex-grow p-3 ${funnelDisplay.className}`}
-              >
+              <ScrollArea className={`w-full p-3 ${funnelDisplay.className}`}>
                 <div className="space-y-2">
                   {files.map((file, index) => {
                     return mapFiles(file, index);
