@@ -66,13 +66,8 @@ declare global {
         /* Unused Functions*/
         minimiseWindow: () => void;
         maximiseWindow: () => void;
-        spawnSettingsWindow: () => void;
-        killSettingsWindow: () => void;
-        createToastOnMainWindow: (
-          title: string,
-          description: string,
-          duration: number,
-        ) => void;
+        closeWindow: () => void;
+
         setWindowAlwaysOnTop: (alwaysOnTop: boolean) => void;
       };
     };

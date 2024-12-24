@@ -3,10 +3,11 @@ import { Funnel_Display } from "next/font/google";
 
 import { Cog } from "lucide-react";
 import { useTheme } from "next-themes";
+import { useSelector } from "@xstate/store/react";
+
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { store } from "@/components/settingsStore";
-import { useSelector } from "@xstate/store/react";
 import {
   Dialog,
   DialogContent,
@@ -45,6 +46,17 @@ export function SettingsDialog() {
               Placeholder text
             </DialogDescription>
           </DialogHeader>
+
+          <div className="flex flex-row items-center space-x-2">
+            <Label htmlFor="defaultSaveLocation">Default Save Location:</Label>
+            <p
+              className={`${funnelDisplay.className} rounded-md border border-black p-1`}
+            >
+              test
+            </p>
+
+            <Button id="defaultSaveLocation">Browse</Button>
+          </div>
 
           <div
             className={`flex flex-row items-center space-x-5 ${funnelDisplay.className}`}

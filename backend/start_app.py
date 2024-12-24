@@ -40,8 +40,7 @@ class SettingsWindowApi():
 
 
 class Api():
-    def __init__(self, settings_window=None):
-        self.settings_window = settings_window
+    def __init__(self):
         self.maximised = False
         self.prevSize = None
 
@@ -49,9 +48,6 @@ class Api():
         print(value)
 
     def closeWindow(self):
-        if self.settings_window:
-            self.settings_window.destroy()
-            self.settings_window = None
         window.destroy()
         sys.exit()
         os._exit(0)
@@ -67,23 +63,6 @@ class Api():
             self.maximised = True
             self.prevSize = (window.width, window.height)
             window.maximize()
-
-    def spawnSettingsWindow(self):
-        if self.settings_window:
-            self.settings_window.destroy()
-            self.settings_window = None
-        settingsApi = SettingsWindowApi()
-        self.settings_window = webview.create_window(
-            "Settings", f"{Settings.backendUrl}/settings", js_api=settingsApi)
-        settingsApi.setWindow(self.settings_window)
-
-    def killSettingsWindow(self):
-        if self.settings_window:
-            self.settings_window.destroy()
-            self.settings_window = None
-
-    def createToastOnMainWindow(self, title, message, duration):
-        window.evaluate_js(f"createToast('{title}','{message}',{duration})")
 
     def setWindowAlwaysOnTop(self, value):
         print("Setting window on top")
@@ -116,11 +95,6 @@ if __name__ == "__main__":
 
     def on_closed():
         print("Main Window is Closed")
-        try:
-            print("Terminating Settings Window")
-            api_instance.killSettingsWindow()
-        except Exception as e:
-            print(e)
 
     window = webview.create_window(
         "Whisper Subtitler", f"{Settings.backendUrl}", js_api=api_instance, background_color="#5B8E7D", min_size=(660, 400), width=880)
