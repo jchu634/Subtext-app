@@ -177,7 +177,7 @@ export default function Home() {
               className={`h-fileHeight flex flex-col bg-[#D9D9D9] ${toolbarVars.rounded}`}
             >
               <div
-                className={`flex items-center justify-between bg-[#F4A259] pr-2 text-black ${funnelDisplay.className} text-xl font-bold ${toolbarVars.height} ${toolbarVars.rounded}`}
+                className={`flex items-center justify-between bg-[#F4A259] pr-2 text-black ${funnelDisplay.className} text-xl font-bold min-h-${toolbarVars.height} ${toolbarVars.rounded}`}
               >
                 <p className="pl-4">Files</p>
                 <div>
