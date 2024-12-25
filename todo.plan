@@ -19,7 +19,8 @@ TODO Frontend
 
     DONE Frontend Layout
     PROGRESS File Menu
-    TODO File exists dialog
-    TODO File Checkbox
-    TODO File removal confirmation
+        TODO File exists dialog
+        DONE File Checkbox
+        TODO Mass File Selection deletion
+        TODO File removal confirmation
     
