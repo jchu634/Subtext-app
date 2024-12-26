@@ -73,6 +73,7 @@ declare global {
     };
   }
 }
+
 export default function Home() {
   const [files, setFiles] = useState<file[]>([]);
   const [selectedFiles, setSelectedFiles] = useState<Set<string>>(new Set());
@@ -103,7 +104,7 @@ export default function Home() {
       );
       return uniqueFiles;
     });
-    console.log(newFiles);
+  
     return newFiles;
   }
   function clearFiles() {
@@ -113,6 +114,15 @@ export default function Home() {
     setFiles((prevFiles) =>
       prevFiles.filter((file) => file.fullPath !== fullPath),
     );
+  }
+  function removeSpecificFiles(){
+    
+    for (const removeFile of selectedFiles) {      
+      setFiles((prevFiles) =>
+        prevFiles.filter((file) => file.fullPath !== removeFile),
+      );
+    } 
+    setSelectedFiles(new Set())
   }
 
   function handleCheckboxChange(
@@ -214,20 +224,36 @@ export default function Home() {
                     >
                       Add New
                     </p>
-                  </Button>
-                  <Button variant="ghost" className="p-2" onClick={clearFiles}>
-                    <TrashIcon
-                      strokeWidth={3}
-                      size={24}
-                      className="hover:text-accent-foreground"
-                    />
-                    <p
-                      className={`${funnelDisplay.className} text-xl font-bold`}
-                    >
-                      Remove All
-                    </p>
-                  </Button>
-                </div>
+                  </Button>         
+                    { selectedFiles.size == 0 && (
+                      <Button variant="ghost" className="p-2" onClick={clearFiles}>
+                        <TrashIcon
+                          strokeWidth={3}
+                          size={24}
+                          className="hover:text-accent-foreground"/>
+                        <p
+                          className={`${funnelDisplay.className} text-xl font-bold`}
+                        >
+                          Remove All
+                        </p>
+                      </Button>
+                    )
+                    }
+                    { selectedFiles.size > 0 && (
+                      <Button variant="ghost" className="p-2" onClick={removeSpecificFiles}>
+                        <TrashIcon
+                          strokeWidth={3}
+                          size={24}
+                          className="hover:text-accent-foreground"/>
+                        <p
+                        className={`${funnelDisplay.className} text-xl font-bold`}
+                      >
+                        Remove Selected
+                      </p>
+                    </Button>
+                    )
+                    }
+                    </div>
               </div>
               <ScrollArea className={`w-full p-3 ${funnelDisplay.className}`}>
                 <div className="space-y-2">
