@@ -36,15 +36,12 @@ export default function Menu() {
       <Menubar
         className={`${funnelDisplay.className} flex justify-between border-b-4 border-l-0 border-r-0 border-t-0 text-black`}
       >
-        <div className="flex">
+        <div className="flex dark:text-white">
           <MenubarMenu>
             <MenubarTrigger>File</MenubarTrigger>
             <MenubarContent>
               <MenubarItem>
-                New Tab <MenubarShortcut>⌘T</MenubarShortcut>
-              </MenubarItem>
-              <MenubarItem>
-                New Window <MenubarShortcut>⌘N</MenubarShortcut>
+                Add File <MenubarShortcut>⌘N</MenubarShortcut>
               </MenubarItem>
               <MenubarItem disabled>New Incognito Window</MenubarItem>
               <MenubarSeparator />

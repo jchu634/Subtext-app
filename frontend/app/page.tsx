@@ -24,6 +24,7 @@ import { useState } from "react";
 
 import { useSelector } from "@xstate/store/react";
 import { store } from "@/components/settingsStore";
+import { useAutoAnimate } from '@formkit/auto-animate/react'
 
 const funnelDisplay = Funnel_Display({
   variable: "--font-funnel",
@@ -54,6 +55,7 @@ var modelSizes = [
 
 var subtitleFormats = ["SRT", "ASS", "WebVTT"];
 var extendedSubtitlesFormats = ["MPL2", "TMP", "SAMI", "TTML", "MicroDVD"];
+var languages = ["EN", "DE", "CN", "FR", "SP", "RU", "JP"] // TODO Complete supported languages list
 
 declare global {
   interface Window {
@@ -78,6 +80,7 @@ export default function Home() {
   const [files, setFiles] = useState<file[]>([]);
   const [selectedFiles, setSelectedFiles] = useState<Set<string>>(new Set());
   const [lastCheckedIndex, setLastCheckedIndex] = useState<number | null>(null);
+  const [parent, enableAnimations] = useAutoAnimate(/* optional config */)
 
   const useExtendedFormats = useSelector(
     store,
@@ -256,7 +259,7 @@ export default function Home() {
                     </div>
               </div>
               <ScrollArea className={`w-full p-3 ${funnelDisplay.className}`}>
-                <div className="space-y-2">
+                <div className="space-y-2" ref={parent}>
                   {files.map((file, index) => {
                     return mapFiles(file, index);
                   })}
@@ -332,7 +335,7 @@ export default function Home() {
                     {subtitleFormats.map((format, index) => (
                       <Toggle key={index}>{format}</Toggle>
                     ))}
-                    {useExtendedFormats}
+                    
                     {useExtendedFormats && (
                       <>
                         {extendedSubtitlesFormats.map((format, index) => (

@@ -21,7 +21,7 @@ export default function RootLayout({
         >
           <Navbar />
           <div className="flex w-full flex-col">
-            <Menu />
+            {/* <Menu /> */}
             {children}
           </div>
         </ThemeProvider>

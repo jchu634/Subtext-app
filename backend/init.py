@@ -33,7 +33,15 @@ def create_app():
     )
 
     from home import home
+    from inference import inference
 
+    app.include_router(inference.transcription_router)
     # Always include the home router last as it contains a catch all route which will prevent other routes from being accessed
     app.include_router(home.home_router)
     return app
+
+app = create_app()
+if __name__ == "__main__":
+    import uvicorn
+    
+    uvicorn.run("init:app", port=6789, reload=True)

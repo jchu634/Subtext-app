@@ -12,6 +12,7 @@ class settingsModel(BaseSettings):
     energy_threshold: int = 40
     record_timeout: int = 2
     phrase_timeout: int = 3
+    testEnable:bool = True
 
     ENV: str = "production"
     LOGGING: bool = True
