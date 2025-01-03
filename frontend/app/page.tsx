@@ -1,6 +1,14 @@
 "use client";
 import { Funnel_Display } from "next/font/google";
-import { TrashIcon, CircleSlashIcon, PlusIcon } from "lucide-react";
+import {
+  Check,
+  ChevronsUpDown,
+  TrashIcon,
+  CircleSlashIcon,
+  PlusIcon,
+} from "lucide-react";
+
+import { cn } from "@/lib/utils";
 
 import { Button } from "@/components/ui/button";
 import { InvertedCheckbox, Checkbox } from "@/components/ui/checkbox";
@@ -19,12 +27,25 @@ import {
   ResizablePanel,
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 
 import { useState } from "react";
 
 import { useSelector } from "@xstate/store/react";
 import { store } from "@/components/settingsStore";
-import { useAutoAnimate } from '@formkit/auto-animate/react'
+import { useAutoAnimate } from "@formkit/auto-animate/react";
 
 const funnelDisplay = Funnel_Display({
   variable: "--font-funnel",
@@ -53,9 +74,69 @@ var modelSizes = [
   { modelName: "turbo", suggestedVRAM: 6 },
 ];
 
+var languages = [
+  { code: "auto", lang: "Auto Detect" },
+  { code: "af", lang: "Afrikaans" },
+  { code: "ar", lang: "Arabic" },
+  { code: "hy", lang: "Armenian" },
+  { code: "az", lang: "Azerbaijani" },
+  { code: "be", lang: "Belarusian" },
+  { code: "bs", lang: "Bosnian" },
+  { code: "bg", lang: "Bulgarian" },
+  { code: "ca", lang: "Catalan" },
+  { code: "zh", lang: "Chinese" },
+  { code: "hr", lang: "Croatian" },
+  { code: "cs", lang: "Czech" },
+  { code: "da", lang: "Danish" },
+  { code: "nl", lang: "Dutch" },
+  { code: "en", lang: "English" },
+  { code: "et", lang: "Estonian" },
+  { code: "fi", lang: "Finnish" },
+  { code: "fr", lang: "French" },
+  { code: "gl", lang: "Galician" },
+  { code: "de", lang: "German" },
+  { code: "el", lang: "Greek" },
+  { code: "he", lang: "Hebrew" },
+  { code: "hi", lang: "Hindi" },
+  { code: "hu", lang: "Hungarian" },
+  { code: "is", lang: "Icelandic" },
+  { code: "id", lang: "Indonesian" },
+  { code: "it", lang: "Italian" },
+  { code: "ja", lang: "Japanese" },
+  { code: "kn", lang: "Kannada" },
+  { code: "kk", lang: "Kazakh" },
+  { code: "ko", lang: "Korean" },
+  { code: "lv", lang: "Latvian" },
+  { code: "lt", lang: "Lithuanian" },
+  { code: "mk", lang: "Macedonian" },
+  { code: "ms", lang: "Malay" },
+  { code: "mr", lang: "Marathi" },
+  { code: "mi", lang: "Maori" },
+  { code: "ne", lang: "Nepali" },
+  { code: "no", lang: "Norwegian" },
+  { code: "fa", lang: "Persian" },
+  { code: "pl", lang: "Polish" },
+  { code: "pt", lang: "Portuguese" },
+  { code: "ro", lang: "Romanian" },
+  { code: "ru", lang: "Russian" },
+  { code: "sr", lang: "Serbian" },
+  { code: "sk", lang: "Slovak" },
+  { code: "sl", lang: "Slovenian" },
+  { code: "es", lang: "Spanish" },
+  { code: "sw", lang: "Swahili" },
+  { code: "sv", lang: "Swedish" },
+  { code: "tl", lang: "Tagalog" },
+  { code: "ta", lang: "Tamil" },
+  { code: "th", lang: "Thai" },
+  { code: "tr", lang: "Turkish" },
+  { code: "uk", lang: "Ukrainian" },
+  { code: "ur", lang: "Urdu" },
+  { code: "vi", lang: "Vietnamese" },
+  { code: "cy", lang: "Welsh" },
+];
+
 var subtitleFormats = ["SRT", "ASS", "WebVTT"];
 var extendedSubtitlesFormats = ["MPL2", "TMP", "SAMI", "TTML", "MicroDVD"];
-var languages = ["EN", "DE", "CN", "FR", "SP", "RU", "JP"] // TODO Complete supported languages list
 
 declare global {
   interface Window {
@@ -80,7 +161,9 @@ export default function Home() {
   const [files, setFiles] = useState<file[]>([]);
   const [selectedFiles, setSelectedFiles] = useState<Set<string>>(new Set());
   const [lastCheckedIndex, setLastCheckedIndex] = useState<number | null>(null);
-  const [parent, enableAnimations] = useAutoAnimate(/* optional config */)
+  const [parent, enableAnimations] = useAutoAnimate(/* optional config */);
+  const [open, setOpen] = useState(false);
+  const [value, setValue] = useState("");
 
   const useExtendedFormats = useSelector(
     store,
@@ -107,7 +190,7 @@ export default function Home() {
       );
       return uniqueFiles;
     });
-  
+
     return newFiles;
   }
   function clearFiles() {
@@ -118,14 +201,13 @@ export default function Home() {
       prevFiles.filter((file) => file.fullPath !== fullPath),
     );
   }
-  function removeSpecificFiles(){
-    
-    for (const removeFile of selectedFiles) {      
+  function removeSpecificFiles() {
+    for (const removeFile of selectedFiles) {
       setFiles((prevFiles) =>
         prevFiles.filter((file) => file.fullPath !== removeFile),
       );
-    } 
-    setSelectedFiles(new Set())
+    }
+    setSelectedFiles(new Set());
   }
 
   function handleCheckboxChange(
@@ -205,7 +287,7 @@ export default function Home() {
           <ResizablePanel defaultSize={60} minSize={30}>
             {/* File Menu */}
             <div
-              className={`h-fileHeight flex flex-col bg-[#D9D9D9] ${toolbarVars.rounded}`}
+              className={`flex h-fileHeight flex-col bg-[#D9D9D9] ${toolbarVars.rounded}`}
             >
               <div
                 className={`flex items-center justify-between bg-[#F4A259] pr-2 text-black ${funnelDisplay.className} text-xl font-bold min-h-${toolbarVars.height} ${toolbarVars.rounded}`}
@@ -227,36 +309,44 @@ export default function Home() {
                     >
                       Add New
                     </p>
-                  </Button>         
-                    { selectedFiles.size == 0 && (
-                      <Button variant="ghost" className="p-2" onClick={clearFiles}>
-                        <TrashIcon
-                          strokeWidth={3}
-                          size={24}
-                          className="hover:text-accent-foreground"/>
-                        <p
-                          className={`${funnelDisplay.className} text-xl font-bold`}
-                        >
-                          Remove All
-                        </p>
-                      </Button>
-                    )
-                    }
-                    { selectedFiles.size > 0 && (
-                      <Button variant="ghost" className="p-2" onClick={removeSpecificFiles}>
-                        <TrashIcon
-                          strokeWidth={3}
-                          size={24}
-                          className="hover:text-accent-foreground"/>
-                        <p
+                  </Button>
+                  {selectedFiles.size == 0 && (
+                    <Button
+                      variant="ghost"
+                      className="p-2"
+                      onClick={clearFiles}
+                    >
+                      <TrashIcon
+                        strokeWidth={3}
+                        size={24}
+                        className="hover:text-accent-foreground"
+                      />
+                      <p
+                        className={`${funnelDisplay.className} text-xl font-bold`}
+                      >
+                        Remove All
+                      </p>
+                    </Button>
+                  )}
+                  {selectedFiles.size > 0 && (
+                    <Button
+                      variant="ghost"
+                      className="p-2"
+                      onClick={removeSpecificFiles}
+                    >
+                      <TrashIcon
+                        strokeWidth={3}
+                        size={24}
+                        className="hover:text-accent-foreground"
+                      />
+                      <p
                         className={`${funnelDisplay.className} text-xl font-bold`}
                       >
                         Remove Selected
                       </p>
                     </Button>
-                    )
-                    }
-                    </div>
+                  )}
+                </div>
               </div>
               <ScrollArea className={`w-full p-3 ${funnelDisplay.className}`}>
                 <div className="space-y-2" ref={parent}>
@@ -335,7 +425,7 @@ export default function Home() {
                     {subtitleFormats.map((format, index) => (
                       <Toggle key={index}>{format}</Toggle>
                     ))}
-                    
+
                     {useExtendedFormats && (
                       <>
                         {extendedSubtitlesFormats.map((format, index) => (
@@ -345,6 +435,64 @@ export default function Home() {
                     )}
                   </div>
                 </div>
+                {/* <div className="flex items-center space-x-2">
+                  <Label htmlFor="languageSelect" className="text-lg font-bold">
+                    Language:
+                  </Label>
+                  <div id="languageSelect">
+                    <Popover open={open} onOpenChange={setOpen}>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="outline"
+                          role="combobox"
+                          aria-expanded={open}
+                          className="w-[200px] justify-between"
+                        >
+                          {value
+                            ? frameworks.find(
+                                (framework) => framework.value === value,
+                              )?.label
+                            : "Auto Detect"}
+                          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-[200px] p-0">
+                        <Command>
+                          <CommandInput placeholder="Search Language..." />
+                          <CommandList>
+                            <CommandEmpty>No language found.</CommandEmpty>
+                            <CommandGroup>
+                              {languages.map((language) => (
+                                <CommandItem
+                                  key={language}
+                                  value={language}
+                                  onSelect={(currentValue) => {
+                                    setValue(
+                                      currentValue === value
+                                        ? ""
+                                        : currentValue,
+                                    );
+                                    setOpen(false);
+                                  }}
+                                >
+                                  <Check
+                                    className={cn(
+                                      "mr-2 h-4 w-4",
+                                      value === language
+                                        ? "opacity-100"
+                                        : "opacity-0",
+                                    )}
+                                  />
+                                  {language}
+                                </CommandItem>
+                              ))}
+                            </CommandGroup>
+                          </CommandList>
+                        </Command>
+                      </PopoverContent>
+                    </Popover>
+                  </div> 
+                </div> */}
               </div>
             </div>
           </ResizablePanel>
