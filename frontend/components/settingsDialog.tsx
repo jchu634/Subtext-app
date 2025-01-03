@@ -70,7 +70,7 @@ export function SettingsDialog() {
                 Save Location:
               </Label>
               <p className="rounded-md border border-black p-1">
-                {saveLocation.length == 0 ? "Default" : saveLocation}
+                {saveLocation.length == 0 ? "Default Location" : saveLocation}
               </p>
 
               <Button id="defaultSaveLocation" onClick={returnPathDirectories}>
