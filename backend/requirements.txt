@@ -1,6 +1,8 @@
-Uvicorn
+uvicorn
 pydantic_settings
 pywebview
 orjson
 fastapi
 pysubs2
+ffmpeg
+openai-whisper
