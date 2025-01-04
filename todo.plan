@@ -14,31 +14,13 @@ TODO Backend
         DONE Model Input Formats
 
 
-
-
-
-                
-
-
-TODO Frontend
-    TODO Settings Page
-        TODO Default Open location
-        DONE Dark/Light Mode
-        TODO Overwrite files automatically
-        DONE Default Save location
-        DONE Enable Extended Subtitle Formats
-
-        
-    TODO Whisper Settings
-        PROGRESS Whisper size
-        DONE Subtitle Formats
-        DONE Extended Subtitle Formats
-        DONE Embed Subtitles in Video Option
-        PROGRESS Language select
-            TODO Fix CMDK dependencies
-
-
-    DONE Frontend Layout
+PROGRESS Frontend
+    DONE Frontend General Layout
+    TODO Make Files a store
+    TODO Add Open Source Licence pages
+    PROGRESS Application Development
+        PROGRESS Make Settings a form
+    
     PROGRESS File Menu
         TODO File exists dialog
         DONE File Checkbox
@@ -48,4 +30,35 @@ TODO Frontend
 
         TODO File removal confirmation
 
+    PROGRESS Settings Menu
+        TODO Migrate Settings to a external file
+        TODO Make Reset Settings button functional
+            NOTE Dependant on Settings becoming a form
+        TODO Default Open location
+        DONE Dark/Light Mode
+        TODO Overwrite files automatically
+        DONE Default Save location
+        DONE Enable Extended Subtitle Formats
+        PROGRESS Language select
+            TODO Fix CMDK dependencies
+            TODO Fetch languages from backend
+        PROGRESS Model size
+            DONE Dropdown
+            TODO Fetch Sizes from Backend instead of being hard-coded
+        DONE Subtitle Formats
+        DONE Extended Subtitle Formats
+        DONE Embed Subtitles in Video Options
     
+    PROGRESS Settings Dialog
+
+TODO Cohesive Application
+    TODO Build Scripts
+    TODO Packaging
+    TODO Testing
+    TODO Documentation
+    TODO Deployment
+    TODO CI/CD
+    TODO Versioning
+    TODO Licensing
+
+
