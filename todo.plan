@@ -31,7 +31,7 @@ PROGRESS Frontend
         TODO File removal confirmation
 
     PROGRESS Settings Menu
-        TODO Migrate Settings to a external file
+        DONE Migrate Settings to a external file
         TODO Make Reset Settings button functional
             NOTE Dependant on Settings becoming a form
         TODO Default Open location
