@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Request
 import logging
 import os
-import ffmpeg
+from ffmpy import FFmpeg
 import tempfile
 
 import importlib.util
@@ -26,22 +26,6 @@ def load_source(modname, filename):
 transcription_router = APIRouter(tags=["Transcription"])
 
 
-def extractAudio(path):
-    temp_dir = tempfile.gettempdir()
-
-    audio_paths = {}
-
-    print(f"Extracting audio from {filename(path)}...")
-    output_path = os.path.join(temp_dir, f"{filename(path)}.wav")
-
-    ffmpeg.input(path).output(
-        output_path,
-        acodec="pcm_s16le", ac=1, ar="16k"
-    ).run(quiet=True, overwrite_output=True)
-
-    return audio_paths
-
-
 @transcription_router.get("/supported_formats")
 def getSupportedFormats(model):
     getFormats = load_source('supportedFormats', f'./inference/{model}/api.py')
@@ -56,14 +40,48 @@ def getModelSizes(model):
 
 # TODO Unfinished
 @transcription_router.get("/subtitle")
-def subtitle(paths, model, modelSize, embed, outputFormats, language="auto"):
+def subtitle(paths, model, modelSize, embed, outputFormats, overwrite, language="auto"):
     generator = load_source('generateSubtitle', f'./inference/{model}/api.py')
     for path in paths:
         subs = pysubs2.load_from_whisper(generator.generateSubtitle(path, modelSize, language))
         for format in outputFormats:
-            subs.save(f"audio.{format}")
+            # TODO Properly name subtitle
+            subs.save(f"test.{format}")
+        if embed:
+            ff = None
+            if overwrite:
 
-    # TODO EMBED
+                # TODO properly add subtitle name
+                if path.split(".")[-1] == "mp4":
+                    ff = FFmpeg(
+                        inputs={path: None},
+                        outputs={path: f'-y -f ass -i {"test.ass"} -map 0:0 -map 0:1 -map 1:0 -c:v copy -c:a copy -c:s mov_text'}
+                    )
+
+                elif path.split(".")[-1] == "mkv":
+                    # TODO ADD MKV specific code
+                    ff = FFmpeg(
+                        inputs={path: None},
+                        outputs={path: '-y'}
+                    )
+            else:
+                # TODO properly add subtitle name
+                if path.split(".")[-1] == "mp4":
+                    ff = FFmpeg(
+                        inputs={path: None},
+                        outputs={path: f'-n -f ass -i {"test.ass"} -map 0:0 -map 0:1 -map 1:0 -c:v copy -c:a copy -c:s mov_text'}
+                    )
+
+                elif path.split(".")[-1] == "mkv":
+                    # TODO ADD MKV specific code
+                    ff = FFmpeg(
+                        inputs={path: None},
+                        outputs={path: '-n'}
+                    )
+
+            # TODO Test if command matches
+            print(ff.cmd())
+
     return {200, "OK"}
 
 ## Test ##
