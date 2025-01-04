@@ -4,5 +4,5 @@ pywebview
 orjson
 fastapi
 pysubs2
-ffmpeg
+ffmpy
 openai-whisper

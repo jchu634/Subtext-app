@@ -1,5 +1,23 @@
 TODO Backend
-    TODO Whisper Processing Endpoint
+    DONE Whisper Model
+    TODO Facebook MMS [Link](https://github.com/facebookresearch/fairseq/tree/main/examples/mms)
+    TODO Facebook M2M-100
+    TODO Facebook SeamlessM4T
+    TODO NVIDIA Parakeet
+    
+    PROGRESS General Subtitle Processing Endpoint
+        PROGRESS Subtitle Generation
+            UNTESTED Subtitle Formats
+            UNTESTED Extended Subtitle Formats
+            PROGRESS Embed Subtitles in Video Option
+        DONE Model Size Endpoint
+        DONE Model Input Formats
+
+
+
+
+
+                
 
 
 TODO Frontend
@@ -16,12 +34,18 @@ TODO Frontend
         DONE Subtitle Formats
         DONE Extended Subtitle Formats
         DONE Embed Subtitles in Video Option
-        TODO Language select
+        PROGRESS Language select
+            TODO Fix CMDK dependencies
+
 
     DONE Frontend Layout
     PROGRESS File Menu
         TODO File exists dialog
         DONE File Checkbox
-        DONE Mass File Selection deletion
+        PROGRESS Mass File Selection deletion
+            DONE Remove Selection Button
+            TODO Remove Individual button on group deletes entire group
+
         TODO File removal confirmation
+
     
