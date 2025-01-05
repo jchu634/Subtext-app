@@ -1,7 +1,12 @@
-import { Check, ChevronsUpDown, CircleSlashIcon } from "lucide-react";
+import {
+  Check,
+  ChevronsUpDown,
+  CircleSlashIcon,
+  Undo2Icon,
+} from "lucide-react";
 import { toolbarVars, funnelDisplay } from "@/app/page";
 import { cn } from "@/lib/utils";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 // Component Stuff
 import { Button } from "@/components/ui/button";
@@ -34,11 +39,15 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, useFieldArray } from "react-hook-form";
 
+import useSWR from "swr";
+
+const fetcher = (url: string) => fetch(url).then((r) => r.json());
+
 interface modelSize {
   modelName: String;
   suggestedVRAM: number;
 }
-var models = ["whisper", "SeamlessM4T"];
+// var models = ["whisper", "SeamlessM4T"];
 var modelSizes = [
   { modelName: "tiny", suggestedVRAM: 1 },
   { modelName: "base", suggestedVRAM: 1 },
@@ -109,9 +118,6 @@ var languages = [
   { code: "cy", lang: "Welsh" },
 ];
 
-var subtitleFormats = ["SRT", "ASS", "WebVTT"];
-var extendedSubtitlesFormats = ["MPL2", "TMP", "SAMI", "TTML", "MicroDVD"];
-
 const formSchema = z.object({
   model: z.string(),
   modelSize: z.string(),
@@ -127,7 +133,31 @@ const formSchema = z.object({
   filePaths: z.array(z.string()),
 });
 
+function getModels() {
+  const { data, error, isLoading } = useSWR(
+    "http://127.0.0.1:6789/available_models",
+    fetcher,
+  );
+
+  if (error) return "An error has occurred.";
+  if (isLoading) return "Loading...";
+  return data;
+}
+
 export function SettingsMenu() {
+  const [modelSizes, setModelSizes] = useState<string[]>([
+    "Something went wrong",
+  ]);
+  let models = getModels();
+
+  //   useEffect(() => {
+  //     fetch("http://127.0.0.1:6789/model_sizes")
+  //       .then((res) => res.json())
+  //       .then((data) => {
+  //         setModels(data);
+  //       });
+  //   }, []);
+
   const useExtendedFormats = useSelector(
     store,
     (state) => state.context.extendedSubtitlesFormats,
@@ -174,6 +204,7 @@ export function SettingsMenu() {
     control: form.control,
   });
 
+  if (models == "Loading...") return <div> loading</div>;
   return (
     <div className={`h-[80vh] bg-[#D9D9D9] ${toolbarVars.rounded}`}>
       {/* Settings Menu */}
@@ -183,7 +214,7 @@ export function SettingsMenu() {
         <p className="pl-4">Settings</p>
         <div>
           <Button variant="ghost" className="p-2" onClick={resetSettings}>
-            <CircleSlashIcon
+            <Undo2Icon
               strokeWidth={3}
               size={24}
               className="hover:text-accent-foreground"
@@ -196,7 +227,7 @@ export function SettingsMenu() {
       </div>
 
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)}>
+        <form onSubmit={form.handleSubmit(onSubmit)} id="settings-form">
           <div
             className={`h-full space-y-4 p-3 text-black ${funnelDisplay.className}`}
           >
@@ -368,7 +399,6 @@ export function SettingsMenu() {
                   </div> 
                 </div> */}
           </div>
-          <Button type="submit">DEBUG Submit</Button>
         </form>
       </Form>
     </div>
