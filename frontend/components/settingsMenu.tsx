@@ -202,10 +202,46 @@ export function SettingsMenu() {
           >
             <FormField
               control={form.control}
+              name="model"
+              render={({ field }) => (
+                <FormItem className="flex items-center space-x-2 space-y-0">
+                  <FormLabel className="min-w-28 text-lg font-bold">
+                    Model:
+                  </FormLabel>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                    value={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger
+                        id="model"
+                        className="w-[180px] border-2 border-black"
+                      >
+                        <SelectValue placeholder="Size" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {models.map((model, index) => (
+                        <SelectItem
+                          value={`${model}`}
+                          className={`${funnelDisplay.className}`}
+                          key={index}
+                        >
+                          {model}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
               name="modelSize"
               render={({ field }) => (
                 <FormItem className="flex items-center space-x-2 space-y-0">
-                  <FormLabel className="text-lg font-bold">
+                  <FormLabel className="min-w-28 text-lg font-bold">
                     Model Size:
                   </FormLabel>
                   <Select
