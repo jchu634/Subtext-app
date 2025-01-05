@@ -126,15 +126,15 @@ const formSchema = z.object({
   ),
   filePaths: z.array(z.string()),
 });
-function resetSettings() {
-  // #TODO
-}
 
 export function SettingsMenu() {
   const useExtendedFormats = useSelector(
     store,
     (state) => state.context.extendedSubtitlesFormats,
   );
+  function resetSettings() {
+    form.reset();
+  }
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -211,6 +211,7 @@ export function SettingsMenu() {
                   <Select
                     onValueChange={field.onChange}
                     defaultValue={field.value}
+                    value={field.value}
                   >
                     <FormControl>
                       <SelectTrigger

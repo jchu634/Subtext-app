@@ -33,8 +33,7 @@ PROGRESS Frontend
 
     PROGRESS Settings Menu
         DONE Migrate Settings to a external file
-        TODO Make Reset Settings button functional
-            NOTE Dependant on Settings becoming a form
+        DONE Make Reset Settings button functional
         TODO Default Open location
         DONE Dark/Light Mode
         TODO Overwrite files Toggle
