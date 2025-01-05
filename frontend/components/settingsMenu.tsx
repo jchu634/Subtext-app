@@ -1,6 +1,7 @@
 import { Check, ChevronsUpDown, CircleSlashIcon } from "lucide-react";
 import { toolbarVars, funnelDisplay } from "@/app/page";
 import { cn } from "@/lib/utils";
+import { useState } from "react";
 
 // Component Stuff
 import { Button } from "@/components/ui/button";
@@ -14,6 +15,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 
 // Store Stuff
 import { useSelector } from "@xstate/store/react";
@@ -22,21 +32,13 @@ import { store } from "@/components/settingsStore";
 // Form Stuff
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-
-const formSchema = z.object({
-  model: z.string(),
-  modelSize: z.string(),
-  embedSubtitles: z.boolean(),
-  language: z.string(),
-  outputFormats: z.array(z.string()),
-  filePaths: z.array(z.string()),
-});
+import { useForm, useFieldArray } from "react-hook-form";
 
 interface modelSize {
   modelName: String;
   suggestedVRAM: number;
 }
+var models = ["whisper", "SeamlessM4T"];
 var modelSizes = [
   { modelName: "tiny", suggestedVRAM: 1 },
   { modelName: "base", suggestedVRAM: 1 },
@@ -110,14 +112,67 @@ var languages = [
 var subtitleFormats = ["SRT", "ASS", "WebVTT"];
 var extendedSubtitlesFormats = ["MPL2", "TMP", "SAMI", "TTML", "MicroDVD"];
 
+const formSchema = z.object({
+  model: z.string(),
+  modelSize: z.string(),
+  embedSubtitles: z.boolean(),
+  language: z.string(),
+  outputFormats: z.array(
+    z.object({
+      value: z.string().min(1, "Value cannot be empty"),
+      active: z.boolean(),
+      isExtended: z.boolean(), // Indicates whether the item is an extended item
+    }),
+  ),
+  filePaths: z.array(z.string()),
+});
+function resetSettings() {
+  // #TODO
+}
+
 export function SettingsMenu() {
-  function resetSettings() {
-    // #TODO
-  }
   const useExtendedFormats = useSelector(
     store,
     (state) => state.context.extendedSubtitlesFormats,
   );
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      model: "whisper",
+      modelSize: "tiny",
+      embedSubtitles: false,
+      language: "english",
+      outputFormats: [
+        { value: "SRT", active: false, isExtended: false },
+        { value: "ASS", active: false, isExtended: false },
+        { value: "WebVTT", active: false, isExtended: false },
+        { value: "MPL2", active: false, isExtended: true },
+        { value: "TMP", active: false, isExtended: true },
+        { value: "SAMI", active: false, isExtended: true },
+        { value: "TTML", active: false, isExtended: true },
+        { value: "MicroDVD", active: false, isExtended: true },
+      ],
+      filePaths: ["Placeholder", "PlaceholderToo"],
+    },
+  });
+  function onSubmit(values: z.infer<typeof formSchema>) {
+    // Do something with the form values.
+    // ✅ This will be type-safe and validated.
+    const result = values.outputFormats
+      .filter((item) => item.active && (!item.isExtended || useExtendedFormats))
+      .map((item) => item.value);
+    console.log(result);
+    console.log(values);
+  }
+
+  const handleToggle = (index: number) => {
+    const current = fields[index];
+    update(index, { ...current, active: !current.active });
+  };
+  const { fields, update } = useFieldArray({
+    name: "outputFormats",
+    control: form.control,
+  });
 
   return (
     <div className={`h-[80vh] bg-[#D9D9D9] ${toolbarVars.rounded}`}>
@@ -139,58 +194,85 @@ export function SettingsMenu() {
           </Button>
         </div>
       </div>
-      <div
-        className={`h-full space-y-4 p-3 text-black ${funnelDisplay.className}`}
-      >
-        <div className="flex items-center space-x-2">
-          <Label htmlFor="modelSize" className="text-lg font-bold">
-            Model Size:
-          </Label>
-          <Select>
-            <SelectTrigger
-              id="modelSize"
-              className="w-[180px] border-2 border-black"
-            >
-              <SelectValue placeholder="Size" />
-            </SelectTrigger>
-            <SelectContent>
-              {modelSizes.map((size, index) => (
-                <SelectItem
-                  value={`${size.modelName}`}
-                  className={`${funnelDisplay.className}`}
-                  key={index}
-                >
-                  {size.modelName}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-        <div className="flex items-center space-x-2">
-          <Label htmlFor="embedSubtitles" className="text-lg font-bold">
-            Embed Subtitles into Video
-          </Label>
-          <Checkbox id="embedSubtitles" defaultChecked={true} />
-        </div>
-        <div className="flex items-center space-x-2">
-          <Label htmlFor="subtitleFormat" className="text-lg font-bold">
-            Output Subtitle Format(s):
-          </Label>
-          <div id="subtitleFormat" className="space-x-1 space-y-1">
-            {subtitleFormats.map((format, index) => (
-              <Toggle key={index}>{format}</Toggle>
-            ))}
 
-            {useExtendedFormats && (
-              <>
-                {extendedSubtitlesFormats.map((format, index) => (
-                  <Toggle key={index}>{format}</Toggle>
-                ))}
-              </>
-            )}
-          </div>
-        </div>
-        {/* <div className="flex items-center space-x-2">
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)}>
+          <div
+            className={`h-full space-y-4 p-3 text-black ${funnelDisplay.className}`}
+          >
+            <FormField
+              control={form.control}
+              name="modelSize"
+              render={({ field }) => (
+                <FormItem className="flex items-center space-x-2 space-y-0">
+                  <FormLabel className="text-lg font-bold">
+                    Model Size:
+                  </FormLabel>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger
+                        id="modelSize"
+                        className="w-[180px] border-2 border-black"
+                      >
+                        <SelectValue placeholder="Size" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {modelSizes.map((size, index) => (
+                        <SelectItem
+                          value={`${size.modelName}`}
+                          className={`${funnelDisplay.className}`}
+                          key={index}
+                        >
+                          {size.modelName}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="embedSubtitles"
+              render={({ field }) => (
+                <FormItem className="flex items-center space-x-2 space-y-0">
+                  <FormLabel className="text-lg font-bold">
+                    Embed Subtitles into Video
+                  </FormLabel>
+                  <FormControl>
+                    <Checkbox
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                      defaultChecked={true}
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+            <div className="flex items-center space-x-2">
+              <Label htmlFor="subtitleFormat" className="text-lg font-bold">
+                Output Subtitle Format(s):
+              </Label>
+              <div id="subtitleFormat" className="space-x-1 space-y-1">
+                {fields.map(
+                  (field, index) =>
+                    (!field.isExtended || useExtendedFormats) && (
+                      <Toggle
+                        pressed={field.active}
+                        onPressedChange={() => handleToggle(index)}
+                        key={field.id}
+                      >
+                        {field.value}
+                      </Toggle>
+                    ),
+                )}
+              </div>
+            </div>
+            {/* <div className="flex items-center space-x-2">
                   <Label htmlFor="languageSelect" className="text-lg font-bold">
                     Language:
                   </Label>
@@ -248,7 +330,10 @@ export function SettingsMenu() {
                     </Popover>
                   </div> 
                 </div> */}
-      </div>
+          </div>
+          <Button type="submit">DEBUG Submit</Button>
+        </form>
+      </Form>
     </div>
   );
 }

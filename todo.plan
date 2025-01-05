@@ -19,7 +19,8 @@ PROGRESS Frontend
     TODO Make Files a store
     TODO Add Open Source Licence pages
     PROGRESS Application Development
-        PROGRESS Make Settings a form
+        DONE Make Settings a form
+        TODO Make Settings form submit send request to backend
     
     PROGRESS File Menu
         TODO File exists dialog
@@ -36,7 +37,7 @@ PROGRESS Frontend
             NOTE Dependant on Settings becoming a form
         TODO Default Open location
         DONE Dark/Light Mode
-        TODO Overwrite files automatically
+        TODO Overwrite files Toggle
         DONE Default Save location
         DONE Enable Extended Subtitle Formats
         PROGRESS Language select
@@ -51,6 +52,9 @@ PROGRESS Frontend
     
     PROGRESS Settings Dialog
 
+TODO BUGS
+    TODO Extended Subtitle Formats overflow out of box when resized and squashed in small windows
+
 TODO Cohesive Application
     TODO Build Scripts
     TODO Packaging
@@ -60,5 +64,3 @@ TODO Cohesive Application
     TODO CI/CD
     TODO Versioning
     TODO Licensing
-
-
