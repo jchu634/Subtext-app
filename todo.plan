@@ -17,6 +17,7 @@ TODO Backend
 
 PROGRESS Frontend
     DONE Frontend General Layout
+    TODO OnHover texts
     TODO Make Files a store
     TODO Add Open Source Licence pages
     PROGRESS Application Development
@@ -41,7 +42,7 @@ PROGRESS Frontend
         DONE Default Save location
         DONE Enable Extended Subtitle Formats
         PROGRESS Language select
-            TODO Fix CMDK dependencies
+            DONE Fix CMDK dependencies
             TODO Fetch languages from backend
         PROGRESS Model size
             DONE Dropdown

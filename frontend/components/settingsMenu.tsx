@@ -1,9 +1,4 @@
-import {
-  Check,
-  ChevronsUpDown,
-  CircleSlashIcon,
-  Undo2Icon,
-} from "lucide-react";
+import { Check, ChevronsUpDown, Undo2Icon } from "lucide-react";
 import { toolbarVars, funnelDisplay } from "@/app/page";
 import { cn } from "@/lib/utils";
 import { useState, useEffect } from "react";
@@ -29,6 +24,19 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 
 // Store Stuff
 import { useSelector } from "@xstate/store/react";
@@ -46,15 +54,6 @@ interface modelSize {
   modelName: String;
   suggestedVRAM: number;
 }
-// var models = ["whisper", "SeamlessM4T"];
-var modelSizes = [
-  { modelName: "tiny", suggestedVRAM: 1 },
-  { modelName: "base", suggestedVRAM: 1 },
-  { modelName: "small", suggestedVRAM: 2 },
-  { modelName: "medium", suggestedVRAM: 5 },
-  { modelName: "large", suggestedVRAM: 10 },
-  { modelName: "turbo", suggestedVRAM: 6 },
-];
 
 var languages = [
   { code: "auto", lang: "Auto Detect" },
@@ -136,6 +135,8 @@ export function SettingsMenu() {
   const queryClient = useQueryClient();
 
   const [selectedModel, setSelectedModel] = useState<string>("whisper");
+  const [open, setOpen] = useState(false);
+  const [value, setValue] = useState("");
 
   const { data: models = [], isLoading: isModelsLoading } = useQuery({
     queryKey: ["models"],
@@ -163,7 +164,7 @@ export function SettingsMenu() {
       model: "whisper",
       modelSize: "tiny",
       embedSubtitles: false,
-      language: "english",
+      language: "auto",
       outputFormats: [
         { value: "SRT", active: false, isExtended: false },
         { value: "ASS", active: false, isExtended: false },
@@ -352,64 +353,66 @@ export function SettingsMenu() {
                 )}
               </div>
             </div>
-            {/* <div className="flex items-center space-x-2">
-                  <Label htmlFor="languageSelect" className="text-lg font-bold">
-                    Language:
-                  </Label>
-                  <div id="languageSelect">
-                    <Popover open={open} onOpenChange={setOpen}>
-                      <PopoverTrigger asChild>
-                        <Button
-                          variant="outline"
-                          role="combobox"
-                          aria-expanded={open}
-                          className="w-[200px] justify-between"
-                        >
-                          {value
-                            ? frameworks.find(
-                                (framework) => framework.value === value,
-                              )?.label
-                            : "Auto Detect"}
-                          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-[200px] p-0">
-                        <Command>
-                          <CommandInput placeholder="Search Language..." />
-                          <CommandList>
-                            <CommandEmpty>No language found.</CommandEmpty>
-                            <CommandGroup>
-                              {languages.map((language) => (
-                                <CommandItem
-                                  key={language}
-                                  value={language}
-                                  onSelect={(currentValue) => {
-                                    setValue(
-                                      currentValue === value
-                                        ? ""
-                                        : currentValue,
-                                    );
-                                    setOpen(false);
-                                  }}
-                                >
-                                  <Check
-                                    className={cn(
-                                      "mr-2 h-4 w-4",
-                                      value === language
-                                        ? "opacity-100"
-                                        : "opacity-0",
-                                    )}
-                                  />
-                                  {language}
-                                </CommandItem>
-                              ))}
-                            </CommandGroup>
-                          </CommandList>
-                        </Command>
-                      </PopoverContent>
-                    </Popover>
-                  </div> 
-                </div> */}
+
+            <FormField
+              control={form.control}
+              name="language"
+              render={({ field }) => (
+                <FormItem className="flex items-center space-x-2 space-y-0">
+                  <FormLabel className="text-lg font-bold">Language:</FormLabel>
+
+                  <Popover open={open} onOpenChange={setOpen}>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        role="combobox"
+                        aria-expanded={open}
+                        className={cn(
+                          "w-[200px] justify-between",
+                          !field.value && "text-muted-foreground",
+                        )}
+                      >
+                        {field.value
+                          ? languages.find(
+                              (language) => language.code === field.value,
+                            )?.lang
+                          : "Auto Detect"}
+                        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="h-[30vh] w-[200px] p-0">
+                      <Command>
+                        <CommandInput placeholder="Search Language..." />
+                        <CommandList>
+                          <CommandEmpty>No language found.</CommandEmpty>
+                          <CommandGroup>
+                            {languages.map((language) => (
+                              <CommandItem
+                                key={language.code}
+                                value={language.lang}
+                                onSelect={() => {
+                                  form.setValue("language", language.code);
+                                }}
+                              >
+                                <Check
+                                  className={cn(
+                                    "mr-2 h-4 w-4",
+                                    language.code === field.value
+                                      ? "opacity-100"
+                                      : "opacity-0",
+                                  )}
+                                />
+                                {language.lang}
+                              </CommandItem>
+                            ))}
+                          </CommandGroup>
+                        </CommandList>
+                      </Command>
+                    </PopoverContent>
+                  </Popover>
+                </FormItem>
+              )}
+            />
           </div>
         </form>
       </Form>
