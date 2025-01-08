@@ -37,7 +37,13 @@ def getSupportedFormats(model):
     return getFormats.supportedFormats()
 
 
-@transcription_router.get("/model_sizes")
+@transcription_router.get("/supported_languages")
+def getsupportedLanguages(model):
+    getLanguages = load_source('supportedLanguages', f'./inference/{model}/api.py')
+    return getLanguages.supportedLanguages()
+
+
+@transcription_router.get("/supported_model_sizes")
 def getModelSizes(model):
     getSizes = load_source('getModels', f'./inference/{model}/api.py')
     return getSizes.getModels()
