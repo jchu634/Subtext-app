@@ -26,6 +26,11 @@ def load_source(modname, filename):
 transcription_router = APIRouter(tags=["Transcription"])
 
 
+@transcription_router.get("/available_models")
+def getModels():
+    return [a for a in os.listdir("./inference/") if os.path.isdir("./inference/" + a) and a != "__pycache__"]
+
+
 @transcription_router.get("/supported_formats")
 def getSupportedFormats(model):
     getFormats = load_source('supportedFormats', f'./inference/{model}/api.py')
