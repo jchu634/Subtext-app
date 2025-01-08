@@ -2,6 +2,7 @@ import Navbar from "@/components/navbar";
 import Menu from "@/components/menu";
 import "@/styles/globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
+import Providers from "./providers";
 
 export default function RootLayout({
   // Layouts must accept a children prop.
@@ -13,18 +14,20 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className="flex bg-white dark:bg-black">
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <Navbar />
-          <div className="flex w-full flex-col">
-            {/* <Menu /> */}
-            {children}
-          </div>
-        </ThemeProvider>
+        <Providers>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <Navbar />
+            <div className="flex w-full flex-col">
+              {/* <Menu /> */}
+              {children}
+            </div>
+          </ThemeProvider>
+        </Providers>
       </body>
     </html>
   );
