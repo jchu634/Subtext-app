@@ -6,24 +6,46 @@ interface file {
 }
 
 export const store = createStore({
-  context: { extendedSubtitlesFormats: false, files:[], saveLocation: "" },
+  context: {
+    extendedSubtitlesFormats: false,
+    files: new Set<file>(),
+    saveLocation: "",
+  },
   // Transitions
   on: {
     toggleExtentedSubtitles: {
       extendedSubtitlesFormats: (context) => !context.extendedSubtitlesFormats,
     },
-    // changeName: {
-    //   name: (context, event: { newName: string }) => event.newName,
-    // },
-    // addFiles: {
-    //   files: (context, event: {newFiles: file[]}) => {
-    //     const allFiles = context.files.concat(event.newFiles)
-    //     const uniquefiles = allFiles.filter(
-    //         (file, index, self) =>
-    //           index === self.findIndex((f) => f.fullPath === file.fullPath),
-    //       );
-    //   })
-    // },
+    addFiles: {
+      files: (context, event: { newFiles: file[] }) => {
+        return new Set<file>([...context.files, ...event.newFiles]);
+      },
+    },
+    addFile: {
+      files: (context, event: { newFile: file }) => {
+        context.files.add(event.newFile);
+        return context.files;
+      },
+    },
+    removeFiles: {
+      files: (context, event: { removeFiles: file[] }) => {
+        const removalSet = new Set(event.removeFiles);
+
+        return new Set(
+          Array.from(context.files).filter((item) => !removalSet.has(item)),
+        );
+      },
+    },
+    removeFile: {
+      files: (context, event: { removeFile: file }) => {
+        context.files.delete(event.removeFile);
+
+        return context.files;
+      },
+    },
+    clearFiles: {
+      files: (context) => new Set<file>(),
+    },
     changeSaveLocation: {
       saveLocation: (context, event: { newLocation: string }) => {
         if (event.newLocation) {

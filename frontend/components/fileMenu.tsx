@@ -21,8 +21,10 @@ interface file {
 export function FilesMenu() {
   const [parent, enableAnimations] = useAutoAnimate(/* optional config */);
   const [files, setFiles] = useState<file[]>([]);
-  const [selectedFiles, setSelectedFiles] = useState<Set<string>>(new Set());
+  const [selectedFiles, setSelectedFiles] = useState<Set<file>>(new Set());
   const [lastCheckedIndex, setLastCheckedIndex] = useState<number | null>(null);
+
+  const storeFiles = useSelector(store, (state) => state.context.files);
 
   async function returnPathDirectories() {
     const handle = await window.pywebview.api.spawnMultipleFileDialog();
@@ -44,7 +46,7 @@ export function FilesMenu() {
       );
       return uniqueFiles;
     });
-
+    store.send({ type: "addFiles", newFiles: newFiles });
     return newFiles;
   }
 
@@ -57,17 +59,15 @@ export function FilesMenu() {
         <InvertedCheckbox
           id={`file-${index}`}
           className="flex-none border-none bg-white data-[state=checked]:bg-white dark:data-[state=checked]:bg-primary"
-          checked={selectedFiles.has(file.fullPath.toString())}
-          onClick={(e) =>
-            handleCheckboxChange(file.fullPath.toString(), index, e)
-          }
+          checked={selectedFiles.has(file)}
+          onClick={(e) => handleCheckboxChange(file, index, e)}
         />
         <p className="truncate px-2">{file.fileName}</p>
         <Button
           variant="ghost"
           size="icon"
           className="flex-none"
-          onClick={() => removeFile(file.fullPath)}
+          onClick={() => removeFile(file)}
         >
           <TrashIcon
             strokeWidth={3}
@@ -80,24 +80,24 @@ export function FilesMenu() {
   }
 
   function clearFiles() {
+    store.send({ type: "clearFiles" });
     setFiles([]);
+    setSelectedFiles(new Set());
   }
-  function removeFile(fullPath: string) {
-    setFiles((prevFiles) =>
-      prevFiles.filter((file) => file.fullPath !== fullPath),
-    );
+  function removeFile(file: file) {
+    setFiles((prevFiles) => prevFiles.filter((filtFile) => filtFile !== file));
+    store.send({ type: "removeFile", removeFile: file });
   }
   function removeSpecificFiles() {
     for (const removeFile of selectedFiles) {
-      setFiles((prevFiles) =>
-        prevFiles.filter((file) => file.fullPath !== removeFile),
-      );
+      setFiles((prevFiles) => prevFiles.filter((file) => file !== removeFile));
     }
+    store.send({ type: "removeFiles", removeFiles: [...selectedFiles] });
     setSelectedFiles(new Set());
   }
 
   function handleCheckboxChange(
-    fullPath: string,
+    file: file,
     index: number,
     event: React.MouseEvent<HTMLButtonElement>,
   ) {
@@ -109,17 +109,17 @@ export function FilesMenu() {
       const end = Math.max(lastCheckedIndex, index);
 
       files.slice(start, end + 1).forEach((file) => {
-        if (selectedFiles.has(files[lastCheckedIndex].fullPath.toString())) {
-          newSelected.add(file.fullPath.toString());
+        if (selectedFiles.has(files[lastCheckedIndex])) {
+          newSelected.add(file);
         } else {
-          newSelected.delete(file.fullPath.toString());
+          newSelected.delete(file);
         }
       });
     } else {
-      if (newSelected.has(fullPath.toString())) {
-        newSelected.delete(fullPath.toString());
+      if (newSelected.has(file)) {
+        newSelected.delete(file);
       } else {
-        newSelected.add(fullPath.toString());
+        newSelected.add(file);
       }
     }
 
@@ -182,7 +182,7 @@ export function FilesMenu() {
       </div>
       <ScrollArea className={`w-full p-3 ${funnelDisplay.className}`}>
         <div className="space-y-2" ref={parent}>
-          {files.map((file, index) => {
+          {[...storeFiles].map((file, index) => {
             return mapFiles(file, index);
           })}
         </div>
