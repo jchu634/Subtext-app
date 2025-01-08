@@ -41,12 +41,12 @@ PROGRESS Frontend
         TODO Overwrite files Toggle
         DONE Default Save location
         DONE Enable Extended Subtitle Formats
-        PROGRESS Language select
+        DONE Language select
             DONE Fix CMDK dependencies
-            TODO Fetch languages from backend
-        PROGRESS Model size
+            DONE Fetch languages from backend
+        DONE Model size
             DONE Dropdown
-            TODO Fetch Sizes from Backend instead of being hard-coded
+            DONE Fetch Sizes from Backend instead of being hard-coded
         DONE Subtitle Formats
         DONE Extended Subtitle Formats
         DONE Embed Subtitles in Video Options

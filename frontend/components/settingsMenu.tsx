@@ -37,6 +37,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { Separator } from "@/components/ui/separator";
 
 // Store Stuff
 import { useSelector } from "@xstate/store/react";
@@ -54,67 +55,10 @@ interface modelSize {
   modelName: String;
   suggestedVRAM: number;
 }
-
-var languages = [
-  { code: "auto", lang: "Auto Detect" },
-  { code: "af", lang: "Afrikaans" },
-  { code: "ar", lang: "Arabic" },
-  { code: "hy", lang: "Armenian" },
-  { code: "az", lang: "Azerbaijani" },
-  { code: "be", lang: "Belarusian" },
-  { code: "bs", lang: "Bosnian" },
-  { code: "bg", lang: "Bulgarian" },
-  { code: "ca", lang: "Catalan" },
-  { code: "zh", lang: "Chinese" },
-  { code: "hr", lang: "Croatian" },
-  { code: "cs", lang: "Czech" },
-  { code: "da", lang: "Danish" },
-  { code: "nl", lang: "Dutch" },
-  { code: "en", lang: "English" },
-  { code: "et", lang: "Estonian" },
-  { code: "fi", lang: "Finnish" },
-  { code: "fr", lang: "French" },
-  { code: "gl", lang: "Galician" },
-  { code: "de", lang: "German" },
-  { code: "el", lang: "Greek" },
-  { code: "he", lang: "Hebrew" },
-  { code: "hi", lang: "Hindi" },
-  { code: "hu", lang: "Hungarian" },
-  { code: "is", lang: "Icelandic" },
-  { code: "id", lang: "Indonesian" },
-  { code: "it", lang: "Italian" },
-  { code: "ja", lang: "Japanese" },
-  { code: "kn", lang: "Kannada" },
-  { code: "kk", lang: "Kazakh" },
-  { code: "ko", lang: "Korean" },
-  { code: "lv", lang: "Latvian" },
-  { code: "lt", lang: "Lithuanian" },
-  { code: "mk", lang: "Macedonian" },
-  { code: "ms", lang: "Malay" },
-  { code: "mr", lang: "Marathi" },
-  { code: "mi", lang: "Maori" },
-  { code: "ne", lang: "Nepali" },
-  { code: "no", lang: "Norwegian" },
-  { code: "fa", lang: "Persian" },
-  { code: "pl", lang: "Polish" },
-  { code: "pt", lang: "Portuguese" },
-  { code: "ro", lang: "Romanian" },
-  { code: "ru", lang: "Russian" },
-  { code: "sr", lang: "Serbian" },
-  { code: "sk", lang: "Slovak" },
-  { code: "sl", lang: "Slovenian" },
-  { code: "es", lang: "Spanish" },
-  { code: "sw", lang: "Swahili" },
-  { code: "sv", lang: "Swedish" },
-  { code: "tl", lang: "Tagalog" },
-  { code: "ta", lang: "Tamil" },
-  { code: "th", lang: "Thai" },
-  { code: "tr", lang: "Turkish" },
-  { code: "uk", lang: "Ukrainian" },
-  { code: "ur", lang: "Urdu" },
-  { code: "vi", lang: "Vietnamese" },
-  { code: "cy", lang: "Welsh" },
-];
+interface languageType {
+  code: string;
+  lang: string;
+}
 
 const formSchema = z.object({
   model: z.string(),
@@ -147,11 +91,21 @@ export function SettingsMenu() {
   const { data: modelSizes = [], isLoading: isModelSizesLoading } = useQuery({
     queryKey: ["modelSizes", selectedModel],
     queryFn: () =>
-      fetch(`http://127.0.0.1:6789/model_sizes?model=${selectedModel}`).then(
-        (res) => res.json(),
-      ),
+      fetch(
+        `http://127.0.0.1:6789/supported_model_sizes?model=${selectedModel}`,
+      ).then((res) => res.json()),
     enabled: !!selectedModel,
   });
+  const { data: modelLanguages = [], isLoading: isLanguagesLoading } = useQuery(
+    {
+      queryKey: ["modelLanguages", selectedModel],
+      queryFn: () =>
+        fetch(
+          `http://127.0.0.1:6789/supported_languages?model=${selectedModel}`,
+        ).then((res) => res.json()),
+      enabled: !!selectedModel,
+    },
+  );
 
   const useExtendedFormats = useSelector(
     store,
@@ -318,6 +272,70 @@ export function SettingsMenu() {
             />
             <FormField
               control={form.control}
+              name="language"
+              render={({ field }) => (
+                <FormItem className="flex items-center space-x-2 space-y-0">
+                  <FormLabel className="text-lg font-bold">
+                    Input Video Language:
+                  </FormLabel>
+
+                  <Popover open={open} onOpenChange={setOpen}>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        role="combobox"
+                        aria-expanded={open}
+                        disabled={isLanguagesLoading}
+                        className={cn(
+                          "w-[200px] justify-between border-2 border-black",
+                          !field.value && "text-muted-foreground",
+                        )}
+                      >
+                        {field.value
+                          ? modelLanguages.find(
+                              (language: languageType) =>
+                                language.code === field.value,
+                            )?.lang
+                          : "Auto Detect"}
+                        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="h-[30vh] w-[200px] p-0">
+                      <Command>
+                        <CommandInput placeholder="Search Language..." />
+                        <CommandList>
+                          <CommandEmpty>No language found.</CommandEmpty>
+                          <CommandGroup>
+                            {modelLanguages.map((language: languageType) => (
+                              <CommandItem
+                                key={language.code}
+                                value={language.lang}
+                                onSelect={() => {
+                                  form.setValue("language", language.code);
+                                }}
+                              >
+                                <Check
+                                  className={cn(
+                                    "mr-2 h-4 w-4",
+                                    language.code === field.value
+                                      ? "opacity-100"
+                                      : "opacity-0",
+                                  )}
+                                />
+                                {language.lang}
+                              </CommandItem>
+                            ))}
+                          </CommandGroup>
+                        </CommandList>
+                      </Command>
+                    </PopoverContent>
+                  </Popover>
+                </FormItem>
+              )}
+            />
+            <Separator className="my-4 bg-black" />
+            <FormField
+              control={form.control}
               name="embedSubtitles"
               render={({ field }) => (
                 <FormItem className="flex items-center space-x-2 space-y-0">
@@ -353,66 +371,6 @@ export function SettingsMenu() {
                 )}
               </div>
             </div>
-
-            <FormField
-              control={form.control}
-              name="language"
-              render={({ field }) => (
-                <FormItem className="flex items-center space-x-2 space-y-0">
-                  <FormLabel className="text-lg font-bold">Language:</FormLabel>
-
-                  <Popover open={open} onOpenChange={setOpen}>
-                    <PopoverTrigger asChild>
-                      <Button
-                        variant="outline"
-                        role="combobox"
-                        aria-expanded={open}
-                        className={cn(
-                          "w-[200px] justify-between",
-                          !field.value && "text-muted-foreground",
-                        )}
-                      >
-                        {field.value
-                          ? languages.find(
-                              (language) => language.code === field.value,
-                            )?.lang
-                          : "Auto Detect"}
-                        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="h-[30vh] w-[200px] p-0">
-                      <Command>
-                        <CommandInput placeholder="Search Language..." />
-                        <CommandList>
-                          <CommandEmpty>No language found.</CommandEmpty>
-                          <CommandGroup>
-                            {languages.map((language) => (
-                              <CommandItem
-                                key={language.code}
-                                value={language.lang}
-                                onSelect={() => {
-                                  form.setValue("language", language.code);
-                                }}
-                              >
-                                <Check
-                                  className={cn(
-                                    "mr-2 h-4 w-4",
-                                    language.code === field.value
-                                      ? "opacity-100"
-                                      : "opacity-0",
-                                  )}
-                                />
-                                {language.lang}
-                              </CommandItem>
-                            ))}
-                          </CommandGroup>
-                        </CommandList>
-                      </Command>
-                    </PopoverContent>
-                  </Popover>
-                </FormItem>
-              )}
-            />
           </div>
         </form>
       </Form>
