@@ -39,9 +39,8 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, useFieldArray } from "react-hook-form";
 
-import useSWR from "swr";
-
-const fetcher = (url: string) => fetch(url).then((r) => r.json());
+// Query Stuff
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 interface modelSize {
   modelName: String;
@@ -133,39 +132,25 @@ const formSchema = z.object({
   filePaths: z.array(z.string()),
 });
 
-function getModels() {
-  const { data, error, isLoading } = useSWR(
-    "http://127.0.0.1:6789/available_models",
-    fetcher,
-  );
-
-  if (error) return "An error has occurred.";
-  if (isLoading) return "Loading...";
-  return data;
-}
-
 export function SettingsMenu() {
-  const [modelSizes, setModelSizes] = useState<string[]>([]);
-  const [models, setModels] = useState<string[]>([]);
+  const queryClient = useQueryClient();
+
   const [selectedModel, setSelectedModel] = useState<string>("whisper");
 
-  useEffect(() => {
-    fetch("http://127.0.0.1:6789/available_models")
-      .then((res) => res.json())
-      .then((data) => {
-        setModels(data);
-      });
-  }, []);
+  const { data: models = [], isLoading: isModelsLoading } = useQuery({
+    queryKey: ["models"],
+    queryFn: () =>
+      fetch("http://127.0.0.1:6789/available_models").then((res) => res.json()),
+  });
 
-  useEffect(() => {
-    if (selectedModel) {
-      fetch(`http://127.0.0.1:6789/model_sizes?model=${selectedModel}`)
-        .then((res) => res.json())
-        .then((data) => {
-          setModelSizes(data);
-        });
-    }
-  }, [selectedModel]);
+  const { data: modelSizes = [], isLoading: isModelSizesLoading } = useQuery({
+    queryKey: ["modelSizes", selectedModel],
+    queryFn: () =>
+      fetch(`http://127.0.0.1:6789/model_sizes?model=${selectedModel}`).then(
+        (res) => res.json(),
+      ),
+    enabled: !!selectedModel,
+  });
 
   const useExtendedFormats = useSelector(
     store,
@@ -193,6 +178,11 @@ export function SettingsMenu() {
     },
   });
 
+  useEffect(() => {
+    if (modelSizes.length > 0) {
+      form.setValue("modelSize", modelSizes[0]);
+    }
+  }, [modelSizes, form]);
   const { fields, update } = useFieldArray({
     name: "outputFormats",
     control: form.control,
@@ -236,124 +226,133 @@ export function SettingsMenu() {
         </div>
       </div>
 
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} id="settings-form">
-            <div
-              className={`h-full space-y-4 p-3 text-black ${funnelDisplay.className}`}
-            >
-              <FormField
-                control={form.control}
-                name="model"
-                render={({ field }) => (
-                  <FormItem className="flex items-center space-x-2 space-y-0">
-                    <FormLabel className="min-w-28 text-lg font-bold">
-                      Model:
-                    </FormLabel>
-                    <Select
-                      onValueChange={(value) => {
-                        field.onChange(value);
-                        setSelectedModel(value);
-                      }}
-                      defaultValue={field.value}
-                      value={field.value}
-                    >
-                      <FormControl>
-                        <SelectTrigger
-                          id="model"
-                          className="w-[180px] border-2 border-black"
-                        >
-                          <SelectValue placeholder="Size" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {models.map((model, index) => (
-                          <SelectItem
-                            value={`${model}`}
-                            className={`${funnelDisplay.className}`}
-                            key={index}
-                          >
-                            {model}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="modelSize"
-                render={({ field }) => (
-                  <FormItem className="flex items-center space-x-2 space-y-0">
-                    <FormLabel className="min-w-28 text-lg font-bold">
-                      Model Size:
-                    </FormLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                      value={field.value}
-                    >
-                      <FormControl>
-                        <SelectTrigger
-                          id="modelSize"
-                          className="w-[180px] border-2 border-black"
-                        >
-                          <SelectValue placeholder="Size" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {modelSizes.map((size, index) => (
-                          <SelectItem
-                            value={`${size}`}
-                            className={`${funnelDisplay.className}`}
-                            key={index}
-                          >
-                            {size}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="embedSubtitles"
-                render={({ field }) => (
-                  <FormItem className="flex items-center space-x-2 space-y-0">
-                    <FormLabel className="text-lg font-bold">
-                      Embed Subtitles into Video
-                    </FormLabel>
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} id="settings-form">
+          <div
+            className={`h-full space-y-4 p-3 text-black ${funnelDisplay.className}`}
+          >
+            <FormField
+              control={form.control}
+              name="model"
+              render={({ field }) => (
+                <FormItem className="flex items-center space-x-2 space-y-0">
+                  <FormLabel className="min-w-28 text-lg font-bold">
+                    Model:
+                  </FormLabel>
+                  <Select
+                    onValueChange={(value) => {
+                      field.onChange(value);
+                      setSelectedModel(value);
+                    }}
+                    defaultValue={field.value}
+                    value={field.value}
+                    disabled={isModelsLoading}
+                  >
                     <FormControl>
-                      <Checkbox
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
-                        defaultChecked={true}
-                      />
+                      <SelectTrigger
+                        id="model"
+                        className="w-[180px] border-2 border-black"
+                      >
+                        <SelectValue
+                          placeholder={
+                            isModelsLoading ? "Loading..." : "Select Model"
+                          }
+                        />
+                      </SelectTrigger>
                     </FormControl>
-                  </FormItem>
-                )}
-              />
-              <div className="flex items-center space-x-2">
-                <Label htmlFor="subtitleFormat" className="text-lg font-bold">
-                  Output Subtitle Format(s):
-                </Label>
-                <div id="subtitleFormat" className="space-x-1 space-y-1">
-                  {fields.map(
-                    (field, index) =>
-                      (!field.isExtended || useExtendedFormats) && (
-                        <Toggle
-                          pressed={field.active}
-                          onPressedChange={() => handleToggle(index)}
-                          key={field.id}
+                    <SelectContent>
+                      {models.map((model: string, index: number) => (
+                        <SelectItem
+                          value={`${model}`}
+                          className={`${funnelDisplay.className}`}
+                          key={index}
                         >
-                          {field.value}
-                        </Toggle>
-                      ),
-                  )}
-                </div>
+                          {model}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="modelSize"
+              render={({ field }) => (
+                <FormItem className="flex items-center space-x-2 space-y-0">
+                  <FormLabel className="min-w-28 text-lg font-bold">
+                    Model Size:
+                  </FormLabel>
+                  <Select
+                    onValueChange={field.onChange}
+                    value={field.value}
+                    disabled={isModelSizesLoading}
+                  >
+                    <FormControl>
+                      <SelectTrigger
+                        id="modelSize"
+                        className="w-[180px] border-2 border-black"
+                      >
+                        <SelectValue
+                          placeholder={
+                            isModelSizesLoading ? "Loading..." : "Select Size"
+                          }
+                        />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {modelSizes.map((size: string, index: number) => (
+                        <SelectItem
+                          value={`${size}`}
+                          className={`${funnelDisplay.className}`}
+                          key={index}
+                        >
+                          {size}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="embedSubtitles"
+              render={({ field }) => (
+                <FormItem className="flex items-center space-x-2 space-y-0">
+                  <FormLabel className="text-lg font-bold">
+                    Embed Subtitles into Video
+                  </FormLabel>
+                  <FormControl>
+                    <Checkbox
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                      defaultChecked={true}
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+            <div className="flex items-center space-x-2">
+              <Label htmlFor="subtitleFormat" className="text-lg font-bold">
+                Output Subtitle Format(s):
+              </Label>
+              <div id="subtitleFormat" className="space-x-1 space-y-1">
+                {fields.map(
+                  (field, index) =>
+                    (!field.isExtended || useExtendedFormats) && (
+                      <Toggle
+                        pressed={field.active}
+                        onPressedChange={() => handleToggle(index)}
+                        key={field.id}
+                      >
+                        {field.value}
+                      </Toggle>
+                    ),
+                )}
               </div>
-              {/* <div className="flex items-center space-x-2">
+            </div>
+            {/* <div className="flex items-center space-x-2">
                   <Label htmlFor="languageSelect" className="text-lg font-bold">
                     Language:
                   </Label>
