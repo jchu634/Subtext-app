@@ -80,32 +80,6 @@ export function SettingsMenu() {
 
   const [selectedModel, setSelectedModel] = useState<string>("whisper");
   const [open, setOpen] = useState(false);
-  const [value, setValue] = useState("");
-
-  const { data: models = [], isLoading: isModelsLoading } = useQuery({
-    queryKey: ["models"],
-    queryFn: () =>
-      fetch("http://127.0.0.1:6789/available_models").then((res) => res.json()),
-  });
-
-  const { data: modelSizes = [], isLoading: isModelSizesLoading } = useQuery({
-    queryKey: ["modelSizes", selectedModel],
-    queryFn: () =>
-      fetch(
-        `http://127.0.0.1:6789/supported_model_sizes?model=${selectedModel}`,
-      ).then((res) => res.json()),
-    enabled: !!selectedModel,
-  });
-  const { data: modelLanguages = [], isLoading: isLanguagesLoading } = useQuery(
-    {
-      queryKey: ["modelLanguages", selectedModel],
-      queryFn: () =>
-        fetch(
-          `http://127.0.0.1:6789/supported_languages?model=${selectedModel}`,
-        ).then((res) => res.json()),
-      enabled: !!selectedModel,
-    },
-  );
 
   const useExtendedFormats = useSelector(
     store,
@@ -133,11 +107,6 @@ export function SettingsMenu() {
     },
   });
 
-  useEffect(() => {
-    if (modelSizes.length > 0) {
-      form.setValue("modelSize", modelSizes[0]);
-    }
-  }, [modelSizes, form]);
   const { fields, update } = useFieldArray({
     name: "outputFormats",
     control: form.control,
@@ -148,21 +117,53 @@ export function SettingsMenu() {
     update(index, { ...current, active: !current.active });
   };
 
+  const resetSettings = () => {
+    form.reset();
+  };
+
   const onSubmit = (values: z.infer<typeof formSchema>) => {
     const result = values.outputFormats
       .filter((item) => item.active && (!item.isExtended || useExtendedFormats))
       .map((item) => item.value);
     console.log(result);
     console.log(values);
+    console.log(store.getSnapshot().context);
   };
 
-  const resetSettings = () => {
-    form.reset();
-  };
+  const { data: models = [], isLoading: isModelsLoading } = useQuery({
+    queryKey: ["models"],
+    queryFn: () =>
+      fetch("http://127.0.0.1:6789/available_models").then((res) => res.json()),
+  });
+
+  const { data: modelSizes = [], isLoading: isModelSizesLoading } = useQuery({
+    queryKey: ["modelSizes", selectedModel],
+    queryFn: () =>
+      fetch(
+        `http://127.0.0.1:6789/supported_model_sizes?model=${selectedModel}`,
+      ).then((res) => res.json()),
+    enabled: !!selectedModel,
+  });
+
+  useEffect(() => {
+    if (modelSizes.length > 0) {
+      form.setValue("modelSize", modelSizes[0]);
+    }
+  }, [modelSizes, form]);
+
+  const { data: modelLanguages = [], isLoading: isLanguagesLoading } = useQuery(
+    {
+      queryKey: ["modelLanguages", selectedModel],
+      queryFn: () =>
+        fetch(
+          `http://127.0.0.1:6789/supported_languages?model=${selectedModel}`,
+        ).then((res) => res.json()),
+      enabled: !!selectedModel,
+    },
+  );
 
   return (
     <div className={`h-[80vh] bg-[#D9D9D9] ${toolbarVars.rounded}`}>
-      {/* Settings Menu */}
       <div
         className={`flex items-center justify-between bg-[#8CB369] pr-2 text-black ${funnelDisplay.className} text-xl font-bold ${toolbarVars.height} ${toolbarVars.rounded}`}
       >

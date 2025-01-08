@@ -29,7 +29,7 @@ export function FilesMenu() {
   async function returnPathDirectories() {
     const handle = await window.pywebview.api.spawnMultipleFileDialog();
 
-    if (handle.length == 0) {
+    if (handle == null || handle.length == 0) {
       // User cancelled, or otherwise failed to open a file.
       return;
     }
@@ -79,11 +79,6 @@ export function FilesMenu() {
     );
   }
 
-  function clearFiles() {
-    store.send({ type: "clearFiles" });
-    setFiles([]);
-    setSelectedFiles(new Set());
-  }
   function removeFile(file: file) {
     setFiles((prevFiles) => prevFiles.filter((filtFile) => filtFile !== file));
     store.send({ type: "removeFile", removeFile: file });
@@ -93,6 +88,11 @@ export function FilesMenu() {
       setFiles((prevFiles) => prevFiles.filter((file) => file !== removeFile));
     }
     store.send({ type: "removeFiles", removeFiles: [...selectedFiles] });
+    setSelectedFiles(new Set());
+  }
+  function clearFiles() {
+    store.send({ type: "clearFiles" });
+    setFiles([]);
     setSelectedFiles(new Set());
   }
 
