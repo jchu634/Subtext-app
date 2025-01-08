@@ -41,7 +41,7 @@ import { Separator } from "@/components/ui/separator";
 
 // Store Stuff
 import { useSelector } from "@xstate/store/react";
-import { store } from "@/components/settingsStore";
+import { store } from "@/components/stores";
 
 // Form Stuff
 import { z } from "zod";

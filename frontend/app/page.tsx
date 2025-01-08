@@ -17,7 +17,7 @@ import { useState } from "react";
 
 // Store Stuff
 import { useSelector } from "@xstate/store/react";
-import { store } from "@/components/settingsStore";
+import { store } from "@/components/stores";
 
 // Animation Stuff
 import { useAutoAnimate } from "@formkit/auto-animate/react";
@@ -252,6 +252,9 @@ export default function Home() {
           <ResizableHandle withHandle />
           <ResizablePanel defaultSize={40} minSize={30}>
             <SettingsMenu />
+            <Button type="submit" form="settings-form">
+              DEBUG Submit
+            </Button>
           </ResizablePanel>
         </ResizablePanelGroup>
       </main>
