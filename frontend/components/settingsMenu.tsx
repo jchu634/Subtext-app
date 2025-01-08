@@ -1,5 +1,5 @@
 import { Check, ChevronsUpDown, Undo2Icon } from "lucide-react";
-import { toolbarVars, funnelDisplay } from "@/app/page";
+import { toolbarVars, funnelDisplay, colourScheme } from "@/app/page";
 import { cn } from "@/lib/utils";
 import { useState, useEffect } from "react";
 
@@ -163,7 +163,7 @@ export function SettingsMenu() {
   );
 
   return (
-    <div className={`h-[80vh] bg-[#D9D9D9] ${toolbarVars.rounded}`}>
+    <div className={`h-[80vh] ${colourScheme.body} ${toolbarVars.rounded}`}>
       <div
         className={`flex items-center justify-between bg-[#8CB369] pr-2 text-black ${funnelDisplay.className} text-xl font-bold ${toolbarVars.height} ${toolbarVars.rounded}`}
       >

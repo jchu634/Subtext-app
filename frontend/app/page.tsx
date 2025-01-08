@@ -21,6 +21,10 @@ export const toolbarVars = {
   rounded: "rounded-md",
 };
 
+export const colourScheme = {
+  body: "bg-[#D9D9D9]",
+};
+
 declare global {
   interface Window {
     showOpenFilePicker: () => Promise<[FileSystemFileHandle]>;
@@ -43,21 +47,29 @@ declare global {
 export default function Home() {
   return (
     <div>
-      <main className="flex flex-row space-x-4 bg-slate-50 p-4 dark:bg-slate-950">
+      <main className="flex h-screen flex-row space-x-4 bg-slate-50 p-4 dark:bg-slate-950">
         <ResizablePanelGroup
           direction="horizontal"
-          className="w-full space-x-4"
+          className="h-screen w-full space-x-4"
           autoSaveId={"persistence"}
         >
           <ResizablePanel defaultSize={60} minSize={30}>
             <FilesMenu />
           </ResizablePanel>
           <ResizableHandle withHandle />
-          <ResizablePanel defaultSize={40} minSize={30}>
-            <SettingsMenu />
-            <Button type="submit" form="settings-form">
-              DEBUG Submit
-            </Button>
+          <ResizablePanel defaultSize={40} minSize={30} className="">
+            <div className="grid h-full grid-cols-1 place-content-evenly gap-4">
+              <SettingsMenu />
+              <div className="flex justify-end">
+                <Button
+                  type="submit"
+                  form="settings-form"
+                  className={`${funnelDisplay.className} h-16 bg-[#5B8E7D] align-middle text-3xl`}
+                >
+                  Start Job
+                </Button>
+              </div>
+            </div>
           </ResizablePanel>
         </ResizablePanelGroup>
       </main>
