@@ -31,7 +31,7 @@ export default function Menu() {
   // Disabled due to latency issues (Window did not know it was un-maximised)
 
   return (
-    <div className="pywebview-drag-region">
+    <div>
       {/* className="border-white" */}
       <Menubar
         className={`${funnelDisplay.className} flex justify-between border-b-4 border-l-0 border-r-0 border-t-0 text-black`}

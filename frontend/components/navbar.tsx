@@ -9,7 +9,7 @@ export default function SideNav() {
   const { setTheme } = useTheme();
 
   return (
-    <main className={`pywebview-drag-region`}>
+    <main>
       <div className="flex h-screen w-16 items-end justify-center bg-[#5B8E7D] p-4 md:px-2">
         <SettingsDialog />
       </div>
