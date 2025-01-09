@@ -1,8 +1,8 @@
 import { createStore } from "@xstate/store";
 
 interface file {
-  fullPath: String;
-  fileName: String;
+  fullPath: string;
+  fileName: string;
 }
 
 export const store = createStore({
