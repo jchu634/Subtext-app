@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Request
+from pydantic import BaseModel
 import logging
 import os
 from ffmpy import FFmpeg
@@ -114,3 +115,25 @@ def test():
 def test_interrupt():
     Settings.testEnable = False
     return 1
+
+
+class TranscriptionRequest(BaseModel):
+    filePaths: list
+    model: str
+    modelSize: str
+    language: str
+    embedSubtitles: bool
+    outputFormats: list
+
+
+@transcription_router.post("/testRequest")
+def test_request(req: TranscriptionRequest):
+    print(req)
+    return req
+
+
+@transcription_router.post("/dummypath")
+async def get_body(request: Request):
+    temp = await request.json()
+    print(temp)
+    return temp
