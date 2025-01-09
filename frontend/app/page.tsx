@@ -17,7 +17,7 @@ export const funnelDisplay = Funnel_Display({
 });
 
 export const toolbarVars = {
-  height: "h-10",
+  height: "min-h-10",
   rounded: "rounded-md",
 };
 
