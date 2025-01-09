@@ -3,6 +3,7 @@ import Menu from "@/components/menu";
 import "@/styles/globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import Providers from "./providers";
+import { Toaster } from "@/components/ui/toaster";
 
 export default function RootLayout({
   // Layouts must accept a children prop.
@@ -22,6 +23,7 @@ export default function RootLayout({
             disableTransitionOnChange
           >
             <Navbar />
+            <Toaster />
             <div className="flex w-full flex-col">
               {/* <Menu /> */}
               {children}
