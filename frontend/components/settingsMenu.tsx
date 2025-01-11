@@ -134,7 +134,7 @@ export function SettingsMenu() {
 
   const mutation = useMutation({
     mutationFn: (formData: FormData) => {
-      return fetch("http://127.0.0.1:6789/testRequest", {
+      return fetch("http://127.0.0.1:6789/transcribe", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

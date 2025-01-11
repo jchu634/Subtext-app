@@ -50,6 +50,50 @@ def getModelSizes(model):
     return getSizes.getModels()
 
 
+class TranscriptionRequest(BaseModel):
+    filePaths: list
+    model: str
+    modelSize: str
+    language: str
+    embedSubtitles: bool
+    outputFormats: list
+
+
+@transcription_router.post("/transcribe")
+def test_request(req: TranscriptionRequest):
+    print(req)
+    generator = load_source('generateSubtitle', f'./inference/{req.model}/api.py')
+    for path in req.filePaths:
+        subs = pysubs2.load_from_whisper(generator.generateSubtitle(path, req.modelSize, req.language))
+        for format in req.outputFormats:
+            # TODO Fix save location
+            # TODO properly add subtitle name
+            subs.save(f"F:/test.{format}")
+        if req.embedSubtitles:
+            if "ass" not in req.outputFormats:
+                subs.save(f"F:/test.ass")
+            ff = None
+            if path.split(".")[-1] == "mp4":
+                # TODO Fix Output path
+                ff = FFmpeg(
+                    inputs={path: None},
+                    outputs={
+                        f"F:/test.mp4": f'-y -f ass -i {"F:/test.ass"} -map 0:0 -map 0:1 -map 1:0 -c:v copy -c:a copy -c:s mov_text'}
+                )
+            elif path.split(".")[-1] == "mkv":
+                # TODO Fix Output path
+                ff = FFmpeg(
+                    inputs={path: None},
+                    outputs={
+                        f"F:/test.mkv": f'-y -f ass -i {"F:/test.ass"} -map 0:0 -map 0:1 -map 1:0 -c:v copy -c:a copy -c:s ass'}
+                )
+            print(ff.cmd)
+            ff.run()
+            print("THIS RAN")
+
+    return {200, "OK"}
+
+
 # TODO Unfinished
 @transcription_router.get("/subtitle")
 def subtitle(paths, model, modelSize, embed, outputFormats, overwrite, language="auto"):
@@ -115,21 +159,6 @@ def test():
 def test_interrupt():
     Settings.testEnable = False
     return 1
-
-
-class TranscriptionRequest(BaseModel):
-    filePaths: list
-    model: str
-    modelSize: str
-    language: str
-    embedSubtitles: bool
-    outputFormats: list
-
-
-@transcription_router.post("/testRequest")
-def test_request(req: TranscriptionRequest):
-    print(req)
-    return req
 
 
 @transcription_router.post("/dummypath")
