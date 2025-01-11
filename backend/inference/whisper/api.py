@@ -3,6 +3,14 @@ import whisper
 
 def getModels():
     return whisper.available_models()
+# var modelSizes = [
+#   { modelName: "tiny", suggestedVRAM: 1 },
+#   { modelName: "base", suggestedVRAM: 1 },
+#   { modelName: "small", suggestedVRAM: 2 },
+#   { modelName: "medium", suggestedVRAM: 5 },
+#   { modelName: "large", suggestedVRAM: 10 },
+#   { modelName: "turbo", suggestedVRAM: 6 },
+# ];
 
 
 def supportedFormats():
@@ -13,7 +21,10 @@ def generateSubtitle(path, model, language):
     if language == "en" and model in ["tiny", "base", "small", "medium",]:
         model = model + ".en"
     model = whisper.load_model(model)
-    return model.transcribe(path, language=language)
+    if language == "auto":
+        return model.transcribe(path)
+    else:
+        return model.transcribe(path, language=language)
 
 
 def supportedLanguages():
