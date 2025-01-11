@@ -23,6 +23,7 @@ PROGRESS Frontend
     PROGRESS Application Development
         DONE Make Settings a form
         TODO Make Settings form submit send request to backend
+        TODO File format validation
     
     PROGRESS File Menu
         TODO File exists dialog
@@ -65,4 +66,4 @@ TODO Cohesive Application
     TODO CI/CD
     TODO Versioning
     TODO Licensing
-    
+

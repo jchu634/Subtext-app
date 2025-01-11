@@ -73,8 +73,11 @@ class Api():
             print(e)
 
     def spawnMultipleFileDialog(self):
+        file_types = ('Video Files (*.mp4;*.mpeg;*.m4a;*.webm)',
+                      'Audio Files (*.mp3;*.mpga;*.wav)', 'All files (*.*)')
         multipleFilenames = window.create_file_dialog(
-            webview.OPEN_DIALOG, allow_multiple=True
+            webview.OPEN_DIALOG, allow_multiple=True, file_types=file_types
+
         )
         return multipleFilenames
 
