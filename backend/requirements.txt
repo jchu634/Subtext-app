@@ -6,3 +6,4 @@ fastapi
 pysubs2
 ffmpy
 openai-whisper
+platformdirs
