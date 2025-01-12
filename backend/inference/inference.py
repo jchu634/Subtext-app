@@ -2,8 +2,11 @@ from fastapi import APIRouter, Request
 from pydantic import BaseModel
 import logging
 import os
-from ffmpy import FFmpeg
+import subprocess
+from pathlib import Path
+from ffmpy import FFmpeg, FFprobe
 import tempfile
+from platformdirs import user_downloads_dir, user_data_dir
 
 import importlib.util
 import importlib.machinery
@@ -51,94 +54,104 @@ def getModelSizes(model):
 
 
 class TranscriptionRequest(BaseModel):
-    filePaths: list
+    filePaths: list[str]
     model: str
     modelSize: str
     language: str
     embedSubtitles: bool
-    outputFormats: list
+    overWriteFiles: bool
+    outputFormats: list[str]
+    saveLocation: str
 
 
 @transcription_router.post("/transcribe")
-def test_request(req: TranscriptionRequest):
-    print(req)
+def transcribe(req: TranscriptionRequest):
+    logging.info(req)
     generator = load_source('generateSubtitle', f'./inference/{req.model}/api.py')
+    unprocessables = []
     for path in req.filePaths:
         subs = pysubs2.load_from_whisper(generator.generateSubtitle(path, req.modelSize, req.language))
+        assLocation = ""
         for format in req.outputFormats:
-            # TODO Fix save location
-            # TODO properly add subtitle name
-            subs.save(f"F:/test.{format}")
+            baseLocation = f"{user_downloads_dir}/{Path(path).stem}" if req.saveLocation == "default" else f"{
+                req.saveLocation}/{Path(path).stem}"
+            match format.lower():
+                case "mpl2":
+                    subs.save(f"{baseLocation}(mpl2).txt", format_="mpl2")
+                case "tmp":
+                    subs.save(f"{baseLocation}(tmp).txt", format_="tmp")
+                case "microdvd":
+                    ffprobe_cmd = FFprobe(
+                        inputs={path: None},
+                        global_options=[
+                            "-v", "0",  # Suppress all output except for errors
+                            "-of", "csv=p=0",  # Output format as plain CSV without headers
+                            "-select_streams", "v:0",  # Select the first video stream
+                            "-show_entries", "stream=r_frame_rate",  # Show only the frame rate
+                        ]
+                    )
+                    fps_ratio = subprocess.check_output(ffprobe_cmd.cmd, shell=True).decode().strip()
+                    num, denom = map(int, fps_ratio.split('/'))
+                    fps = num / denom
+                    subs.save(f"{baseLocation}(microdvd).sub", format_="microdvd", fps=fps)
+                case "ass":
+                    subs.save(f"{baseLocation}.ass")
+                    assLocation = f"{baseLocation}.ass"
+                case "webvtt":
+                    subs.save(f"{baseLocation}.vtt")
+                case _:
+                    subs.save(f"{baseLocation}.{format.lower()}")
+
+
         if req.embedSubtitles:
-            if "ass" not in req.outputFormats:
-                subs.save(f"F:/test.ass")
+            if assLocation == "":
+                assLocation = f"{user_data_dir(Settings.appName, Settings.appAuthor)}\{Path(path).stem}.ass"
+                subs.save(assLocation)
+            
             ff = None
-            if path.split(".")[-1] == "mp4":
-                # TODO Fix Output path
+            outPath = f'{os.path.splitext(path)[0]}(Subtitled){os.path.splitext(path)[1]}'
+            counter = 1
+            while os.path.exists(outPath):
+                outPath = f'{os.path.splitext(path)[0]}(Subtitled)[{counter}]{os.path.splitext(path)[1]}'
+                counter += 1
+            
+            if os.path.splitext(path)[1] == ".mp4":
                 ff = FFmpeg(
                     inputs={path: None},
                     outputs={
-                        f"F:/test.mp4": f'-y -f ass -i {"F:/test.ass"} -map 0:0 -map 0:1 -map 1:0 -c:v copy -c:a copy -c:s mov_text'}
+                         f"{outPath}": f"-y -f ass -i '{assLocation}' -map 0:0 -map 0:1 -map 1:0 -c:v copy -c:a copy -c:s mov_text"
+                    }
+                         
                 )
-            elif path.split(".")[-1] == "mkv":
-                # TODO Fix Output path
+            elif os.path.splitext(path)[1] == ".mkv":
+                
                 ff = FFmpeg(
                     inputs={path: None},
                     outputs={
-                        f"F:/test.mkv": f'-y -f ass -i {"F:/test.ass"} -map 0:0 -map 0:1 -map 1:0 -c:v copy -c:a copy -c:s ass'}
+                        f"{outPath}": f"-y -f ass -i '{assLocation}' -map 0:0 -map 0:1 -map 1:0 -c:v copy -c:a copy -c:s ass"
+                        }
                 )
+            else:
+                unprocessables.append((path, "Unable to embed subtitles into this file format"))
+                continue
+            if req.overWriteFiles:
+                try:
+                    os.replace(outPath, path)
+                except FileNotFoundError:
+                    print(f"Error: Source file {outPath} not found")
+                except PermissionError:
+                    print(f"Error: Permission denied when trying to replace {path}")
+                except OSError as e:
+                    print(f"Error replacing file: {e}")
+
+
+                
             print(ff.cmd)
             ff.run()
-            print("THIS RAN")
 
     return {200, "OK"}
 
 
-# TODO Unfinished
-@transcription_router.get("/subtitle")
-def subtitle(paths, model, modelSize, embed, outputFormats, overwrite, language="auto"):
-    generator = load_source('generateSubtitle', f'./inference/{model}/api.py')
-    for path in paths:
-        subs = pysubs2.load_from_whisper(generator.generateSubtitle(path, modelSize, language))
-        for format in outputFormats:
-            # TODO Properly name subtitle
-            subs.save(f"test.{format}")
-        if embed:
-            ff = None
-            if overwrite:
-
-                # TODO properly add subtitle name
-                if path.split(".")[-1] == "mp4":
-                    ff = FFmpeg(
-                        inputs={path: None},
-                        outputs={path: f'-y -f ass -i {"test.ass"} -map 0:0 -map 0:1 -map 1:0 -c:v copy -c:a copy -c:s mov_text'}
-                    )
-
-                elif path.split(".")[-1] == "mkv":
-                    # TODO ADD MKV specific code
-                    ff = FFmpeg(
-                        inputs={path: None},
-                        outputs={path: '-y'}
-                    )
-            else:
-                # TODO properly add subtitle name
-                if path.split(".")[-1] == "mp4":
-                    ff = FFmpeg(
-                        inputs={path: None},
-                        outputs={path: f'-n -f ass -i {"test.ass"} -map 0:0 -map 0:1 -map 1:0 -c:v copy -c:a copy -c:s mov_text'}
-                    )
-
-                elif path.split(".")[-1] == "mkv":
-                    # TODO ADD MKV specific code
-                    ff = FFmpeg(
-                        inputs={path: None},
-                        outputs={path: '-n'}
-                    )
-
-            # TODO Test if command matches
-            print(ff.cmd())
-
-    return {200, "OK"}
 
 ## Test ##
 
