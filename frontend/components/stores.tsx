@@ -9,7 +9,7 @@ export const store = createStore({
   context: {
     extendedSubtitlesFormats: false,
     files: new Set<file>(),
-    saveLocation: "",
+    saveLocation: "default",
   },
   // Transitions
   on: {

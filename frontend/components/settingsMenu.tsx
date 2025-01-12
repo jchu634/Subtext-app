@@ -53,7 +53,7 @@ import { useForm, useFieldArray } from "react-hook-form";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 interface modelSize {
-  modelName: String;
+  modelName: string;
   suggestedVRAM: number;
 }
 interface languageType {
@@ -65,6 +65,7 @@ const formSchema = z.object({
   model: z.string(),
   modelSize: z.string(),
   embedSubtitles: z.boolean(),
+  overWriteFiles: z.boolean(),
   language: z.string(),
   outputFormats: z.array(
     z.object({
@@ -94,6 +95,7 @@ export function SettingsMenu() {
       model: "whisper",
       modelSize: "tiny",
       embedSubtitles: false,
+      overWriteFiles: false,
       language: "auto",
       outputFormats: [
         { value: "SRT", active: false, isExtended: false },
@@ -101,7 +103,7 @@ export function SettingsMenu() {
         { value: "WebVTT", active: false, isExtended: false },
         { value: "MPL2", active: false, isExtended: true },
         { value: "TMP", active: false, isExtended: true },
-        { value: "SAMI", active: false, isExtended: true },
+        // { value: "SAMI", active: false, isExtended: true },
         { value: "TTML", active: false, isExtended: true },
         { value: "MicroDVD", active: false, isExtended: true },
       ],
@@ -130,6 +132,7 @@ export function SettingsMenu() {
     language: string;
     embedSubtitles: boolean;
     outputFormats: string[];
+    saveLocation: string;
   };
 
   const mutation = useMutation({
@@ -187,6 +190,14 @@ export function SettingsMenu() {
           "Embed subtitles is off and no Output formats are selected",
       });
       return;
+    } else if (values.modelSize == "") {
+      toast({
+        variant: "destructive",
+        duration: 2000,
+        title: "Error: No Model Size",
+        description: "Please select a model size",
+      });
+      return;
     }
 
     const formData = {
@@ -195,7 +206,9 @@ export function SettingsMenu() {
       modelSize: values.modelSize,
       language: values.language,
       embedSubtitles: values.embedSubtitles,
+      overWriteFiles: values.overWriteFiles,
       outputFormats: outputFormats,
+      saveLocation: temp.saveLocation[0],
     };
     mutation.mutate(formData);
   };
@@ -410,11 +423,35 @@ export function SettingsMenu() {
               name="embedSubtitles"
               render={({ field }) => (
                 <FormItem className="flex items-center space-x-2 space-y-0">
-                  <FormLabel className="text-lg font-bold">
+                  <FormLabel className="min-w-60 text-lg font-bold">
                     Embed Subtitles into Video
                   </FormLabel>
                   <FormControl>
                     <Checkbox
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                      defaultChecked={true}
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="overWriteFiles"
+              render={({ field }) => (
+                <FormItem className="flex items-center space-x-2 space-y-0">
+                  <FormLabel
+                    className={`min-w-60 text-lg font-bold ${
+                      !form.getValues("embedSubtitles") ? "text-gray-600" : ""
+                    }`}
+                  >
+                    Replace Original File
+                  </FormLabel>
+                  <FormControl>
+                    <Checkbox
+                      title={`${!form.getValues("embedSubtitles") ? "This option is only available if embed subtitles is enabled" : "Embeds subtitles into original file"}`}
+                      disabled={!form.getValues("embedSubtitles")}
                       checked={field.value}
                       onCheckedChange={field.onChange}
                       defaultChecked={true}

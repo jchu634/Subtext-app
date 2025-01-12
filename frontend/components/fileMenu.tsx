@@ -14,8 +14,8 @@ import { store } from "@/components/stores";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 
 interface file {
-  fullPath: String;
-  fileName: String;
+  fullPath: string;
+  fileName: string;
 }
 
 export function FilesMenu() {
