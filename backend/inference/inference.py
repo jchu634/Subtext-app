@@ -66,15 +66,16 @@ class TranscriptionRequest(BaseModel):
 
 @transcription_router.post("/transcribe")
 def transcribe(req: TranscriptionRequest):
-    logging.info(req)
-    generator = load_source('generateSubtitle', f'./inference/{req.model}/api.py')
+    print(req)
+    generator = load_source('generateSubtitle', os.path.join(".", "inference", req.model, "api.py"))
     unprocessables = []
     for path in req.filePaths:
         subs = pysubs2.load_from_whisper(generator.generateSubtitle(path, req.modelSize, req.language))
         assLocation = ""
         for format in req.outputFormats:
-            baseLocation = f"{user_downloads_dir}/{Path(path).stem}" if req.saveLocation == "default" else f"{
-                req.saveLocation}/{Path(path).stem}"
+            baseLocation = os.path.join(user_downloads_dir(), Path(
+                path).stem) if req.saveLocation == "default" else os.path.join(req.saveLocation, Path(path).stem)
+
             match format.lower():
                 case "mpl2":
                     subs.save(f"{baseLocation}(mpl2).txt", format_="mpl2")
@@ -102,34 +103,34 @@ def transcribe(req: TranscriptionRequest):
                 case _:
                     subs.save(f"{baseLocation}.{format.lower()}")
 
-
         if req.embedSubtitles:
             if assLocation == "":
-                assLocation = f"{user_data_dir(Settings.appName, Settings.appAuthor)}\{Path(path).stem}.ass"
+                assLocation = os.path.join(user_data_dir(
+                    Settings.appName, Settings.appAuthor), f"{Path(path).stem}.ass")
                 subs.save(assLocation)
-            
+
             ff = None
-            outPath = f'{user_downloads_dir}/{Path(path).stem}(Subtitled){os.path.splitext(path)[1]}'
+            outPath = os.path.join(user_downloads_dir(), f'{Path(path).stem}(Subtitled){os.path.splitext(path)[1]}')
             counter = 1
             while os.path.exists(outPath):
-                outPath = f'{user_downloads_dir}/{Path(path).stem}(Subtitled)[{counter}]{os.path.splitext(path)[1]}'
+                outPath = f'{user_downloads_dir()}\\{Path(path).stem}(Subtitled)[{counter}]{os.path.splitext(path)[1]}'
                 counter += 1
-            
+
             if os.path.splitext(path)[1] == ".mp4":
                 ff = FFmpeg(
                     inputs={path: None},
                     outputs={
-                         f"{outPath}": f"-y -f ass -i '{assLocation}' -map 0:0 -map 0:1 -map 1:0 -c:v copy -c:a copy -c:s mov_text"
+                        f"{outPath}": f"-y -f ass -i '{assLocation}' -map 0:0 -map 0:1 -map 1:0 -c:v copy -c:a copy -c:s mov_text"
                     }
-                         
+
                 )
             elif os.path.splitext(path)[1] == ".mkv":
-                
+
                 ff = FFmpeg(
                     inputs={path: None},
                     outputs={
                         f"{outPath}": f"-y -f ass -i '{assLocation}' -map 0:0 -map 0:1 -map 1:0 -c:v copy -c:a copy -c:s ass"
-                        }
+                    }
                 )
             else:
                 unprocessables.append((path, "Unable to embed subtitles into this file format"))
@@ -143,12 +144,11 @@ def transcribe(req: TranscriptionRequest):
                     print(f"Error: Permission denied when trying to replace {path}")
                 except OSError as e:
                     print(f"Error replacing file: {e}")
-                
+
             print(ff.cmd)
             ff.run()
 
     return {200, "OK"}
-
 
 
 ## Test ##
