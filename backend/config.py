@@ -4,6 +4,9 @@ import os
 
 library_path = os.path.dirname(os.path.abspath(__file__))
 
+# CHANGE FOR DEVELOPMENT
+env = "PRODUCTION"
+
 
 class settingsModel(BaseSettings):
     appName: str = "Subtext"    # "Gas: Generative AI Subtitling"
@@ -13,16 +16,17 @@ class settingsModel(BaseSettings):
     outputPath: str = ""
     testEnable: bool = True
     allowUnsignedCode: bool = False
+    debuggingEnabled: bool = False
 
-    ENV: str = "production"
     LOGGING: bool = True
 
-    model_config = SettingsConfigDict(
-        env_file=(
-            ".env",
-            ".env.development"
+    if env == "DEVELOPMENT":
+        model_config = SettingsConfigDict(
+            env_file=(
+                ".env",
+                ".env.development"
+            )
         )
-    )
 
 
 Settings = settingsModel()

@@ -19,7 +19,7 @@ def create_app():
         },
 
     ]
-    if Settings.ENV == "development":
+    if Settings.debuggingEnabled == True:
         app = FastAPI(openapi_tags=tags_metadata)
     else:
         app = FastAPI(openapi_tags=tags_metadata, docs_url=None, redoc_url=None)
@@ -40,8 +40,9 @@ def create_app():
     app.include_router(home.home_router)
     return app
 
+
 app = create_app()
 if __name__ == "__main__":
     import uvicorn
-    
+
     uvicorn.run("init:app", port=6789, reload=True)
