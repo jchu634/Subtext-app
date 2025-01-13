@@ -208,7 +208,7 @@ export function SettingsMenu() {
       embedSubtitles: values.embedSubtitles,
       overWriteFiles: values.overWriteFiles,
       outputFormats: outputFormats,
-      saveLocation: temp.saveLocation[0],
+      saveLocation: temp.saveLocation,
     };
     mutation.mutate(formData);
   };

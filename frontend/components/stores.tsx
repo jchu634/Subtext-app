@@ -49,7 +49,7 @@ export const store = createStore({
     changeSaveLocation: {
       saveLocation: (context, event: { newLocation: string }) => {
         if (event.newLocation) {
-          return event.newLocation;
+          return event.newLocation[0];
         } else {
           return context.saveLocation; // Return the current save location if the new location is invalid
         }
