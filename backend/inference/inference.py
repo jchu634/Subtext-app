@@ -84,9 +84,9 @@ def transcribe(req: TranscriptionRequest):
                     ffprobe_cmd = FFprobe(
                         inputs={path: None},
                         global_options=[
-                            "-v", "0",  # Suppress all output except for errors
-                            "-of", "csv=p=0",  # Output format as plain CSV without headers
-                            "-select_streams", "v:0",  # Select the first video stream
+                            "-v", "0",                               # Suppress all output except for errors
+                            "-of", "csv=p=0",                        # Output format as plain CSV without headers
+                            "-select_streams", "v:0",                # Select the first video stream
                             "-show_entries", "stream=r_frame_rate",  # Show only the frame rate
                         ]
                     )
@@ -109,10 +109,10 @@ def transcribe(req: TranscriptionRequest):
                 subs.save(assLocation)
             
             ff = None
-            outPath = f'{os.path.splitext(path)[0]}(Subtitled){os.path.splitext(path)[1]}'
+            outPath = f'{user_downloads_dir}/{Path(path).stem}(Subtitled){os.path.splitext(path)[1]}'
             counter = 1
             while os.path.exists(outPath):
-                outPath = f'{os.path.splitext(path)[0]}(Subtitled)[{counter}]{os.path.splitext(path)[1]}'
+                outPath = f'{user_downloads_dir}/{Path(path).stem}(Subtitled)[{counter}]{os.path.splitext(path)[1]}'
                 counter += 1
             
             if os.path.splitext(path)[1] == ".mp4":
@@ -143,8 +143,6 @@ def transcribe(req: TranscriptionRequest):
                     print(f"Error: Permission denied when trying to replace {path}")
                 except OSError as e:
                     print(f"Error replacing file: {e}")
-
-
                 
             print(ff.cmd)
             ff.run()

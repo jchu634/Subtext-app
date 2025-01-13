@@ -22,7 +22,7 @@ PROGRESS Frontend
     TODO Add Open Source Licence pages
     PROGRESS Application Development
         DONE Make Settings a form
-        TODO Make Settings form submit send request to backend
+        DONE Make Settings form submit send request to backend
         TODO File format validation
     
     PROGRESS File Menu
@@ -39,7 +39,7 @@ PROGRESS Frontend
         DONE Make Reset Settings button functional
         TODO Default Open location
         DONE Dark/Light Mode
-        TODO Overwrite files Toggle
+        DONE Overwrite files Toggle
         DONE Default Save location
         DONE Enable Extended Subtitle Formats
         DONE Language select
