@@ -64,36 +64,31 @@ export function SettingsDialog() {
           </DialogHeader>
           <div className="space-y-4">
             <div
-              className={`flex flex-row items-center space-x-2 ${funnelDisplay.className}`}
+              className={`flex flex-row items-center space-x-5 ${funnelDisplay.className}`}
             >
-              <Label htmlFor="defaultSaveLocation" className="text-lg">
+              <Label htmlFor="defaultSaveLocation" className="min-w-40 text-lg">
                 Save Location:
               </Label>
-              <p className="rounded-md border border-black p-1">
+              <p className="rounded-md border border-black p-1 pl-2 pr-2 dark:bg-white dark:text-black">
                 {saveLocation.length == 0 ? "Default Location" : saveLocation}
               </p>
 
-              <Button id="defaultSaveLocation" onClick={returnPathDirectories}>
-                Browse
+              <Button
+                id="defaultSaveLocation"
+                className="font-semibold dark:bg-emerald-500"
+                onClick={returnPathDirectories}
+              >
+                Change Location
               </Button>
             </div>
 
             <div
               className={`flex flex-row items-center space-x-5 ${funnelDisplay.className}`}
             >
-              <Label htmlFor="viewModeToggle" className="text-lg">
-                Enable Extended Subtitle Formats
-              </Label>
-              <Switch
-                defaultChecked={useExtendedFormats}
-                onClick={() => store.send({ type: "toggleExtentedSubtitles" })}
-                className="outline outline-1 outline-gray-700 dark:bg-slate-200 dark:data-[state=checked]:bg-orange-400"
-              ></Switch>
-            </div>
-            <div
-              className={`flex flex-row items-center space-x-5 ${funnelDisplay.className}`}
-            >
-              <Label htmlFor="viewModeToggle" className="border-black text-lg">
+              <Label
+                htmlFor="viewModeToggle"
+                className="min-w-40 border-black text-lg"
+              >
                 UI Mode:
               </Label>
               <ToggleGroup
@@ -111,25 +106,37 @@ export function SettingsDialog() {
                 <ToggleGroupItem
                   value="dark"
                   onClick={() => setTheme("dark")}
-                  className="border-black hover:bg-gray-400 data-[state=on]:bg-orange-300 dark:data-[state=on]:text-black"
+                  className="border-black text-black hover:bg-gray-400 hover:font-extrabold data-[state=on]:bg-orange-300 data-[state=on]:font-bold dark:bg-white dark:hover:bg-gray-400 dark:hover:text-black dark:data-[state=on]:bg-orange-300 dark:data-[state=on]:text-black"
                 >
                   Dark
                 </ToggleGroupItem>
                 <ToggleGroupItem
                   value="light"
                   onClick={() => setTheme("light")}
-                  className="border-black hover:bg-gray-400 data-[state=on]:bg-orange-300"
+                  className="border-black text-black hover:bg-gray-400 hover:font-extrabold data-[state=on]:bg-orange-300 data-[state=on]:font-bold dark:bg-white dark:hover:bg-gray-400 dark:hover:text-black dark:data-[state=on]:bg-orange-300 dark:data-[state=on]:text-black"
                 >
                   Light
                 </ToggleGroupItem>
                 <ToggleGroupItem
                   value="system"
                   onClick={() => setTheme("system")}
-                  className="border-black hover:bg-gray-400 data-[state=on]:bg-orange-300 dark:data-[state=on]:text-black"
+                  className="border-black text-black hover:bg-gray-400 hover:font-extrabold data-[state=on]:bg-orange-300 data-[state=on]:font-bold dark:bg-white dark:hover:bg-gray-400 dark:hover:text-black dark:data-[state=on]:bg-orange-300 dark:data-[state=on]:text-black"
                 >
                   System
                 </ToggleGroupItem>
               </ToggleGroup>
+            </div>
+            <div
+              className={`flex flex-row items-center space-x-5 ${funnelDisplay.className}`}
+            >
+              <Label htmlFor="viewModeToggle" className="text-lg">
+                Enable Extended Subtitle Formats
+              </Label>
+              <Switch
+                defaultChecked={useExtendedFormats}
+                onClick={() => store.send({ type: "toggleExtentedSubtitles" })}
+                className="outline outline-1 outline-gray-700 dark:bg-slate-200 dark:data-[state=checked]:bg-orange-400"
+              ></Switch>
             </div>
           </div>
         </DialogContent>
