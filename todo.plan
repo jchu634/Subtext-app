@@ -24,6 +24,7 @@ PROGRESS Frontend
         DONE Make Settings a form
         DONE Make Settings form submit send request to backend
         TODO File format validation
+        TODO Dark mode colourScheme
     
     PROGRESS File Menu
         TODO File exists dialog

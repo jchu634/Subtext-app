@@ -58,7 +58,7 @@ export default function Home() {
           </ResizablePanel>
           <ResizableHandle withHandle />
           <ResizablePanel defaultSize={40} minSize={30} className="">
-            <div className="grid h-full grid-cols-1 place-content-evenly gap-4">
+            <div className="grid h-full grid-cols-1 place-content-between gap-4">
               <SettingsMenu />
               <div className="flex justify-end">
                 <Button
