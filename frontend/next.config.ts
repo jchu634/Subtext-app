@@ -4,8 +4,11 @@ const nextConfig: NextConfig = {
   /* config options here */
   reactStrictMode: true,
   devIndicators: {
-    appIsrStatus: false
-  }
+    appIsrStatus: false,
+  },
+  experimental: {
+    reactCompiler: true,
+  },
 };
 
 export default nextConfig;
