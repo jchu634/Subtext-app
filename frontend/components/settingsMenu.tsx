@@ -1,5 +1,7 @@
 import { Check, ChevronsUpDown, Undo2Icon } from "lucide-react";
-import { toolbarVars, funnelDisplay, colourScheme } from "@/app/page";
+import { colourScheme } from "@/lib/colourscheme";
+import { toolbar } from "@/lib/toolbar";
+import { funnel } from "@/lib/fonts";
 import { cn } from "@/lib/utils";
 import { useState, useEffect } from "react";
 
@@ -18,11 +20,9 @@ import {
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
-  FormMessage,
 } from "@/components/ui/form";
 import {
   Command,
@@ -38,6 +38,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Separator } from "@/components/ui/separator";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { useToast } from "@/hooks/use-toast";
 
 // Store Stuff
@@ -52,10 +53,10 @@ import { useForm, useFieldArray } from "react-hook-form";
 // Query Stuff
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
-interface modelSize {
-  modelName: string;
-  suggestedVRAM: number;
-}
+// interface modelSize {
+//   modelName: string;
+//   suggestedVRAM: number;
+// }
 interface languageType {
   code: string;
   lang: string;
@@ -78,6 +79,7 @@ const formSchema = z.object({
 });
 
 export function SettingsMenu() {
+  // eslint-disable-next-line
   const queryClient = useQueryClient();
 
   const [selectedModel, setSelectedModel] = useState<string>("whisper");
@@ -150,6 +152,7 @@ export function SettingsMenu() {
         return res.json();
       });
     },
+    // eslint-disable-next-line
     onSuccess: (data) => {
       toast({
         title: "Success",
@@ -246,9 +249,11 @@ export function SettingsMenu() {
   );
 
   return (
-    <div className={`h-[80vh] ${colourScheme.body} ${toolbarVars.rounded}`}>
+    <div
+      className={`flex h-[80vh] flex-col ${colourScheme.body} ${toolbar.rounded}`}
+    >
       <div
-        className={`flex items-center justify-between bg-[#8CB369] pr-2 text-black ${funnelDisplay.className} text-xl font-bold ${toolbarVars.height} ${toolbarVars.rounded}`}
+        className={`flex items-center justify-between bg-[#8CB369] pr-2 text-black ${funnel.className} text-xl font-bold ${toolbar.height} ${toolbar.rounded}`}
       >
         <p className="pl-4">Settings</p>
         <div>
@@ -258,228 +263,230 @@ export function SettingsMenu() {
               size={24}
               className="hover:text-accent-foreground"
             />
-            <p className={`${funnelDisplay.className} text-xl font-bold`}>
-              Reset
-            </p>
+            <p className={`${funnel.className} text-xl font-bold`}>Reset</p>
           </Button>
         </div>
       </div>
 
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} id="settings-form">
-          <div
-            className={`h-full space-y-4 p-3 text-black ${funnelDisplay.className}`}
-          >
-            <FormField
-              control={form.control}
-              name="model"
-              render={({ field }) => (
-                <FormItem className="flex items-center space-x-2 space-y-0">
-                  <FormLabel className="min-w-28 text-lg font-bold">
-                    Model:
-                  </FormLabel>
-                  <Select
-                    onValueChange={(value) => {
-                      field.onChange(value);
-                      setSelectedModel(value);
-                    }}
-                    defaultValue={field.value}
-                    value={field.value}
-                    disabled={isModelsLoading}
-                  >
-                    <FormControl>
-                      <SelectTrigger
-                        id="model"
-                        className="w-[180px] border-2 border-black"
-                      >
-                        <SelectValue
-                          placeholder={
-                            isModelsLoading ? "Loading..." : "Select Model"
-                          }
-                        />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {models.map((model: string, index: number) => (
-                        <SelectItem
-                          value={`${model}`}
-                          className={`${funnelDisplay.className}`}
-                          key={index}
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          id="settings-form"
+          className="flex-1"
+        >
+          <ScrollArea className="h-[calc(80vh-48px)]">
+            <div className={`space-y-3 p-3 text-black ${funnel.className}`}>
+              <FormField
+                control={form.control}
+                name="model"
+                render={({ field }) => (
+                  <FormItem className={`flex items-center space-x-2 space-y-0`}>
+                    <FormLabel className="min-w-28 text-lg font-bold">
+                      Model:
+                    </FormLabel>
+                    <Select
+                      onValueChange={(value) => {
+                        field.onChange(value);
+                        setSelectedModel(value);
+                      }}
+                      defaultValue={field.value}
+                      value={field.value}
+                      disabled={isModelsLoading}
+                    >
+                      <FormControl>
+                        <SelectTrigger
+                          id="model"
+                          className="w-[180px] border-2 border-black"
                         >
-                          {model}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="modelSize"
-              render={({ field }) => (
-                <FormItem className="flex items-center space-x-2 space-y-0">
-                  <FormLabel className="min-w-28 text-lg font-bold">
-                    Model Size:
-                  </FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    value={field.value}
-                    disabled={isModelSizesLoading}
-                  >
-                    <FormControl>
-                      <SelectTrigger
-                        id="modelSize"
-                        className="w-[180px] border-2 border-black"
-                      >
-                        <SelectValue
-                          placeholder={
-                            isModelSizesLoading ? "Loading..." : "Select Size"
-                          }
-                        />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {modelSizes.map((size: string, index: number) => (
-                        <SelectItem
-                          value={`${size}`}
-                          className={`${funnelDisplay.className}`}
-                          key={index}
-                        >
-                          {size}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="language"
-              render={({ field }) => (
-                <FormItem className="flex items-center space-x-2 space-y-0">
-                  <FormLabel className="text-lg font-bold">
-                    Input Video Language:
-                  </FormLabel>
-
-                  <Popover open={open} onOpenChange={setOpen}>
-                    <PopoverTrigger asChild>
-                      <Button
-                        variant="outline"
-                        role="combobox"
-                        aria-expanded={open}
-                        disabled={isLanguagesLoading}
-                        className={cn(
-                          "w-[200px] justify-between border-2 border-black",
-                          !field.value && "text-muted-foreground",
-                        )}
-                      >
-                        {field.value
-                          ? modelLanguages.find(
-                              (language: languageType) =>
-                                language.code === field.value,
-                            )?.lang
-                          : "Auto Detect"}
-                        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="h-[30vh] w-[200px] p-0">
-                      <Command>
-                        <CommandInput placeholder="Search Language..." />
-                        <CommandList>
-                          <CommandEmpty>No language found.</CommandEmpty>
-                          <CommandGroup>
-                            {modelLanguages.map((language: languageType) => (
-                              <CommandItem
-                                key={language.code}
-                                value={language.lang}
-                                onSelect={() => {
-                                  form.setValue("language", language.code);
-                                }}
-                              >
-                                <Check
-                                  className={cn(
-                                    "mr-2 h-4 w-4",
-                                    language.code === field.value
-                                      ? "opacity-100"
-                                      : "opacity-0",
-                                  )}
-                                />
-                                {language.lang}
-                              </CommandItem>
-                            ))}
-                          </CommandGroup>
-                        </CommandList>
-                      </Command>
-                    </PopoverContent>
-                  </Popover>
-                </FormItem>
-              )}
-            />
-            <Separator className="my-4 bg-black" />
-            <FormField
-              control={form.control}
-              name="embedSubtitles"
-              render={({ field }) => (
-                <FormItem className="flex items-center space-x-2 space-y-0">
-                  <FormLabel className="min-w-60 text-lg font-bold">
-                    Embed Subtitles into Video
-                  </FormLabel>
-                  <FormControl>
-                    <Checkbox
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                      defaultChecked={true}
-                    />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="overWriteFiles"
-              render={({ field }) => (
-                <FormItem className="flex items-center space-x-2 space-y-0">
-                  <FormLabel
-                    className={`min-w-60 text-lg font-bold ${
-                      !form.getValues("embedSubtitles") ? "text-gray-600" : ""
-                    }`}
-                  >
-                    Replace Original File
-                  </FormLabel>
-                  <FormControl>
-                    <Checkbox
-                      title={`${!form.getValues("embedSubtitles") ? "This option is only available if embed subtitles is enabled" : "Embeds subtitles into original file"}`}
-                      disabled={!form.getValues("embedSubtitles")}
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                      defaultChecked={true}
-                    />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-            <div className="flex items-center space-x-2">
-              <Label htmlFor="subtitleFormat" className="text-lg font-bold">
-                Output Subtitle Format(s):
-              </Label>
-              <div id="subtitleFormat" className="space-x-1 space-y-1">
-                {fields.map(
-                  (field, index) =>
-                    (!field.isExtended || useExtendedFormats) && (
-                      <Toggle
-                        pressed={field.active}
-                        onPressedChange={() => handleToggle(index)}
-                        key={field.id}
-                      >
-                        {field.value}
-                      </Toggle>
-                    ),
+                          <SelectValue
+                            placeholder={
+                              isModelsLoading ? "Loading..." : "Select Model"
+                            }
+                          />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {models.map((model: string, index: number) => (
+                          <SelectItem
+                            value={`${model}`}
+                            className={`${funnel.className}`}
+                            key={index}
+                          >
+                            {model}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </FormItem>
                 )}
+              />
+              <FormField
+                control={form.control}
+                name="modelSize"
+                render={({ field }) => (
+                  <FormItem className="flex items-center space-x-2 space-y-0">
+                    <FormLabel className="min-w-28 text-lg font-bold">
+                      Model Size:
+                    </FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      value={field.value}
+                      disabled={isModelSizesLoading}
+                    >
+                      <FormControl>
+                        <SelectTrigger
+                          id="modelSize"
+                          className="w-[180px] border-2 border-black"
+                        >
+                          <SelectValue
+                            placeholder={
+                              isModelSizesLoading ? "Loading..." : "Select Size"
+                            }
+                          />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {modelSizes.map((size: string, index: number) => (
+                          <SelectItem
+                            value={`${size}`}
+                            className={`${funnel.className}`}
+                            key={index}
+                          >
+                            {size}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="language"
+                render={({ field }) => (
+                  <FormItem className="flex items-center space-x-2 space-y-0">
+                    <FormLabel className="text-lg font-bold">
+                      Input Video Language:
+                    </FormLabel>
+
+                    <Popover open={open} onOpenChange={setOpen}>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="outline"
+                          role="combobox"
+                          aria-expanded={open}
+                          disabled={isLanguagesLoading}
+                          className={cn(
+                            "w-[200px] justify-between border-2 border-black",
+                            !field.value && "text-muted-foreground",
+                          )}
+                        >
+                          {field.value
+                            ? modelLanguages.find(
+                                (language: languageType) =>
+                                  language.code === field.value,
+                              )?.lang
+                            : "Auto Detect"}
+                          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="h-[30vh] w-[200px] p-0">
+                        <Command>
+                          <CommandInput placeholder="Search Language..." />
+                          <CommandList>
+                            <CommandEmpty>No language found.</CommandEmpty>
+                            <CommandGroup>
+                              {modelLanguages.map((language: languageType) => (
+                                <CommandItem
+                                  key={language.code}
+                                  value={language.lang}
+                                  onSelect={() => {
+                                    form.setValue("language", language.code);
+                                  }}
+                                >
+                                  <Check
+                                    className={cn(
+                                      "mr-2 h-4 w-4",
+                                      language.code === field.value
+                                        ? "opacity-100"
+                                        : "opacity-0",
+                                    )}
+                                  />
+                                  {language.lang}
+                                </CommandItem>
+                              ))}
+                            </CommandGroup>
+                          </CommandList>
+                        </Command>
+                      </PopoverContent>
+                    </Popover>
+                  </FormItem>
+                )}
+              />
+              <Separator className="my-4 bg-black" />
+              <FormField
+                control={form.control}
+                name="embedSubtitles"
+                render={({ field }) => (
+                  <FormItem className="flex items-center space-x-2 space-y-0">
+                    <FormLabel className="min-w-60 text-lg font-bold">
+                      Embed Subtitles into Video
+                    </FormLabel>
+                    <FormControl>
+                      <Checkbox
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                        defaultChecked={true}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="overWriteFiles"
+                render={({ field }) => (
+                  <FormItem className="flex items-center space-x-2 space-y-0">
+                    <FormLabel
+                      className={`min-w-60 text-lg font-bold ${
+                        !form.getValues("embedSubtitles") ? "text-gray-600" : ""
+                      }`}
+                    >
+                      Replace Original File
+                    </FormLabel>
+                    <FormControl>
+                      <Checkbox
+                        title={`${!form.getValues("embedSubtitles") ? "This option is only available if embed subtitles is enabled" : "Embeds subtitles into original file"}`}
+                        disabled={!form.getValues("embedSubtitles")}
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                        defaultChecked={true}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+              <div className="flex items-center space-x-2">
+                <Label htmlFor="subtitleFormat" className="text-lg font-bold">
+                  Output Subtitle Format(s):
+                </Label>
+                <div id="subtitleFormat" className="space-x-1 space-y-1">
+                  {fields.map(
+                    (field, index) =>
+                      (!field.isExtended || useExtendedFormats) && (
+                        <Toggle
+                          pressed={field.active}
+                          onPressedChange={() => handleToggle(index)}
+                          key={field.id}
+                        >
+                          {field.value}
+                        </Toggle>
+                      ),
+                  )}
+                </div>
               </div>
             </div>
-          </div>
+          </ScrollArea>
         </form>
       </Form>
     </div>

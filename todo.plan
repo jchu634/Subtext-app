@@ -56,7 +56,7 @@ PROGRESS Frontend
     PROGRESS Settings Dialog
 
 TODO BUGS
-    TODO Extended Subtitle Formats overflow out of box when resized and squashed in small windows
+    DONE Extended Subtitle Formats overflow out of box when resized and squashed in small windows
 
 TODO Cohesive Application
     TODO Build Scripts
