@@ -2,7 +2,7 @@ import * as React from "react";
 import * as ToastPrimitives from "@radix-ui/react-toast";
 import { cva, type VariantProps } from "class-variance-authority";
 import { X } from "lucide-react";
-import { funnelDisplay } from "@/app/page";
+import { funnel } from "@/lib/fonts";
 
 import { cn } from "@/lib/utils";
 
@@ -28,8 +28,8 @@ const toastVariants = cva(
   {
     variants: {
       variant: {
-        default: `border bg-background text-foreground ${funnelDisplay.className}`,
-        destructive: `destructive group border-destructive bg-destructive text-destructive-foreground ${funnelDisplay.className}`,
+        default: `border bg-background text-foreground ${funnel.className}`,
+        destructive: `destructive group border-destructive bg-destructive text-destructive-foreground ${funnel.className}`,
       },
     },
     defaultVariants: {

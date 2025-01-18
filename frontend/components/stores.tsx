@@ -44,7 +44,7 @@ export const store = createStore({
       },
     },
     clearFiles: {
-      files: (context) => new Set<file>(),
+      files: (context) => new Set<file>(), // eslint-disable-line
     },
     changeSaveLocation: {
       saveLocation: (context, event: { newLocation: string }) => {

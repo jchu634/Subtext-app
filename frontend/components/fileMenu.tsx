@@ -1,7 +1,8 @@
-import { toolbarVars, funnelDisplay } from "@/app/page";
+import { toolbar } from "@/lib/toolbar";
+import { funnel } from "@/lib/fonts";
 import { TrashIcon, PlusIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { InvertedCheckbox, Checkbox } from "@/components/ui/checkbox";
+import { InvertedCheckbox } from "@/components/ui/checkbox";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
 import { useState } from "react";
@@ -19,7 +20,7 @@ interface file {
 }
 
 export function FilesMenu() {
-  const [parent, enableAnimations] = useAutoAnimate(/* optional config */);
+  const [parent] = useAutoAnimate(/* optional config */);
   const [files, setFiles] = useState<file[]>([]);
   const [selectedFiles, setSelectedFiles] = useState<Set<file>>(new Set());
   const [lastCheckedIndex, setLastCheckedIndex] = useState<number | null>(null);
@@ -50,7 +51,7 @@ export function FilesMenu() {
     return newFiles;
   }
 
-  function mapFiles(file: any, index: number) {
+  function mapFiles(file: file, index: number) {
     return (
       <div
         className="grid h-11 w-full grid-cols-[auto_1fr_auto] items-center gap-2 rounded-md bg-[#5E5E5E] px-2"
@@ -129,10 +130,10 @@ export function FilesMenu() {
 
   return (
     <div
-      className={`flex h-fileHeight flex-col bg-[#D9D9D9] ${toolbarVars.rounded}`}
+      className={`flex h-fileHeight flex-col bg-[#D9D9D9] ${toolbar.rounded}`}
     >
       <div
-        className={`flex items-center justify-between bg-[#F4A259] pr-2 text-black ${funnelDisplay.className} text-xl font-bold ${toolbarVars.height} ${toolbarVars.rounded}`}
+        className={`flex items-center justify-between bg-[#F4A259] pr-2 text-black ${funnel.className} text-xl font-bold ${toolbar.height} ${toolbar.rounded}`}
       >
         <p className="pl-4">Files</p>
         <div>
@@ -146,9 +147,7 @@ export function FilesMenu() {
               size={24}
               className="hover:text-accent-foreground"
             />
-            <p className={`${funnelDisplay.className} text-xl font-bold`}>
-              Add New
-            </p>
+            <p className={`${funnel.className} text-xl font-bold`}>Add New</p>
           </Button>
           {selectedFiles.size == 0 && (
             <Button variant="ghost" className="p-2" onClick={clearFiles}>
@@ -157,7 +156,7 @@ export function FilesMenu() {
                 size={24}
                 className="hover:text-accent-foreground"
               />
-              <p className={`${funnelDisplay.className} text-xl font-bold`}>
+              <p className={`${funnel.className} text-xl font-bold`}>
                 Remove All
               </p>
             </Button>
@@ -173,14 +172,14 @@ export function FilesMenu() {
                 size={24}
                 className="hover:text-accent-foreground"
               />
-              <p className={`${funnelDisplay.className} text-xl font-bold`}>
+              <p className={`${funnel.className} text-xl font-bold`}>
                 Remove Selected
               </p>
             </Button>
           )}
         </div>
       </div>
-      <ScrollArea className={`w-full p-3 ${funnelDisplay.className}`}>
+      <ScrollArea className={`w-full p-3 ${funnel.className}`}>
         <div className="space-y-2" ref={parent}>
           {[...storeFiles].map((file, index) => {
             return mapFiles(file, index);

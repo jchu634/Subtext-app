@@ -1,5 +1,5 @@
 "use client";
-import { Funnel_Display } from "next/font/google";
+import { funnel } from "@/lib/fonts";
 import { SettingsMenu } from "@/components/settingsMenu";
 import { FilesMenu } from "@/components/fileMenu";
 
@@ -10,20 +10,6 @@ import {
   ResizablePanel,
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
-
-export const funnelDisplay = Funnel_Display({
-  variable: "--font-funnel",
-  subsets: ["latin"],
-});
-
-export const toolbarVars = {
-  height: "min-h-10",
-  rounded: "rounded-md",
-};
-
-export const colourScheme = {
-  body: "bg-[#D9D9D9]",
-};
 
 declare global {
   interface Window {
@@ -64,7 +50,7 @@ export default function Home() {
                 <Button
                   type="submit"
                   form="settings-form"
-                  className={`${funnelDisplay.className} h-16 bg-[#5B8E7D] align-middle text-3xl`}
+                  className={`${funnel.className} h-16 bg-[#5B8E7D] align-middle text-3xl`}
                 >
                   Start Job
                 </Button>

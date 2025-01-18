@@ -1,5 +1,5 @@
 import Navbar from "@/components/navbar";
-import Menu from "@/components/menu";
+// import Menu from "@/components/menu";
 import "@/styles/globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import Providers from "./providers";

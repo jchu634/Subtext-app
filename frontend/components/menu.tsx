@@ -5,8 +5,6 @@ import {
   MenubarContent,
   MenubarItem,
   MenubarMenu,
-  MenubarRadioGroup,
-  MenubarRadioItem,
   MenubarSeparator,
   MenubarShortcut,
   MenubarSub,
@@ -17,7 +15,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { XIcon, MinusIcon, SquareIcon } from "lucide-react";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 import { Funnel_Display } from "next/font/google";
 
@@ -27,6 +25,7 @@ const funnelDisplay = Funnel_Display({
 });
 
 export default function Menu() {
+  // eslint-disable-next-line
   const [windowControlEnabled, setWindowControlEnabled] = useState(false);
   // Disabled due to latency issues (Window did not know it was un-maximised)
 
