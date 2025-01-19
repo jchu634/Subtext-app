@@ -129,9 +129,7 @@ export function FilesMenu() {
   }
 
   return (
-    <div
-      className={`flex h-fileHeight flex-col bg-[#D9D9D9] ${toolbar.rounded}`}
-    >
+    <div className={`flex h-fileHeight flex-col bg-[#D9D9D9]`}>
       <div
         className={`flex items-center justify-between bg-[#F4A259] pr-2 text-black ${funnel.className} text-xl font-bold ${toolbar.height} ${toolbar.rounded}`}
       >
