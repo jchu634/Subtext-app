@@ -38,7 +38,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Separator } from "@/components/ui/separator";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { ScrollAreaShadow } from "@/components/ui/scroll-area-shadow";
 import { useToast } from "@/hooks/use-toast";
 
 // Store Stuff
@@ -274,7 +274,7 @@ export function SettingsMenu() {
           id="settings-form"
           className="flex-1"
         >
-          <ScrollArea className="h-[calc(80vh-48px)]">
+          <ScrollAreaShadow className="h-[calc(80vh-36px)]">
             <div className={`space-y-3 p-3 text-black ${funnel.className}`}>
               <FormField
                 control={form.control}
@@ -486,7 +486,7 @@ export function SettingsMenu() {
                 </div>
               </div>
             </div>
-          </ScrollArea>
+          </ScrollAreaShadow>
         </form>
       </Form>
     </div>
