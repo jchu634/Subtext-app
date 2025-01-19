@@ -250,7 +250,7 @@ export function SettingsMenu() {
 
   return (
     <div
-      className={`flex h-[80vh] flex-col ${colourScheme.body} ${toolbar.rounded}`}
+      className={`flex h-[70vh] flex-col ${colourScheme.body} ${toolbar.rounded}`}
     >
       <div
         className={`flex items-center justify-between bg-[#8CB369] pr-2 text-black ${funnel.className} text-xl font-bold ${toolbar.height} ${toolbar.rounded}`}
@@ -274,7 +274,7 @@ export function SettingsMenu() {
           id="settings-form"
           className="flex-1"
         >
-          <ScrollAreaShadow className="h-[calc(80vh-36px)]">
+          <ScrollAreaShadow className="h-[calc(70vh-36px)]">
             <div className={`space-y-3 p-3 text-black ${funnel.className}`}>
               <FormField
                 control={form.control}
