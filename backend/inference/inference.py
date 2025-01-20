@@ -1,23 +1,76 @@
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, Request, HTTPException
 from pydantic import BaseModel
 import logging
 import os
 import subprocess
 from pathlib import Path
 from ffmpy import FFmpeg, FFprobe
-import tempfile
 from platformdirs import user_downloads_dir, user_data_dir
 
 import importlib.util
 import importlib.machinery
 import sys
 
+import base64
+from cryptography.hazmat.primitives import hashes, serialization
+from cryptography.hazmat.primitives.asymmetric import padding
+from cryptography.exceptions import InvalidSignature
+
 from config import Settings
 from time import sleep
 import pysubs2
 
 
+class PublicKeyError(Exception):
+    """Raised when there are problems with the public key  """
+
+
+class FileSignatureError(Exception):
+    """Raised when there are problems related to the file signature """
+
+
+def verify_file(public_key, file_path):
+    # Read file data
+    with open(file_path, 'rb') as f:
+        file_data = f.read()
+
+    # Read signature
+    sig_path = str(file_path) + '.sig'
+    with open(sig_path, 'rb') as f:
+        signature = base64.b64decode(f.read())
+
+    # Calculate file digest
+    hasher = hashes.Hash(hashes.SHA256())
+    hasher.update(file_data)
+
+    # Verify signature
+    try:
+        public_key.verify(
+            signature,
+            file_data,
+            padding.PSS(
+                mgf=padding.MGF1(hashes.SHA256()),
+                salt_length=padding.PSS.MAX_LENGTH
+            ),
+            hashes.SHA256()
+        )
+        verified = True
+    except InvalidSignature:
+        verified = False
+    return verified
+
+
 def load_source(modname, filename):
+    if not Settings.allowUnsignedCode:
+        if not Settings.publicKey:
+            raise PublicKeyError("The application is missing its public key")
+        else:
+            if os.path.exists(filename + ".sig"):
+                if not verify_file(Settings.publicKey, filename):
+                    raise FileSignatureError("Signature check failed")
+            else:
+                raise FileSignatureError("Signature file is missing")
+
     loader = importlib.machinery.SourceFileLoader(modname, filename)
     spec = importlib.util.spec_from_file_location(modname, filename, loader=loader)
     module = importlib.util.module_from_spec(spec)
@@ -37,20 +90,29 @@ def getModels():
 
 @transcription_router.get("/supported_formats")
 def getSupportedFormats(model):
-    getFormats = load_source('supportedFormats', f'./inference/{model}/api.py')
-    return getFormats.supportedFormats()
+    try:
+        getFormats = load_source('supportedFormats', f'./inference/{model}/api.py')
+        return getFormats.supportedFormats()
+    except (FileSignatureError, PublicKeyError) as e:
+        raise HTTPException(status_code=500, detail=e.args[0])
 
 
 @transcription_router.get("/supported_languages")
 def getsupportedLanguages(model):
-    getLanguages = load_source('supportedLanguages', f'./inference/{model}/api.py')
-    return getLanguages.supportedLanguages()
+    try:
+        getLanguages = load_source('supportedLanguages', f'./inference/{model}/api.py')
+        return getLanguages.supportedLanguages()
+    except (FileSignatureError, PublicKeyError) as e:
+        raise HTTPException(status_code=500, detail=e.args[0])
 
 
 @transcription_router.get("/supported_model_sizes")
 def getModelSizes(model):
-    getSizes = load_source('getModels', f'./inference/{model}/api.py')
-    return getSizes.getModels()
+    try:
+        getSizes = load_source('getModels', f'./inference/{model}/api.py')
+        return getSizes.getModels()
+    except (FileSignatureError, PublicKeyError) as e:
+        raise HTTPException(status_code=500, detail=e.args[0])
 
 
 class TranscriptionRequest(BaseModel):
@@ -67,7 +129,11 @@ class TranscriptionRequest(BaseModel):
 @transcription_router.post("/transcribe")
 def transcribe(req: TranscriptionRequest):
     print(req)
-    generator = load_source('generateSubtitle', os.path.join(".", "inference", req.model, "api.py"))
+    try:
+        generator = load_source('generateSubtitle', os.path.join(".", "inference", req.model, "api.py"))
+    except (FileSignatureError, PublicKeyError) as e:
+        raise HTTPException(status_code=500, detail=e.args[0])
+
     unprocessables = []
     for path in req.filePaths:
         subs = pysubs2.load_from_whisper(generator.generateSubtitle(path, req.modelSize, req.language))

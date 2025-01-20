@@ -1,5 +1,8 @@
 from typing import Any
 from pydantic_settings import BaseSettings, SettingsConfigDict
+from cryptography.hazmat.primitives.asymmetric.types import PublicKeyTypes
+from cryptography.hazmat.primitives import serialization
+from pydantic import Field
 import os
 
 library_path = os.path.dirname(os.path.abspath(__file__))
@@ -17,6 +20,14 @@ class settingsModel(BaseSettings):
     testEnable: bool = True
     allowUnsignedCode: bool = False
     debuggingEnabled: bool = False
+    publicKey: PublicKeyTypes
+
+    if os.path.exists("key.pub"):
+        publicKey = Field(default_factory=lambda: serialization.load_pem_public_key(
+            open("key.pub", 'rb').read()
+        ))
+    else:
+        publicKey = None
 
     LOGGING: bool = True
 

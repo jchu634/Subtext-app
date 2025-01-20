@@ -12,7 +12,8 @@ TODO Backend
             PROGRESS Embed Subtitles in Video Option
         DONE Model Size Endpoint
         DONE Model Input Formats
-        TODO Model Code Signing
+        DONE Model Code Signing
+    TODO Add more error handling
 
 
 PROGRESS Frontend
@@ -53,6 +54,7 @@ PROGRESS Frontend
         DONE Extended Subtitle Formats
         DONE Embed Subtitles in Video Options
     
+    TODO Add more error handling
     PROGRESS Settings Dialog
 
 TODO BUGS
