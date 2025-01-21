@@ -296,7 +296,7 @@ export default function SettingsMenu() {
                       <FormControl>
                         <SelectTrigger
                           id="model"
-                          className="w-[180px] border-2 border-black"
+                          className="w-[180px] border-2 border-black hover:bg-slate-50"
                         >
                           <SelectValue
                             placeholder={
@@ -336,7 +336,7 @@ export default function SettingsMenu() {
                       <FormControl>
                         <SelectTrigger
                           id="modelSize"
-                          className="w-[180px] border-2 border-black"
+                          className="w-[180px] border-2 border-black hover:bg-slate-50"
                         >
                           <SelectValue
                             placeholder={
@@ -437,6 +437,7 @@ export default function SettingsMenu() {
                         checked={field.value}
                         onCheckedChange={field.onChange}
                         defaultChecked={true}
+                        className="hover:bg-slate-50"
                       />
                     </FormControl>
                   </FormItem>
@@ -461,6 +462,7 @@ export default function SettingsMenu() {
                         checked={field.value}
                         onCheckedChange={field.onChange}
                         defaultChecked={true}
+                        className="enabled:hover:bg-slate-50"
                       />
                     </FormControl>
                   </FormItem>

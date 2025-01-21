@@ -69,7 +69,7 @@ export default function SettingsDialog() {
 
               <Button
                 id="defaultSaveLocation"
-                className="font-semibold dark:bg-emerald-500"
+                className="font-semibold hover:bg-zinc-600 dark:hover:bg-amber-200"
                 onClick={returnPathDirectories}
               >
                 Change Location
@@ -100,21 +100,21 @@ export default function SettingsDialog() {
                 <ToggleGroupItem
                   value="dark"
                   onClick={() => setTheme("dark")}
-                  className="border-black text-black hover:bg-gray-400 hover:font-extrabold data-[state=on]:bg-orange-300 data-[state=on]:font-bold dark:bg-white dark:hover:bg-gray-400 dark:hover:text-black dark:data-[state=on]:bg-orange-300 dark:data-[state=on]:text-black"
+                  className="border-black text-black hover:bg-amber-200 hover:font-extrabold data-[state=on]:bg-orange-300 data-[state=on]:font-bold dark:bg-white dark:hover:bg-amber-200 dark:hover:text-black dark:data-[state=on]:bg-orange-300 dark:data-[state=on]:text-black"
                 >
                   Dark
                 </ToggleGroupItem>
                 <ToggleGroupItem
                   value="light"
                   onClick={() => setTheme("light")}
-                  className="border-black text-black hover:bg-gray-400 hover:font-extrabold data-[state=on]:bg-orange-300 data-[state=on]:font-bold dark:bg-white dark:hover:bg-gray-400 dark:hover:text-black dark:data-[state=on]:bg-orange-300 dark:data-[state=on]:text-black"
+                  className="border-black text-black hover:bg-amber-200 hover:font-extrabold data-[state=on]:bg-orange-300 data-[state=on]:font-bold dark:bg-white dark:hover:bg-amber-200 dark:hover:text-black dark:data-[state=on]:bg-orange-300 dark:data-[state=on]:text-black"
                 >
                   Light
                 </ToggleGroupItem>
                 <ToggleGroupItem
                   value="system"
                   onClick={() => setTheme("system")}
-                  className="border-black text-black hover:bg-gray-400 hover:font-extrabold data-[state=on]:bg-orange-300 data-[state=on]:font-bold dark:bg-white dark:hover:bg-gray-400 dark:hover:text-black dark:data-[state=on]:bg-orange-300 dark:data-[state=on]:text-black"
+                  className="border-black text-black hover:bg-amber-200 hover:font-extrabold data-[state=on]:bg-orange-300 data-[state=on]:font-bold dark:bg-white dark:hover:bg-amber-200 dark:hover:text-black dark:data-[state=on]:bg-orange-300 dark:data-[state=on]:text-black"
                 >
                   System
                 </ToggleGroupItem>
