@@ -16,10 +16,11 @@ import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
+import { useState } from "react";
 import { useSelector } from "@xstate/store/react";
 import { store } from "@/lib/stores";
 
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, ChevronUp, ChevronsUpDown } from "lucide-react";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { funnel } from "@/lib/fonts";
 import { backendLicenses, frontendLicenses } from "@/lib/licenses";
@@ -39,7 +40,7 @@ function mapLicenses(license: licenseFormat, index: number) {
           <div>
             License: {license.license}
             <Button variant="ghost" size="icon" className="hover:bg-amber-200">
-              <ChevronDown />
+              <ChevronsUpDown />
             </Button>
           </div>
         </CollapsibleTrigger>
@@ -57,6 +58,9 @@ function mapLicenses(license: licenseFormat, index: number) {
 export default function AppInfoDialog() {
   const [parent] = useAutoAnimate(/* optional config */);
   const appVersion = useSelector(store, (state) => state.context.appVersion);
+  const [isOpenGeneral, setIsOpenGeneral] = useState(false);
+  const [isOpenBackend, setIsOpenBackend] = useState(false);
+  const [isOpenFrontend, setIsOpenFrontend] = useState(false);
   return (
     <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
       {/* Disables Dropdown box immediately closing the dialog */}
@@ -78,7 +82,11 @@ export default function AppInfoDialog() {
             <Separator className="my-4 bg-black" />
           </DialogHeader>
 
-          <Collapsible className={`${funnel.className}`}>
+          <Collapsible
+            className={`${funnel.className}`}
+            open={isOpenGeneral}
+            onOpenChange={setIsOpenGeneral}
+          >
             <CollapsibleTrigger
               className="flex items-center gap-x-1 text-lg"
               asChild
@@ -90,13 +98,16 @@ export default function AppInfoDialog() {
                   size="icon"
                   className="hover:bg-amber-200"
                 >
-                  <ChevronDown />
+                  {isOpenGeneral ? <ChevronUp /> : <ChevronDown />}
                 </Button>
               </div>
             </CollapsibleTrigger>
             <CollapsibleContent className="pl-4">
               <ScrollArea className={`h-[50vh] p-3 ${funnel.className}`}>
-                <Collapsible>
+                <Collapsible
+                  open={isOpenBackend}
+                  onOpenChange={setIsOpenBackend}
+                >
                   <CollapsibleTrigger
                     className="flex items-center gap-x-1"
                     asChild
@@ -108,7 +119,7 @@ export default function AppInfoDialog() {
                         size="icon"
                         className="hover:bg-amber-200"
                       >
-                        <ChevronDown />
+                        {isOpenBackend ? <ChevronUp /> : <ChevronDown />}
                       </Button>
                     </div>
                   </CollapsibleTrigger>
@@ -120,7 +131,10 @@ export default function AppInfoDialog() {
                     </ScrollArea>
                   </CollapsibleContent>
                 </Collapsible>
-                <Collapsible>
+                <Collapsible
+                  open={isOpenFrontend}
+                  onOpenChange={setIsOpenFrontend}
+                >
                   <CollapsibleTrigger
                     className="flex items-center gap-x-1"
                     asChild
@@ -132,7 +146,7 @@ export default function AppInfoDialog() {
                         size="icon"
                         className="hover:bg-amber-200"
                       >
-                        <ChevronDown />
+                        {isOpenFrontend ? <ChevronUp /> : <ChevronDown />}
                       </Button>
                     </div>
                   </CollapsibleTrigger>
