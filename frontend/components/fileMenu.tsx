@@ -128,9 +128,9 @@ export default function FilesMenu() {
   }
 
   return (
-    <div className={`flex h-fileHeight flex-col bg-[#D9D9D9]`}>
+    <div className={`flex h-fileHeight flex-col rounded-t-lg bg-[#D9D9D9]`}>
       <div
-        className={`flex items-center justify-between bg-[#F4A259] pr-2 text-black ${funnel.className} min-h-12 rounded-t-md text-xl font-bold`}
+        className={`flex items-center justify-between bg-[#F4A259] pr-2 text-black ${funnel.className} min-h-12 rounded-t-lg text-xl font-bold`}
       >
         <p className="pl-4">Files</p>
         <div>

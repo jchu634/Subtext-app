@@ -15,12 +15,14 @@ import { Button } from "@/components/ui/button";
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import Link from "next/link";
 
 import { useState } from "react";
 import { useSelector } from "@xstate/store/react";
 import { store } from "@/lib/stores";
 
 import { ChevronDown, ChevronUp, ChevronsUpDown } from "lucide-react";
+import { FaGithub } from "react-icons/fa";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { funnel } from "@/lib/fonts";
 import { backendLicenses, frontendLicenses } from "@/lib/licenses";
@@ -76,8 +78,18 @@ export default function AppInfoDialog() {
             <DialogTitle className={`text-3xl ${funnel.className}`}>
               Subtext Desktop {appVersion}
             </DialogTitle>
-            <DialogDescription className="text-md text-gray-800 dark:text-slate-400">
+            <DialogDescription className="text-md flex items-center gap-x-2 text-gray-800 dark:text-slate-400">
               Author: Joshua Chung
+              <Button
+                variant="link"
+                size="icon"
+                className="[&_svg]:size-6"
+                asChild
+              >
+                <Link href="https://github.com/jchu634/" target="_blank">
+                  <FaGithub />
+                </Link>
+              </Button>
             </DialogDescription>
             <Separator className="my-4 bg-black" />
           </DialogHeader>
