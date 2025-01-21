@@ -1,6 +1,4 @@
 "use client";
-import { Funnel_Display } from "next/font/google";
-
 import { Cog } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useSelector } from "@xstate/store/react";
@@ -18,11 +16,7 @@ import {
 } from "@/components/ui/dialog";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Switch } from "@/components/ui/switch";
-
-const funnelDisplay = Funnel_Display({
-  variable: "--font-funnel",
-  subsets: ["latin"],
-});
+import { funnel } from "@/lib/fonts";
 
 async function returnPathDirectories() {
   const folder = await window.pywebview.api.spawnFolderDialog();
@@ -34,7 +28,7 @@ async function returnPathDirectories() {
   return folder;
 }
 
-export function SettingsDialog() {
+export default function SettingsDialog() {
   const { theme, setTheme } = useTheme();
   const useExtendedFormats = useSelector(
     store,
@@ -55,7 +49,7 @@ export function SettingsDialog() {
         </DialogTrigger>
         <DialogContent className="flex h-[80vh] w-[80vw] max-w-screen-2xl flex-col bg-slate-100 bg-opacity-95 text-black dark:bg-black dark:bg-opacity-80 dark:text-white">
           <DialogHeader>
-            <DialogTitle className={`text-3xl ${funnelDisplay.className}`}>
+            <DialogTitle className={`text-3xl ${funnel.className}`}>
               Settings
             </DialogTitle>
             <DialogDescription className="text-gray-800 dark:text-slate-400">
@@ -64,7 +58,7 @@ export function SettingsDialog() {
           </DialogHeader>
           <div className="space-y-4">
             <div
-              className={`flex flex-row items-center space-x-5 ${funnelDisplay.className}`}
+              className={`flex flex-row items-center space-x-5 ${funnel.className}`}
             >
               <Label htmlFor="defaultSaveLocation" className="min-w-40 text-lg">
                 Save Location:
@@ -83,7 +77,7 @@ export function SettingsDialog() {
             </div>
 
             <div
-              className={`flex flex-row items-center space-x-5 ${funnelDisplay.className}`}
+              className={`flex flex-row items-center space-x-5 ${funnel.className}`}
             >
               <Label
                 htmlFor="viewModeToggle"
@@ -127,7 +121,7 @@ export function SettingsDialog() {
               </ToggleGroup>
             </div>
             <div
-              className={`flex flex-row items-center space-x-5 ${funnelDisplay.className}`}
+              className={`flex flex-row items-center space-x-5 ${funnel.className}`}
             >
               <Label htmlFor="viewModeToggle" className="text-lg">
                 Enable Extended Subtitle Formats

@@ -17,23 +17,17 @@ import { XIcon, MinusIcon, SquareIcon } from "lucide-react";
 
 import { useState } from "react";
 
-import { Funnel_Display } from "next/font/google";
+import { funnel } from "@/lib/fonts";
 
-const funnelDisplay = Funnel_Display({
-  variable: "--font-funnel",
-  subsets: ["latin"],
-});
-
+// Unused due to latency issues (Window did not know it was un-maximised)
 export default function Menu() {
   // eslint-disable-next-line
   const [windowControlEnabled, setWindowControlEnabled] = useState(false);
-  // Disabled due to latency issues (Window did not know it was un-maximised)
 
   return (
     <div>
-      {/* className="border-white" */}
       <Menubar
-        className={`${funnelDisplay.className} flex justify-between border-b-4 border-l-0 border-r-0 border-t-0 text-black`}
+        className={`${funnel.className} flex justify-between border-b-4 border-l-0 border-r-0 border-t-0 text-black`}
       >
         <div className="flex dark:text-white">
           <MenubarMenu>
