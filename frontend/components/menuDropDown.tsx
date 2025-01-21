@@ -8,6 +8,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import AppInfoDialog from "@/components/appInfoDialog";
 
 export function MenuDropDown() {
   return (
@@ -18,7 +19,7 @@ export function MenuDropDown() {
       <DropdownMenuContent align="start" className={`${funnel.className}`}>
         {/* <DropdownMenuLabel>App</DropdownMenuLabel>
           <DropdownMenuSeparator /> */}
-        <DropdownMenuItem>App Info</DropdownMenuItem>
+        <AppInfoDialog />
       </DropdownMenuContent>
     </DropdownMenu>
   );
