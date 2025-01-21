@@ -72,7 +72,7 @@ export default function AppInfoDialog({}) {
       {/* Disables Dropdown box immediately closing the dialog */}
       <Dialog>
         <DialogTrigger asChild>
-          <span>App Info</span>
+          <span>About the app</span>
         </DialogTrigger>
         <DialogContent className="flex h-[80vh] w-[80vw] max-w-screen-2xl flex-col bg-slate-100 bg-opacity-95 text-black dark:bg-black dark:bg-opacity-80 dark:text-white">
           <DialogHeader className={`${funnel.className}`}>
