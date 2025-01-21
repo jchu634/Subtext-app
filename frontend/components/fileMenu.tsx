@@ -9,7 +9,7 @@ import { useState } from "react";
 
 // Store Stuff
 import { useSelector } from "@xstate/store/react";
-import { store } from "@/components/stores";
+import { store } from "@/lib/stores";
 
 // Animation Stuff
 import { useAutoAnimate } from "@formkit/auto-animate/react";

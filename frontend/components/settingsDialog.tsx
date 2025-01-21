@@ -5,7 +5,7 @@ import { useSelector } from "@xstate/store/react";
 
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { store } from "@/components/stores";
+import { store } from "@/lib/stores";
 import {
   Dialog,
   DialogContent,
