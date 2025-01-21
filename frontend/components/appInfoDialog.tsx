@@ -17,7 +17,7 @@ import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import Link from "next/link";
 
-import { useState } from "react";
+import { useState, RefCallback } from "react";
 import { useSelector } from "@xstate/store/react";
 import { store } from "@/lib/stores";
 
@@ -33,7 +33,11 @@ interface licenseFormat {
   licenseDetails: string;
 }
 
-function mapLicenses(license: licenseFormat, index: number) {
+function mapLicenses(
+  license: licenseFormat,
+  index: number,
+  parent: RefCallback<Element>,
+) {
   return (
     <div key={`license-${index}`}>
       <div className="font-bold">{license.name}</div>
@@ -46,7 +50,7 @@ function mapLicenses(license: licenseFormat, index: number) {
             </Button>
           </div>
         </CollapsibleTrigger>
-        <CollapsibleContent>
+        <CollapsibleContent ref={parent}>
           <pre className="max-h-96 overflow-auto whitespace-pre-wrap text-sm">
             {license.licenseDetails}
           </pre>
@@ -57,8 +61,8 @@ function mapLicenses(license: licenseFormat, index: number) {
   );
 }
 
-export default function AppInfoDialog() {
-  const [parent] = useAutoAnimate(/* optional config */);
+export default function AppInfoDialog({}) {
+  const [parent] = useAutoAnimate({ duration: 100 });
   const appVersion = useSelector(store, (state) => state.context.appVersion);
   const [isOpenGeneral, setIsOpenGeneral] = useState(false);
   const [isOpenBackend, setIsOpenBackend] = useState(false);
@@ -70,10 +74,7 @@ export default function AppInfoDialog() {
         <DialogTrigger asChild>
           <span>App Info</span>
         </DialogTrigger>
-        <DialogContent
-          className="flex h-[80vh] w-[80vw] max-w-screen-2xl flex-col bg-slate-100 bg-opacity-95 text-black dark:bg-black dark:bg-opacity-80 dark:text-white"
-          ref={parent}
-        >
+        <DialogContent className="flex h-[80vh] w-[80vw] max-w-screen-2xl flex-col bg-slate-100 bg-opacity-95 text-black dark:bg-black dark:bg-opacity-80 dark:text-white">
           <DialogHeader className={`${funnel.className}`}>
             <DialogTitle className={`text-3xl ${funnel.className}`}>
               Subtext Desktop {appVersion}
@@ -114,7 +115,7 @@ export default function AppInfoDialog() {
                 </Button>
               </div>
             </CollapsibleTrigger>
-            <CollapsibleContent className="pl-4">
+            <CollapsibleContent className="pl-4" ref={parent}>
               <ScrollArea className={`h-[50vh] p-3 ${funnel.className}`}>
                 <Collapsible
                   open={isOpenBackend}
@@ -135,10 +136,10 @@ export default function AppInfoDialog() {
                       </Button>
                     </div>
                   </CollapsibleTrigger>
-                  <CollapsibleContent className="pl-4">
+                  <CollapsibleContent className="pl-4" ref={parent}>
                     <ScrollArea className={`h-[30vh] p-3 ${funnel.className}`}>
                       {backendLicenses.map((license, index) => {
-                        return mapLicenses(license, index);
+                        return mapLicenses(license, index, parent);
                       })}
                     </ScrollArea>
                   </CollapsibleContent>
@@ -162,10 +163,10 @@ export default function AppInfoDialog() {
                       </Button>
                     </div>
                   </CollapsibleTrigger>
-                  <CollapsibleContent className="pl-4">
+                  <CollapsibleContent className="pl-4" ref={parent}>
                     <ScrollArea className={`h-[30vh] p-3 ${funnel.className}`}>
                       {frontendLicenses.map((license, index) => {
-                        return mapLicenses(license, index);
+                        return mapLicenses(license, index, parent);
                       })}
                     </ScrollArea>
                   </CollapsibleContent>
