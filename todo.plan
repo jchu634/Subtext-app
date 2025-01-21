@@ -28,18 +28,18 @@ PROGRESS Frontend
         TODO Dark mode colourScheme
     
     PROGRESS File Menu
-        TODO File exists dialog
+        DONE_WILL_NOT_IMPLEMENT File exists dialog
         DONE File Checkbox
         PROGRESS Mass File Selection deletion
             DONE Remove Selection Button
             TODO Remove Individual button on group deletes entire group
 
-        TODO File removal confirmation
+        DONE File removal confirmation
 
     PROGRESS Settings Menu
         DONE Migrate Settings to a external file
         DONE Make Reset Settings button functional
-        TODO Default Open location
+        DONE_WILL_NOT_IMPLEMENT Default Open location
         DONE Dark/Light Mode
         DONE Overwrite files Toggle
         DONE Default Save location

@@ -1,8 +1,20 @@
 import { funnel } from "@/lib/fonts";
 import { TrashIcon, PlusIcon } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
 import { InvertedCheckbox } from "@/components/ui/checkbox";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 import { useState } from "react";
 
@@ -55,6 +67,7 @@ export default function FilesMenu() {
       <div
         className="grid h-11 w-full grid-cols-[auto_1fr_auto] items-center gap-2 rounded-md bg-[#5E5E5E] px-2"
         key={index}
+        title={file.fullPath}
       >
         <InvertedCheckbox
           id={`file-${index}`}
@@ -146,19 +159,41 @@ export default function FilesMenu() {
             />
             <p className={`${funnel.className} text-xl font-bold`}>Add New</p>
           </Button>
-          {selectedFiles.size == 0 && (
-            <Button variant="ghost" className="p-2" onClick={clearFiles}>
-              <TrashIcon
-                strokeWidth={3}
-                size={24}
-                className="hover:text-accent-foreground"
-              />
-              <p className={`${funnel.className} text-xl font-bold`}>
-                Remove All
-              </p>
-            </Button>
-          )}
-          {selectedFiles.size > 0 && (
+          {selectedFiles.size == 0 ? (
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button variant="ghost" className="p-2">
+                  <TrashIcon
+                    strokeWidth={3}
+                    size={24}
+                    className="hover:text-accent-foreground"
+                  />
+                  <p className={`${funnel.className} text-xl font-bold`}>
+                    Remove All
+                  </p>
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent className="bg-slate-100 text-black">
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                  <AlertDialogDescription className="text-gray-700">
+                    Are you sure that you want to remove all files?
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel className="border-black hover:bg-gray-200">
+                    Cancel
+                  </AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={clearFiles}
+                    className="font-md bg-red-800 hover:bg-red-950"
+                  >
+                    Continue
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          ) : (
             <Button
               variant="ghost"
               className="p-2"
