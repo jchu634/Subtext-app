@@ -20,7 +20,7 @@ PROGRESS Frontend
     DONE Frontend General Layout
     TODO OnHover texts
     DONE Make Files a store
-    TODO Add Open Source Licence pages
+    DONE Add Open Source Licence pages
     PROGRESS Application Development
         DONE Make Settings a form
         DONE Make Settings form submit send request to backend
@@ -56,6 +56,16 @@ PROGRESS Frontend
     
     TODO Add more error handling
     PROGRESS Settings Dialog
+
+    PROGRESS Backend Communication
+        TODO Show toast for backend errors
+        TODO Fix toast when job is started
+        TODO Add communication on job progress
+        MAYBE Add Job pane
+            TODO Add Job animation shake when joh is added
+            TODO Add job cancellation
+            TODO Add job scheduling
+
 
 TODO BUGS
     DONE Extended Subtitle Formats overflow out of box when resized and squashed in small windows
