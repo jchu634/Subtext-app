@@ -35,11 +35,13 @@ function mapLicenses(license: licenseFormat, index: number) {
     <div key={`license-${index}`}>
       <div className="font-bold">{license.name}</div>
       <Collapsible>
-        <CollapsibleTrigger className="flex items-center">
-          License: {license.license}
-          <Button variant="ghost" size="icon" className="hover:bg-amber-200">
-            <ChevronDown />
-          </Button>
+        <CollapsibleTrigger className="flex items-center" asChild>
+          <div>
+            License: {license.license}
+            <Button variant="ghost" size="icon" className="hover:bg-amber-200">
+              <ChevronDown />
+            </Button>
+          </div>
         </CollapsibleTrigger>
         <CollapsibleContent>
           <pre className="max-h-96 overflow-auto whitespace-pre-wrap text-sm">
@@ -77,28 +79,38 @@ export default function AppInfoDialog() {
           </DialogHeader>
 
           <Collapsible className={`${funnel.className}`}>
-            <CollapsibleTrigger className="flex items-center gap-x-1 text-lg">
-              Open Source Licenses
-              <Button
-                variant="ghost"
-                size="icon"
-                className="hover:bg-amber-200"
-              >
-                <ChevronDown />
-              </Button>
+            <CollapsibleTrigger
+              className="flex items-center gap-x-1 text-lg"
+              asChild
+            >
+              <div>
+                Open Source Licenses
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="hover:bg-amber-200"
+                >
+                  <ChevronDown />
+                </Button>
+              </div>
             </CollapsibleTrigger>
             <CollapsibleContent className="pl-4">
               <ScrollArea className={`h-[50vh] p-3 ${funnel.className}`}>
                 <Collapsible>
-                  <CollapsibleTrigger className="flex items-center gap-x-1">
-                    Backend
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="hover:bg-amber-200"
-                    >
-                      <ChevronDown />
-                    </Button>
+                  <CollapsibleTrigger
+                    className="flex items-center gap-x-1"
+                    asChild
+                  >
+                    <div>
+                      Backend
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="hover:bg-amber-200"
+                      >
+                        <ChevronDown />
+                      </Button>
+                    </div>
                   </CollapsibleTrigger>
                   <CollapsibleContent className="pl-4">
                     <ScrollArea className={`h-[30vh] p-3 ${funnel.className}`}>
@@ -109,15 +121,20 @@ export default function AppInfoDialog() {
                   </CollapsibleContent>
                 </Collapsible>
                 <Collapsible>
-                  <CollapsibleTrigger className="flex items-center gap-x-1">
-                    Frontend
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="hover:bg-amber-200"
-                    >
-                      <ChevronDown />
-                    </Button>
+                  <CollapsibleTrigger
+                    className="flex items-center gap-x-1"
+                    asChild
+                  >
+                    <div>
+                      Frontend
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="hover:bg-amber-200"
+                      >
+                        <ChevronDown />
+                      </Button>
+                    </div>
                   </CollapsibleTrigger>
                   <CollapsibleContent className="pl-4">
                     <ScrollArea className={`h-[30vh] p-3 ${funnel.className}`}>
