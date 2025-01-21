@@ -1,4 +1,3 @@
-import { toolbar } from "@/lib/toolbar";
 import { funnel } from "@/lib/fonts";
 import { TrashIcon, PlusIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -131,7 +130,7 @@ export default function FilesMenu() {
   return (
     <div className={`flex h-fileHeight flex-col bg-[#D9D9D9]`}>
       <div
-        className={`flex items-center justify-between bg-[#F4A259] pr-2 text-black ${funnel.className} text-xl font-bold ${toolbar.height} ${toolbar.rounded}`}
+        className={`flex items-center justify-between bg-[#F4A259] pr-2 text-black ${funnel.className} min-h-12 rounded-t-md text-xl font-bold`}
       >
         <p className="pl-4">Files</p>
         <div>
