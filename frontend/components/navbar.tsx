@@ -1,7 +1,7 @@
 "use client";
 
 import { MenuDropDown } from "@/components/menuDropDown";
-import { SettingsDialog } from "@/components/settingsDialog";
+import SettingsDialog from "@/components/settingsDialog";
 
 export default function SideNav() {
   return (
