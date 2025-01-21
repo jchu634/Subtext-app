@@ -1,7 +1,7 @@
 "use client";
 import { funnel } from "@/lib/fonts";
-import { SettingsMenu } from "@/components/settingsMenu";
-import { FilesMenu } from "@/components/fileMenu";
+import SettingsMenu from "@/components/settingsMenu";
+import FilesMenu from "@/components/fileMenu";
 
 // Component Stuff
 import { Button } from "@/components/ui/button";

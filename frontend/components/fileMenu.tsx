@@ -19,7 +19,7 @@ interface file {
   fileName: string;
 }
 
-export function FilesMenu() {
+export default function FilesMenu() {
   const [parent] = useAutoAnimate(/* optional config */);
   const [files, setFiles] = useState<file[]>([]);
   const [selectedFiles, setSelectedFiles] = useState<Set<file>>(new Set());

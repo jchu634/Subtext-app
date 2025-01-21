@@ -78,7 +78,7 @@ const formSchema = z.object({
   filePaths: z.array(z.string()),
 });
 
-export function SettingsMenu() {
+export default function SettingsMenu() {
   // eslint-disable-next-line
   const queryClient = useQueryClient();
 
@@ -105,7 +105,7 @@ export function SettingsMenu() {
         { value: "WebVTT", active: false, isExtended: false },
         { value: "MPL2", active: false, isExtended: true },
         { value: "TMP", active: false, isExtended: true },
-        // { value: "SAMI", active: false, isExtended: true },
+        //SAMI is not fully suppported in PySub2 { value: "SAMI", active: false, isExtended: true },
         { value: "TTML", active: false, isExtended: true },
         { value: "MicroDVD", active: false, isExtended: true },
       ],
