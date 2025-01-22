@@ -1,5 +1,5 @@
 import { funnel } from "@/lib/fonts";
-import { TrashIcon, PlusIcon } from "lucide-react";
+import { TrashIcon, PlusIcon, SquareIcon, SquareXIcon } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { InvertedCheckbox } from "@/components/ui/checkbox";
@@ -108,6 +108,12 @@ export default function FilesMenu() {
     setFiles([]);
     setSelectedFiles(new Set());
   }
+  function selectAllFiles() {
+    setSelectedFiles(new Set(files));
+  }
+  function unSelectAllFiles() {
+    setSelectedFiles(new Set());
+  }
 
   function handleCheckboxChange(
     file: file,
@@ -144,6 +150,7 @@ export default function FilesMenu() {
     <div className={`flex h-fileHeight flex-col rounded-t-lg bg-[#D9D9D9]`}>
       <div
         className={`flex items-center justify-between bg-[#F4A259] pr-2 text-black ${funnel.className} min-h-12 rounded-t-lg text-xl font-bold`}
+        ref={parent}
       >
         <p className="pl-4">Files</p>
         <div>
@@ -159,58 +166,96 @@ export default function FilesMenu() {
             />
             <p className={`${funnel.className} text-xl font-bold`}>Add New</p>
           </Button>
-          {selectedFiles.size == 0 ? (
-            <AlertDialog>
-              <AlertDialogTrigger asChild>
-                <Button variant="ghost" className="p-2">
-                  <TrashIcon
-                    strokeWidth={3}
-                    size={24}
-                    className="hover:text-accent-foreground"
-                  />
-                  <p className={`${funnel.className} text-xl font-bold`}>
-                    Remove All
-                  </p>
-                </Button>
-              </AlertDialogTrigger>
-              <AlertDialogContent className="bg-slate-100 text-black">
-                <AlertDialogHeader>
-                  <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                  <AlertDialogDescription className="text-gray-700">
-                    Are you sure that you want to remove all files?
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel className="border-black hover:bg-gray-200">
-                    Cancel
-                  </AlertDialogCancel>
-                  <AlertDialogAction
-                    onClick={clearFiles}
-                    className="font-md bg-red-800 hover:bg-red-950"
-                  >
-                    Continue
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
-          ) : (
+
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button variant="ghost" className="p-2">
+                <TrashIcon
+                  strokeWidth={3}
+                  size={24}
+                  className="hover:text-accent-foreground"
+                />
+                <p className={`${funnel.className} text-xl font-bold`}>
+                  Remove All
+                </p>
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent className="bg-slate-100 text-black">
+              <AlertDialogHeader>
+                <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                <AlertDialogDescription className="text-gray-700">
+                  Are you sure that you want to remove all files?
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel className="border-black hover:bg-gray-200">
+                  Cancel
+                </AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={clearFiles}
+                  className="font-md bg-red-800 hover:bg-red-950"
+                >
+                  Continue
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        </div>
+      </div>
+      {storeFiles.size != 0 && (
+        <div
+          className="flex items-center space-x-2 rounded-sm bg-slate-300 py-2 pl-2.5"
+          ref={parent}
+        >
+          <Button
+            variant="outline"
+            size="narrow"
+            className={`${funnel.className} border-black text-black`}
+            onClick={
+              selectedFiles.size == files.length
+                ? unSelectAllFiles
+                : selectAllFiles
+            }
+          >
+            {selectedFiles.size == files.length ? (
+              <div className="flex items-center space-x-2">
+                <SquareXIcon
+                  strokeWidth={2}
+                  size={24}
+                  className="text-black hover:text-accent-foreground"
+                />
+                <span>Unselect all Files</span>
+              </div>
+            ) : (
+              <div className="flex items-center space-x-2">
+                <SquareIcon
+                  strokeWidth={2}
+                  size={24}
+                  className="text-black hover:text-accent-foreground"
+                />
+                <span>Select All Files</span>
+              </div>
+            )}
+          </Button>
+          {selectedFiles.size > 0 && (
             <Button
-              variant="ghost"
-              className="p-2"
+              variant="outline"
+              size="narrow"
+              className="border-black p-2"
               onClick={removeSpecificFiles}
             >
               <TrashIcon
-                strokeWidth={3}
+                strokeWidth={2}
                 size={24}
-                className="hover:text-accent-foreground"
+                className="text-black hover:text-accent-foreground"
               />
-              <p className={`${funnel.className} text-xl font-bold`}>
+              <p className={`${funnel.className} text-black`}>
                 Remove Selected
               </p>
             </Button>
           )}
         </div>
-      </div>
+      )}
       <ScrollArea className={`w-full p-3 ${funnel.className}`}>
         <div className="space-y-2" ref={parent}>
           {[...storeFiles].map((file, index) => {
