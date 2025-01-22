@@ -14,31 +14,6 @@ def start_server():
     uvicorn.run(app, port=6789)
 
 
-class SettingsWindowApi():
-    def __init__(self):
-        self._window = None
-
-    def log(self, value):
-        print(value)
-
-    def killSettingsWindow(self):
-        self._window.destroy()
-
-    def setWindow(self, window):
-        self._window = window
-
-    def createToastOnMainWindow(self, title, message, duration):
-        window.evaluate_js(f"createToast('{title}','{message}',{duration})")
-
-    def setWindowAlwaysOnTop(self, value):
-        print("Setting window on top")
-        try:
-            window.on_top = value
-            print("Window is now on top")
-        except Exception as e:
-            print(e)
-
-
 class Api():
     def __init__(self):
         self.maximised = False

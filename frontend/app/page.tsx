@@ -2,6 +2,7 @@
 import { funnel } from "@/lib/fonts";
 import SettingsMenu from "@/components/settingsMenu";
 import FilesMenu from "@/components/fileMenu";
+import { colourScheme } from "@/lib/colourscheme";
 
 // Component Stuff
 import { Button } from "@/components/ui/button";
@@ -50,7 +51,7 @@ export default function Home() {
                 <Button
                   type="submit"
                   form="settings-form"
-                  className={`${funnel.className} h-16 bg-[#5B8E7D] align-middle text-3xl`}
+                  className={`${funnel.className} h-16 ${colourScheme.neutralButton} align-middle text-3xl`}
                 >
                   Start Job
                 </Button>

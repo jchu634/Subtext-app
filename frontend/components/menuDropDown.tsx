@@ -5,7 +5,6 @@ import { LibrarySquareIcon } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import AppInfoDialog from "@/components/appInfoDialog";
