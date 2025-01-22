@@ -151,11 +151,19 @@ export default function SettingsMenu() {
         return res.json();
       });
     },
-    // eslint-disable-next-line
-    onSuccess: (data) => {
+    onMutate: () => {
       toast({
-        title: "Success",
-        description: "Form submitted successfully",
+        className: "bg-blue-800",
+        title: "Job Sent",
+        description: "Submitted job successfully",
+        duration: 2000,
+      });
+    },
+    onSuccess: () => {
+      toast({
+        className: "bg-purple-800",
+        title: "Job Success",
+        description: "Job is complete",
         duration: 2000,
       });
     },
@@ -213,6 +221,13 @@ export default function SettingsMenu() {
       saveLocation: temp.saveLocation,
     };
     mutation.mutate(formData);
+    console.log("test");
+    toast({
+      className: "bg-blue-800",
+      title: "Success",
+      description: "Form submitted successfully",
+      duration: 2000,
+    });
   };
 
   const { data: models = [], isLoading: isModelsLoading } = useQuery({
