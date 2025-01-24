@@ -13,6 +13,7 @@ TODO Backend
         DONE Model Size Endpoint
         DONE Model Input Formats
         DONE Model Code Signing
+        TODO Add CRC check for key file
     TODO Add more error handling
 
 
