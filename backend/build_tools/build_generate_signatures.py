@@ -80,7 +80,6 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
     name = args.name
-
     if args.generate_new_keys:
         private_key, public_key = generate_key_pair()
 
@@ -111,15 +110,14 @@ if __name__ == "__main__":
     for apiFile in apiFiles:
         apiFile = Path(apiFile)
         file_size = apiFile.stat().st_size
-        print(f"File: {apiFile}")
-        print(f"Size in bytes: {file_size}")
+        print(f"Signed File: {apiFile}")
 
         signed_file = sign_file(private_key_path, apiFile)
         with open(Path(str(apiFile) + ".sig"), "w") as f:
             f.write(signed_file['signature'])
 
-        print(f"Signed File: {signed_file}")
         if args.verbose:
+            print(f"Size in bytes: {file_size}")
             print(f"Signature: {signed_file['signature']}")
             print(f"File digest: {signed_file['file_digest']}")
             print()
