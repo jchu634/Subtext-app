@@ -117,7 +117,9 @@ if __name__ == "__main__":
         signed_file = sign_file(private_key_path, apiFile)
         with open(Path(str(apiFile) + ".sig"), "w") as f:
             f.write(signed_file['signature'])
-        print(f"SignedFile: {signed_file}")
-        print(f"Signature: {signed_file['signature']}")
-        print(f"File digest: {signed_file['file_digest']}")
-        print()
+
+        print(f"Signed File: {signed_file}")
+        if args.verbose:
+            print(f"Signature: {signed_file['signature']}")
+            print(f"File digest: {signed_file['file_digest']}")
+            print()
