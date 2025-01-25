@@ -13,7 +13,7 @@ TODO Backend
         DONE Model Size Endpoint
         DONE Model Input Formats
         DONE Model Code Signing
-        TODO Add CRC check for key file
+        DONE Add CRC check for key file
     TODO Add more error handling
 
 
@@ -72,12 +72,12 @@ TODO BUGS
     DONE Extended Subtitle Formats overflow out of box when resized and squashed in small windows
 
 TODO Cohesive Application
-    TODO Build Scripts
-    TODO Packaging
+    PROGRESS Build Scripts
+    PROGRESS Packaging
     TODO Testing
     TODO Documentation
     TODO Deployment
     TODO CI/CD
     TODO Versioning
-    TODO Licensing
+    DONE Licensing
 

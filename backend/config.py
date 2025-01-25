@@ -3,6 +3,8 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 from cryptography.hazmat.primitives.asymmetric.types import PublicKeyTypes
 from cryptography.hazmat.primitives import serialization
 from pydantic import Field
+from hashlib import sha256
+from sys import exit
 import os
 
 library_path = os.path.dirname(os.path.abspath(__file__))
@@ -26,6 +28,8 @@ class settingsModel(BaseSettings):
         publicKey = Field(default_factory=lambda: serialization.load_pem_public_key(
             open("key.pub", 'rb').read()
         ))
+        if (hash.hexdigest() != "0e5fa3d7e8b53a32a87911fce765486a1001cefe6549c8e243572c138465c491"):
+            exit(100)
     else:
         publicKey = None
 
