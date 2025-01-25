@@ -44,6 +44,7 @@ exe = EXE(
     entitlements_file=None,
     contents_directory='.',
     hide_console='hide-early',
+    icon='home/frontend/favicon.ico'
 )
 coll = COLLECT(
     exe,
