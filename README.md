@@ -13,5 +13,16 @@ Subtext is an easy to use subtitling app, which allows an user to utilise AI mod
     - To disable this check, set `allowUnsignedCode=true`
     - To sign model code instead, utilise the script `.\build_tools\build_generate_signatures.py`
 
+### Build Scripts
+Argument Documentation
+- `buildFrontendApp.ps1`
+    - `-SkipBuild`: Skips the building of frontend
+- `bundleApp.ps1`
+    - `WithCuda`: Install with cuda support
+    - `SkipDependencies`: Skip dependency installation step
+    - `SkipFrontend`: Skip frontend build step
+    - `SkipPortable`: Skip portable app build step
+    - `SkipInstaller`: Skip installer build step
+
 
 

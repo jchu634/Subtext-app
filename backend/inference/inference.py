@@ -171,8 +171,9 @@ def transcribe(req: TranscriptionRequest):
 
         if req.embedSubtitles:
             if assLocation == "":
-                assLocation = os.path.join(user_data_dir(
-                    Settings.appName, Settings.appAuthor), f"{Path(path).stem}.ass")
+                save_dir = user_data_dir(Settings.appName, Settings.appAuthor)
+                os.makedirs(save_dir, exist_ok=True)
+                assLocation = os.path.join(save_dir, f"{Path(path).stem}.ass")
                 subs.save(assLocation)
 
             ff = None
