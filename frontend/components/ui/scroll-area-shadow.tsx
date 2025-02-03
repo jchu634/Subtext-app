@@ -99,19 +99,19 @@ export function ScrollAreaShadow({
       viewportRef={scrollViewportRef}
       onScrollCapture={handleScroll}
       className={cn(
-        "h-full rounded-b-lg", // Added rounded-b-lg for bottom corners
+        "h-full",
         overflown &&
           shadowTop &&
           !shadowBottom &&
-          "shadow-[inset_0_20px_10px_-6px_rgba(0,0,0,0.3)]",
+          "shadow-[inset_0_20px_10px_-6px_rgba(0,0,0,0.3)] dark:shadow-[inset_0_20px_10px_-6px_rgba(255,255,255,0.3)]",
         overflown &&
           !shadowTop &&
           shadowBottom &&
-          "shadow-[inset_0_-20px_10px_-6px_rgba(0,0,0,0.3)]",
+          "shadow-[inset_0_-20px_10px_-6px_rgba(0,0,0,0.3)] dark:shadow-[inset_0_-20px_10px_-6px_rgba(255,255,255,0.3)]",
         overflown &&
           shadowTop &&
           shadowBottom &&
-          "shadow-[inset_0_-20px_10px_-6px_rgba(0,0,0,0.3),inset_0_20px_10px_-6px_rgba(0,0,0,0.3)]",
+          "shadow-[inset_0_-20px_10px_-6px_rgba(0,0,0,0.3),inset_0_20px_10px_-6px_rgba(0,0,0,0.3)] dark:shadow-[inset_0_-20px_10px_-6px_rgba(255,255,255,0.3),inset_0_20px_10px_-6px_rgba(255,255,255,0.3)]",
         className,
       )}
       {...props}
