@@ -263,9 +263,9 @@ export default function SettingsMenu() {
   );
 
   return (
-    <div className={`flex h-[76vh] flex-col ${colourScheme.body} rounded-t-lg`}>
+    <div className={`flex h-[76vh] flex-col rounded-lg ${colourScheme.body}`}>
       <div
-        className={`flex items-center justify-between bg-[#8CB369] pr-2 text-black ${funnel.className} min-h-12 rounded-t-lg text-xl font-bold`}
+        className={`flex items-center justify-between bg-[#8CB369] pr-2 text-black ${funnel.className} h-12 rounded-t-lg text-xl font-bold`}
       >
         <p className="pl-4">Settings</p>
         <div>
@@ -284,9 +284,9 @@ export default function SettingsMenu() {
         <form
           onSubmit={form.handleSubmit(onSubmit)}
           id="settings-form"
-          className="flex-1"
+          className="flex-1 overflow-hidden"
         >
-          <ScrollAreaShadow className="h-[calc(76vh-36px)]">
+          <ScrollAreaShadow className="h-full">
             <div className={`space-y-3 p-3 text-black ${funnel.className}`}>
               <FormField
                 control={form.control}

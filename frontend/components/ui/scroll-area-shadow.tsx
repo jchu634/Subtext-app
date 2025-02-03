@@ -99,6 +99,7 @@ export function ScrollAreaShadow({
       viewportRef={scrollViewportRef}
       onScrollCapture={handleScroll}
       className={cn(
+        "h-full rounded-b-lg", // Added rounded-b-lg for bottom corners
         overflown &&
           shadowTop &&
           !shadowBottom &&
