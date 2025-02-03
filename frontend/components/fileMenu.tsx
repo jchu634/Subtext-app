@@ -147,7 +147,9 @@ export default function FilesMenu() {
   }
 
   return (
-    <div className={`flex h-fileHeight flex-col rounded-t-lg bg-[#D9D9D9]`}>
+    <div
+      className={`flex h-fileHeight flex-col rounded-lg bg-[#D9D9D9] dark:bg-[#1b1c1d]`}
+    >
       <div
         className={`flex items-center justify-between bg-[#F4A259] pr-2 text-black ${funnel.className} min-h-12 rounded-t-lg text-xl font-bold`}
         ref={parent}
@@ -204,13 +206,13 @@ export default function FilesMenu() {
       </div>
       {storeFiles.size != 0 && (
         <div
-          className="flex items-center space-x-2 rounded-sm bg-slate-300 py-2 pl-2.5"
+          className="flex items-center space-x-2 rounded-b-sm bg-slate-300 py-2 pl-2.5 dark:bg-[#2a2b2c]"
           ref={parent}
         >
           <Button
             variant="outline"
             size="narrow"
-            className={`${funnel.className} border-black text-black`}
+            className={`${funnel.className} border-black text-black dark:border-white dark:text-white`}
             onClick={
               selectedFiles.size == files.length
                 ? unSelectAllFiles
@@ -219,20 +221,12 @@ export default function FilesMenu() {
           >
             {selectedFiles.size == files.length ? (
               <div className="flex items-center space-x-2">
-                <SquareXIcon
-                  strokeWidth={2}
-                  size={24}
-                  className="text-black hover:text-accent-foreground"
-                />
+                <SquareXIcon strokeWidth={2} size={24} />
                 <span>Unselect all Files</span>
               </div>
             ) : (
               <div className="flex items-center space-x-2">
-                <SquareIcon
-                  strokeWidth={2}
-                  size={24}
-                  className="text-black hover:text-accent-foreground"
-                />
+                <SquareIcon strokeWidth={2} size={24} />
                 <span>Select All Files</span>
               </div>
             )}
@@ -241,17 +235,15 @@ export default function FilesMenu() {
             <Button
               variant="outline"
               size="narrow"
-              className="border-black p-2"
+              className="border-black p-2 text-black dark:border-white dark:text-white"
               onClick={removeSpecificFiles}
             >
               <TrashIcon
                 strokeWidth={2}
                 size={24}
-                className="text-black hover:text-accent-foreground"
+                className="hover:text-accent-foreground"
               />
-              <p className={`${funnel.className} text-black`}>
-                Remove Selected
-              </p>
+              <p className={`${funnel.className} `}>Remove Selected</p>
             </Button>
           )}
         </div>

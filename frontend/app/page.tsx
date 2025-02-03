@@ -34,7 +34,7 @@ declare global {
 export default function Home() {
   return (
     <div>
-      <main className="flex h-screen flex-row space-x-4 bg-slate-50 p-4 dark:bg-slate-950">
+      <main className="flex h-screen flex-row space-x-4 bg-slate-50 p-4 dark:bg-zinc-950">
         <ResizablePanelGroup
           direction="horizontal"
           className="h-screen w-full space-x-4"
@@ -51,7 +51,7 @@ export default function Home() {
                 <Button
                   type="submit"
                   form="settings-form"
-                  className={`${funnel.className} h-16 ${colourScheme.neutralButton} align-middle text-3xl`}
+                  className={`${funnel.className} h-16 bg-[#1f4739] align-middle text-3xl text-white hover:text-black dark:bg-[#297a5f]`}
                 >
                   Start Job
                 </Button>

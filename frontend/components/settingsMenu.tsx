@@ -263,7 +263,9 @@ export default function SettingsMenu() {
   );
 
   return (
-    <div className={`flex h-[76vh] flex-col rounded-lg ${colourScheme.body}`}>
+    <div
+      className={`flex h-[76vh] flex-col rounded-lg bg-[#D9D9D9] dark:bg-[#1b1c1d]`}
+    >
       <div
         className={`flex items-center justify-between bg-[#8CB369] pr-2 text-black ${funnel.className} h-12 rounded-t-lg text-xl font-bold`}
       >
@@ -286,14 +288,16 @@ export default function SettingsMenu() {
           id="settings-form"
           className="flex-1 overflow-hidden"
         >
-          <ScrollAreaShadow className="h-full">
-            <div className={`space-y-3 p-3 text-black ${funnel.className}`}>
+          <ScrollAreaShadow className="h-full rounded-b-lg">
+            <div
+              className={`space-y-3 p-3 text-black dark:text-white ${funnel.className}`}
+            >
               <FormField
                 control={form.control}
                 name="model"
                 render={({ field }) => (
                   <FormItem className={`flex items-center space-x-2 space-y-0`}>
-                    <FormLabel className="min-w-28 text-lg font-bold">
+                    <FormLabel className="min-w-28 text-lg font-bold dark:font-medium">
                       Model:
                     </FormLabel>
                     <Select
@@ -308,7 +312,7 @@ export default function SettingsMenu() {
                       <FormControl>
                         <SelectTrigger
                           id="model"
-                          className="w-[180px] border-2 border-black hover:bg-slate-50"
+                          className="dark:border-1 w-[180px] border-2 border-black hover:bg-slate-50 dark:border-white dark:hover:bg-slate-500"
                         >
                           <SelectValue
                             placeholder={
@@ -337,7 +341,7 @@ export default function SettingsMenu() {
                 name="modelSize"
                 render={({ field }) => (
                   <FormItem className="flex items-center space-x-2 space-y-0">
-                    <FormLabel className="min-w-28 text-lg font-bold">
+                    <FormLabel className="min-w-28 text-lg font-bold dark:font-medium">
                       Model Size:
                     </FormLabel>
                     <Select
@@ -348,7 +352,7 @@ export default function SettingsMenu() {
                       <FormControl>
                         <SelectTrigger
                           id="modelSize"
-                          className="w-[180px] border-2 border-black hover:bg-slate-50"
+                          className="dark:border-1 w-[180px] border-2 border-black hover:bg-slate-50 dark:border-white dark:hover:bg-slate-500"
                         >
                           <SelectValue
                             placeholder={
@@ -377,7 +381,7 @@ export default function SettingsMenu() {
                 name="language"
                 render={({ field }) => (
                   <FormItem className="flex items-center space-x-2 space-y-0">
-                    <FormLabel className="text-lg font-bold">
+                    <FormLabel className="text-lg font-bold dark:font-medium">
                       Input Video Language:
                     </FormLabel>
 
@@ -389,7 +393,7 @@ export default function SettingsMenu() {
                           aria-expanded={open}
                           disabled={isLanguagesLoading}
                           className={cn(
-                            "w-[200px] justify-between border-2 border-black",
+                            "dark:border-1 w-[200px] justify-between border-2 border-black dark:border-white dark:hover:bg-slate-500",
                             !field.value && "text-muted-foreground",
                           )}
                         >
@@ -441,7 +445,7 @@ export default function SettingsMenu() {
                 name="embedSubtitles"
                 render={({ field }) => (
                   <FormItem className="flex items-center space-x-2 space-y-0">
-                    <FormLabel className="min-w-60 text-lg font-bold">
+                    <FormLabel className="min-w-60 text-lg font-bold dark:font-medium">
                       Embed Subtitles into Video
                     </FormLabel>
                     <FormControl>
@@ -461,7 +465,7 @@ export default function SettingsMenu() {
                 render={({ field }) => (
                   <FormItem className="flex items-center space-x-2 space-y-0">
                     <FormLabel
-                      className={`min-w-60 text-lg font-bold ${
+                      className={`min-w-60 text-lg font-bold dark:font-medium ${
                         !form.getValues("embedSubtitles") ? "text-gray-600" : ""
                       }`}
                     >
@@ -481,7 +485,10 @@ export default function SettingsMenu() {
                 )}
               />
               <div className="flex items-center space-x-2">
-                <Label htmlFor="subtitleFormat" className="text-lg font-bold">
+                <Label
+                  htmlFor="subtitleFormat"
+                  className="text-lg font-bold dark:font-medium"
+                >
                   Output Subtitle Format(s):
                 </Label>
                 <div id="subtitleFormat" className="space-x-1 space-y-1">
