@@ -47,7 +47,7 @@ export default function SettingsDialog() {
             <Cog strokeWidth={2} />
           </Button>
         </DialogTrigger>
-        <DialogContent className="flex h-[80vh] w-[80vw] max-w-screen-2xl flex-col bg-slate-100 bg-opacity-95 text-black dark:bg-black dark:bg-opacity-80 dark:text-white">
+        <DialogContent className="flex h-[80vh] w-[80vw] max-w-screen-2xl flex-col bg-slate-100 bg-opacity-95 text-black ring-4 ring-white/15 ring-offset-0 dark:bg-black dark:bg-opacity-80 dark:text-white">
           <DialogHeader>
             <DialogTitle className={`text-3xl ${funnel.className}`}>
               Settings
