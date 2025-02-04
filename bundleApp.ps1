@@ -1,12 +1,15 @@
 param(
     [Parameter()]
-    [switch]$SkipFrontend,
+    [switch]$SkipFrontendBuild,
 
     [Parameter()]
     [switch]$SkipPortable,
 
     [Parameter()]
     [switch]$SkipInstaller,
+
+    [Parameter()]
+    [switch]$SkipBackendBuild,
 
     [Parameter()]
     [switch]$WithCuda,
@@ -19,8 +22,9 @@ param(
 $applicationName = "Subtext"
 $rootPath = $PWD
 $backendPath = Join-Path $rootPath "backend"
+$backendBuilt = $false
 
-if (-not $SkipFrontend) {
+if (-not $SkipFrontendBuild) {
     Write-Host "Building Frontend" -ForegroundColor Cyan
     .\buildFrontend.ps1
 } else {
@@ -53,18 +57,21 @@ if (Test-Path -Path ".\key" -PathType Leaf) {
 # Package Backend + Frontend into Portable Executable
 if (-not $SkipPortable) { 
     Write-Host "Building App" -ForegroundColor Cyan
-    pyinstaller Subtext.spec --clean --noconfirm
+    if (-not $SkipBackendBuild){
+        pyinstaller Subtext.spec --clean --noconfirm
+        $backendBuilt = $true
+    }
     
     if ($LASTEXITCODE -eq 0) {
-        # Package Executable into Zip
+        # Package Executable into 7z
         Write-Host "Packaging executable" -ForegroundColor Cyan
         $7zVar = Join-Path ".\dist" $applicationName
-        7z -tzip a (Join-Path $7zVar ".zip") (Join-Path $7zVar "*")
+        7z a -t7z -m0=lzma2 (Join-Path $7zVar ".7z") (Join-Path $7zVar "*")
         
         # Move Zipped Executable to Root
         Write-Host "Moving zipped application" -ForegroundColor Cyan
-        $NewName = Join-Path $rootPath "$applicationName-Portable-Windows.zip"
-        Move-Item (Join-Path $7zVar ".zip") $NewName -Force
+        $NewName = Join-Path $rootPath "$applicationName-Portable-Windows.7z"
+        Move-Item (Join-Path $7zVar ".7z") $NewName -Force
     } else {
         Write-Host "PyInstaller failed, skipping packaging steps" -ForegroundColor Red
     }
@@ -73,13 +80,20 @@ if (-not $SkipPortable) {
 # Package Backend + Frontend into Installation Executable
 if (-not $SkipInstaller){    
     Write-Host "INSTALLER NOT READY" -ForegroundColor Red
-    # pyinstaller .\pywebview_installed.py --hide-console "hide-early" --add-data "library;library" --add-data "sql_app.db;." --noconfirm --clean --name $applicationName --contents-directory "." --icon "library\static\favicon.ico" --hidden-import=keras --hidden-import=PIL --hidden-import=glob --hidden-import=numpy --hidden-import=tensorflow --hidden-import=cv2 --hidden-import=torchvision --hidden-import=torch 
-    # iscc .\package.iss
+    if (($backendBuilt) -or ($SkipBackendBuild)){
+        Write-Host "Skipping Build step as already built" -ForegroundColor Green
+    } else {
+        Write-Host "Building App" -ForegroundColor Cyan
+        pyinstaller Subtext.spec --clean --noconfirm
+    }
+    Write-Host "Packaging App" -ForegroundColor Cyan
+    iscc .\package.iss
 
-    # # # Move Installation Executable to Root
-    # $OldName = ".\$applicationName-Setup.exe"
-    # $NewName = Join-Path $rootPath "$applicationName-Setup.exe"
-    # Move-Item $OldName $NewName -Force
+    # # Move Installation Executable to Root
+    Write-Host "Moving packaged setup" -ForegroundColor Cyan
+    $OldName = ".\$applicationName-Setup.exe"
+    $NewName = Join-Path $rootPath "$applicationName-Setup.exe"
+    Move-Item $OldName $NewName -Force
 }
 
 # Disable Venv
