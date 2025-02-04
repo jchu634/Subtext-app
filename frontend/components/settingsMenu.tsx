@@ -1,5 +1,4 @@
 import { Check, ChevronsUpDown, Undo2Icon } from "lucide-react";
-import { colourScheme } from "@/lib/colourscheme";
 import { funnel } from "@/lib/fonts";
 import { cn } from "@/lib/utils";
 import { useState, useEffect } from "react";
