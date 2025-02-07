@@ -19,9 +19,15 @@ param(
     [switch]$WithCuda,
 
     [Parameter()]
-    [switch]$SkipDependencies
+    [switch]$SkipDependencies,
 
+    [Parameter()]
+    [switch]$Force
 )
+
+# Set error handling based on Force parameter
+$ErrorActionPreference = if ($Force) { "Continue" } else { "Stop" }
+Set-StrictMode -Version Latest
 
 try {
     $applicationName = "Subtext"
@@ -32,7 +38,7 @@ try {
     if (-not $SkipFrontendBuild) {
         Write-Host "Building Frontend" -ForegroundColor Cyan
         & "$PSScriptRoot\buildFrontend.ps1"
-        if ($LASTEXITCODE -ne 0) { throw "Frontend build failed" }
+        if ((-not $Force) -and ($LASTEXITCODE -ne 0)) { throw "Frontend build failed" }
     } else {
         Write-Host "Skipped Frontend Build" -ForegroundColor Green
     }
@@ -40,15 +46,15 @@ try {
     Set-Location $backendPath
     if (-not $SkipDependencies) {
         python -m venv venv
-        if ($LASTEXITCODE -ne 0) { throw "Failed to create virtual environment" }
+        if ((-not $Force) -and ($LASTEXITCODE -ne 0)) { throw "Failed to create virtual environment" }
         
         .\venv\Scripts\activate
         if ($WithCuda){
             pip install -r cuda-requirements.txt
-            if ($LASTEXITCODE -ne 0) { throw "Failed to install CUDA requirements" }
+            if ((-not $Force) -and ($LASTEXITCODE -ne 0)) { throw "Failed to install CUDA requirements" }
         } else {
             pip install -r requirements.txt
-            if ($LASTEXITCODE -ne 0) { throw "Failed to install requirements" }
+            if ((-not $Force) -and ($LASTEXITCODE -ne 0)) { throw "Failed to install requirements" }
         }
     } else {
         .\venv\Scripts\activate
@@ -67,7 +73,7 @@ try {
         Write-Host "Building App" -ForegroundColor Cyan
         if (-not $SkipBackendBuild){
             pyinstaller Subtext.spec --clean --noconfirm
-            if ($LASTEXITCODE -ne 0) { throw "PyInstaller failed" }
+            if ((-not $Force) -and ($LASTEXITCODE -ne 0)) { throw "PyInstaller failed" }
             $backendBuilt = $true
         }
         
@@ -75,7 +81,7 @@ try {
         Write-Host "Packaging executable" -ForegroundColor Cyan
         $7zVar = Join-Path ".\dist" $applicationName
         7z a -t7z -m0=lzma2 (Join-Path $7zVar ".7z") (Join-Path $7zVar "*")
-        if ($LASTEXITCODE -ne 0) { throw "7z packaging failed" }
+        if ((-not $Force) -and ($LASTEXITCODE -ne 0)) { throw "7z packaging failed" }
         
         # Move Zipped Executable to Root
         Write-Host "Moving zipped application" -ForegroundColor Cyan
@@ -90,12 +96,12 @@ try {
         } else {
             Write-Host "Building App" -ForegroundColor Cyan
             pyinstaller Subtext.spec --clean --noconfirm
-            if ($LASTEXITCODE -ne 0) { throw "PyInstaller failed" }
+            if ((-not $Force) -and ($LASTEXITCODE -ne 0)) { throw "PyInstaller failed" }
         }
         
         Write-Host "Packaging App" -ForegroundColor Cyan
         iscc .\package.iss
-        if ($LASTEXITCODE -ne 0) { throw "Inno Setup packaging failed" }
+        if ((-not $Force) -and ($LASTEXITCODE -ne 0)) { throw "Inno Setup packaging failed" }
 
         Write-Host "Moving packaged setup" -ForegroundColor Cyan
         $OldName = ".\$applicationName-Setup.exe"
@@ -110,7 +116,11 @@ try {
 
 } catch {
     Write-Host "Error: $_" -ForegroundColor Red
-    exit 1
+    if (-not $Force) {
+        exit 1
+    } else {
+        Write-Host "Continuing despite error (Force mode)" -ForegroundColor Yellow
+    }
 } finally {
     # Always try to deactivate venv and restore location
     if (Get-Command "deactivate" -errorAction SilentlyContinue) {
