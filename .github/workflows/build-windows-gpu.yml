@@ -1,0 +1,58 @@
+name: Build for Windows With CUDA
+
+on:
+  push:
+    branches: ["main"]
+  workflow_dispatch:
+    inputs:
+      build_type:
+        description: 'Build type'
+        required: true
+        default: 'release'
+        type: choice
+        options:
+          - release
+          - debug
+      skip_tests:
+        description: 'Skip tests'
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+  actions: write
+
+jobs:
+  build_and_package:
+    runs-on: [self-hosted, Windows, gpu]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Make Keyfile
+        run: |
+          echo "${{ secrets.KEY }}" > ./backend/key
+      - name: Build Frontend
+        shell: pwsh
+        run: ./bundleApp.ps1 -WithCuda
+      - name: Prepare Directory Name
+        id: prepare_dir
+        shell: pwsh
+        run: |
+          $date = Get-Date -Format "yyyyMMdd"
+          $sha = git rev-parse --short HEAD
+          $dirName = "${date}_${sha}_gpu"
+          echo "DIR_NAME=$dirName" >> $env:GITHUB_ENV
+      - name: Connect and Copy to SMB
+        shell: pwsh
+        run: |
+          net use Z: \\192.168.2.1\Builds /user:"${{ secrets.SMB_USER }}" "${{ secrets.SMB_PASSWORD }}" /persistent:no
+          $targetDir = "Z:\Subtext\${{ env.DIR_NAME }}"
+          New-Item -Path $targetDir -ItemType Directory -Force
+          Move-Item -Path "*.7z" -Destination $targetDir -ErrorAction SilentlyContinue
+          Move-Item -Path "*.exe" -Destination $targetDir -ErrorAction SilentlyContinue
+          net use Z: /delete
+      - name: Cleanup Working Directory
+        if: always()
+        run: |
+          git clean -fdx
+
