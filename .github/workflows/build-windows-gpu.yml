@@ -60,7 +60,7 @@ jobs:
         if: always()
         shell: pwsh
         run: |
-          if ("${{ inputs.wipe_cache }}" -eq "false") {
+          if ("${{ inputs.wipe_cache }}" -eq "true") {
             Remove-Item -Path "backend/home/frontend" -Recurse -Force -ErrorAction SilentlyContinue
             git clean -fdx -e "frontend/.next" -e "frontend/node_modules" -e "backend/venv"
           } else {

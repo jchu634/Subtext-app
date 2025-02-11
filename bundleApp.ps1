@@ -45,10 +45,16 @@ try {
 
     Set-Location $backendPath
     if (-not $SkipDependencies) {
-        & python -m venv venv
-        if ((-not $Force) -and ($LASTEXITCODE -ne 0)) { throw "Failed to create virtual environment" }
+        if (-not (Test-Path -Path "venv" -PathType Container)) {
+            Write-Host "Creating new virtual environment..." -ForegroundColor Cyan
+            & python -m venv venv
+            if ((-not $Force) -and ($LASTEXITCODE -ne 0)) { throw "Failed to create virtual environment" }
+        } else {
+            Write-Host "Using existing virtual environment" -ForegroundColor Green
+        }
         
         & ./venv/Scripts/Activate.ps1
+        Write-Host "Installing/Updating Requirements..." -ForegroundColor Cyan
         if ($WithCuda){
             & python -m pip install -r cuda-requirements.txt
             if ((-not $Force) -and ($LASTEXITCODE -ne 0)) { throw "Failed to install CUDA requirements" }
@@ -57,6 +63,10 @@ try {
             if ((-not $Force) -and ($LASTEXITCODE -ne 0)) { throw "Failed to install requirements" }
         }
     } else {
+        if (-not (Test-Path -Path "venv" -PathType Container)) {
+            throw "No virtual environment found and SkipDependencies is set"
+        }
+        Write-Host "Activating existing virtual environment" -ForegroundColor Green
         & ./venv/Scripts/Activate.ps1
     }
 

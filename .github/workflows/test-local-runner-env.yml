@@ -1,0 +1,62 @@
+name: Test Build Environment
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: write
+
+jobs:
+  test_environment:
+    runs-on: [self-hosted, Windows, gpu]
+    steps:
+      - name: Check Git
+        shell: pwsh
+        run: |
+          Write-Host "Testing git availability..."
+          git --version
+          
+      - name: Check Network Commands
+        shell: pwsh
+        run: |
+          Write-Host "Testing network commands..."
+          net help
+          
+      - name: Check PowerShell Version
+        shell: pwsh
+        run: |
+          Write-Host "PowerShell Version:"
+          $PSVersionTable
+          
+      - name: Print Environment Variables
+        shell: pwsh
+        run: |
+          Write-Host "Environment Variables:"
+          Get-ChildItem env:
+          
+      - name: Test File System Access
+        shell: pwsh
+        run: |
+          Write-Host "Testing file system access..."
+          Test-Path "\\192.168.2.1\Builds"
+          
+      - name: Test Required Tools
+        shell: pwsh
+        run: |
+          $tools = @(
+            "python --version",
+            "node --version",
+            "npm --version",
+            "git --version"
+          )
+          
+          foreach ($cmd in $tools) {
+            Write-Host "Testing: $cmd"
+            try {
+              Invoke-Expression $cmd
+              Write-Host "✅ Available"
+            } catch {
+              Write-Host "❌ Failed: $cmd"
+            }
+          }
