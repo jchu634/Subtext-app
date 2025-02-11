@@ -18,6 +18,11 @@ on:
         required: false
         type: boolean
         default: false
+      wipe_cache:
+        description: 'Clean Cache after run'
+        required: false
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -33,7 +38,7 @@ jobs:
           echo "${{ secrets.KEY }}" > ./backend/key
       - name: Build Frontend
         shell: pwsh
-        run: .\bundleApp.ps1 -WithCuda:$true
+        run: .\bundleApp.ps1 -WithCuda
       - name: Prepare Directory Name
         id: prepare_dir
         shell: pwsh
@@ -53,6 +58,12 @@ jobs:
           net use Z: /delete
       - name: Cleanup Working Directory
         if: always()
+        shell: pwsh
         run: |
-          git clean -fdx
+          if ("${{ inputs.wipe_cache }}" -eq "false") {
+            Remove-Item -Path "backend/home/frontend" -Recurse -Force -ErrorAction SilentlyContinue
+            git clean -fdx -e "frontend/.next" -e "frontend/node_modules" -e "backend/venv"
+          } else {
+            git clean -fdx
+          }
 
