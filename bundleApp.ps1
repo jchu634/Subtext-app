@@ -63,9 +63,18 @@ try {
             Write-Host "Using existing virtual environment" -ForegroundColor Green
         }
         
+        $venvPath = Resolve-Path "venv"
+        Write-Host "Virtual environment location: $venvPath" -ForegroundColor Yellow
+        
         & ./venv/Scripts/Activate.ps1
+        if ($env:VIRTUAL_ENV) {
+            Write-Host "Virtual environment activated successfully" -ForegroundColor Green
+        } else {
+            throw "Failed to activate venv"
+        }
+        
         Write-Host "Installing/Updating Requirements..." -ForegroundColor Cyan
-        if ($WithCuda){
+        if ($WithCuda) {
             & $pythonExe -m pip install -r cuda-requirements.txt
             if ((-not $Force) -and ($LASTEXITCODE -ne 0)) { throw "Failed to install CUDA requirements" }
         } else {
