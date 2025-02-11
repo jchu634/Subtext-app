@@ -86,7 +86,7 @@ try {
         # Move Zipped Executable to Root
         Write-Host "Moving zipped application" -ForegroundColor Cyan
         $NewName = Join-Path $rootPath "$applicationName-Portable-Windows.7z"
-        Move-Item (Join-Path $7zPath ".7z") $NewName -Force
+        Move-Item "$7zPath.7z" $NewName -Force
     }
 
     if (-not $SkipInstaller){    
