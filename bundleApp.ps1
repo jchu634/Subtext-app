@@ -40,7 +40,7 @@ try {
 
     # Define Python path
     $pythonExe = if ($HardCodedPythonPath) {
-        "${env:LOCALAPPDATA}\Programs\Python\Python312\python.exe"
+        "C:\Users\build-gpu\AppData\Local\Programs\Python\Python312\python.exe"
     } else {
         "python"
     }
