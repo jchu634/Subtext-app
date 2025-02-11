@@ -37,35 +37,13 @@ jobs:
       - uses: actions/checkout@v4
         with:
           clean: false
-      
-      - name: Configure Python Path
-        shell: pwsh
-        run: |          
-          # Check if Python is already in PATH
-          $pythonInPath = $false
-          try {
-            python --version
-            $pythonInPath = $true
-          } catch {
-            Write-Host "Python not found in PATH"
-          }
-          
-          # Add Python to PATH if needed
-          if (-not $pythonInPath) {
-            Write-Host "Adding Python to PATH: $pythonPath"
-            echo "${env:LOCALAPPDATA}\Programs\Python\Python312" >> $env:GITHUB_PATH
-            echo "${env:LOCALAPPDATA}\Programs\Python\Python312\Scripts" >> $env:GITHUB_PATH
-            python --version
-          } elseif (-not $pythonPath) {
-            throw ("Python installation not found")
-          }
 
       - name: Make Keyfile
         run: |
           echo "${{ secrets.KEY }}" > ./backend/key
       - name: Build App
         shell: pwsh
-        run: .\bundleApp.ps1 -WithCuda
+        run: .\bundleApp.ps1 -WithCuda -HardCodedPythonPath
       - name: Prepare Directory Name
         id: prepare_dir
         shell: pwsh

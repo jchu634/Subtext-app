@@ -18,7 +18,10 @@ param(
     [switch]$SkipDependencies,
 
     [Parameter()]
-    [switch]$Force
+    [switch]$Force,
+
+    [Parameter()]
+    [switch]$HardCodedPythonPath
 )
 
 # Set strict error handling
@@ -35,6 +38,13 @@ try {
     $backendPath = Join-Path $rootPath "backend"
     $backendBuilt = $false
 
+    # Define Python path
+    $pythonExe = if ($HardCodedPythonPath) {
+        "${env:LOCALAPPDATA}\Programs\Python\Python312\python.exe"
+    } else {
+        "python"
+    }
+
     if (-not $SkipFrontendBuild) {
         Write-Host "Building Frontend" -ForegroundColor Cyan
         & "$PSScriptRoot/buildFrontend.ps1"
@@ -47,7 +57,7 @@ try {
     if (-not $SkipDependencies) {
         if (-not (Test-Path -Path "venv" -PathType Container)) {
             Write-Host "Creating new virtual environment..." -ForegroundColor Cyan
-            & python -m venv venv
+            & $pythonExe -m venv venv
             if ((-not $Force) -and ($LASTEXITCODE -ne 0)) { throw "Failed to create virtual environment" }
         } else {
             Write-Host "Using existing virtual environment" -ForegroundColor Green
@@ -56,10 +66,10 @@ try {
         & ./venv/Scripts/Activate.ps1
         Write-Host "Installing/Updating Requirements..." -ForegroundColor Cyan
         if ($WithCuda){
-            & python -m pip install -r cuda-requirements.txt
+            & $pythonExe -m pip install -r cuda-requirements.txt
             if ((-not $Force) -and ($LASTEXITCODE -ne 0)) { throw "Failed to install CUDA requirements" }
         } else {
-            & python -m pip install -r requirements.txt
+            & $pythonExe -m pip install -r requirements.txt
             if ((-not $Force) -and ($LASTEXITCODE -ne 0)) { throw "Failed to install requirements" }
         }
     } else {
@@ -73,7 +83,7 @@ try {
     if (Test-Path -Path "./key" -PathType Leaf) {
         Write-Host "Key file found" -ForegroundColor Green
         Write-Host "Generating Model Signatures" -ForegroundColor Cyan
-        & python ./build_tools/build_generate_signatures.py key
+        & $pythonExe ./build_tools/build_generate_signatures.py key
         if ($LASTEXITCODE -ne 0) { throw "Failed to generate model signatures" }
     } else {
         throw "Key file not found"
