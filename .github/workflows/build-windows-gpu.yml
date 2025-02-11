@@ -44,6 +44,41 @@ jobs:
           # If source files changed but packages didn't, rebuild from a prior cache.
           restore-keys: |
             ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-
+      
+      - name: Configure Python Path
+        shell: pwsh
+        run: |
+          # Try to find Python installation
+          $pythonPath = $null
+          $possiblePaths = @(
+            "${env:LOCALAPPDATA}\Programs\Python\Python312"
+          )
+          
+          foreach ($path in $possiblePaths) {
+            if (Test-Path "$path\python.exe") {
+              $pythonPath = $path
+              break
+            }
+          }
+          
+          # Check if Python is already in PATH
+          $pythonInPath = $false
+          try {
+            python --version
+            $pythonInPath = $true
+          } catch {
+            Write-Host "Python not found in PATH"
+          }
+          
+          # Add Python to PATH if needed
+          if (-not $pythonInPath -and $pythonPath) {
+            Write-Host "Adding Python to PATH: $pythonPath"
+            echo "$pythonPath" >> $env:GITHUB_PATH
+            echo "$pythonPath\Scripts" >> $env:GITHUB_PATH
+          } elseif (-not $pythonPath) {
+            throw "Python installation not found!"
+          }
+
       - name: Make Keyfile
         run: |
           echo "${{ secrets.KEY }}" > ./backend/key
@@ -71,7 +106,7 @@ jobs:
         if: always()
         shell: pwsh
         run: |
-          if ($env:WIPE_CACHE -eq 'false') {
+          if ("${{ inputs.wipe_cache }}" -eq "true") {
             Remove-Item -Path "backend/home/frontend" -Recurse -Force -ErrorAction SilentlyContinue
             git clean -fdx -e "frontend/.next" -e "frontend/node_modules" -e "backend/venv"
           } else {
