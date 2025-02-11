@@ -54,7 +54,7 @@ jobs:
           if (-not $pythonInPath) {
             Write-Host "Adding Python to PATH: $pythonPath"
             echo "${env:LOCALAPPDATA}\Programs\Python\Python312" >> $env:GITHUB_PATH
-            echo "$"${env:LOCALAPPDATA}\Programs\Python\Python312\Scripts" >> $env:GITHUB_PATH
+            echo "${env:LOCALAPPDATA}\Programs\Python\Python312\Scripts" >> $env:GITHUB_PATH
           } elseif (-not $pythonPath) {
             throw ("Python installation not found")
           }
