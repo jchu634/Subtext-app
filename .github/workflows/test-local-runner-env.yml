@@ -29,12 +29,6 @@ jobs:
           Write-Host "Environment Variables:"
           Get-ChildItem env:
           
-      - name: Test File System Access
-        shell: pwsh
-        run: |
-          Write-Host "Testing file system access..."
-          Test-Path "\\192.168.2.1\Builds"
-          
       - name: Test Required Tools
         shell: pwsh
         run: |
