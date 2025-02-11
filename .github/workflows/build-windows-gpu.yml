@@ -49,8 +49,6 @@ jobs:
           } catch {
             Write-Host "Python not found in PATH"
           }
-
-          echo "${env:LOCALAPPDATA}"
           
           # Add Python to PATH if needed
           if (-not $pythonInPath) {
@@ -58,7 +56,7 @@ jobs:
             echo "${env:LOCALAPPDATA}\Programs\Python\Python312" >> $env:GITHUB_PATH
             echo "$"${env:LOCALAPPDATA}\Programs\Python\Python312\Scripts" >> $env:GITHUB_PATH
           } elseif (-not $pythonPath) {
-            throw "Python installation not found!"
+            throw "Python installation not found"
           }
 
       - name: Make Keyfile
