@@ -40,20 +40,7 @@ jobs:
       
       - name: Configure Python Path
         shell: pwsh
-        run: |
-          # Try to find Python installation
-          $pythonPath = $null
-          $possiblePaths = @(
-            "${env:LOCALAPPDATA}\Programs\Python\Python312"
-          )
-          
-          foreach ($path in $possiblePaths) {
-            if (Test-Path "$path\python.exe") {
-              $pythonPath = $path
-              break
-            }
-          }
-          
+        run: |          
           # Check if Python is already in PATH
           $pythonInPath = $false
           try {
@@ -62,12 +49,14 @@ jobs:
           } catch {
             Write-Host "Python not found in PATH"
           }
+
+          echo "${env:LOCALAPPDATA}"
           
           # Add Python to PATH if needed
-          if (-not $pythonInPath -and $pythonPath) {
+          if (-not $pythonInPath) {
             Write-Host "Adding Python to PATH: $pythonPath"
-            echo "$pythonPath" >> $env:GITHUB_PATH
-            echo "$pythonPath\Scripts" >> $env:GITHUB_PATH
+            echo "${env:LOCALAPPDATA}\Programs\Python\Python312" >> $env:GITHUB_PATH
+            echo "$"${env:LOCALAPPDATA}\Programs\Python\Python312\Scripts" >> $env:GITHUB_PATH
           } elseif (-not $pythonPath) {
             throw "Python installation not found!"
           }
