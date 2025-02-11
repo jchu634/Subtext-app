@@ -75,10 +75,10 @@ try {
         
         Write-Host "Installing/Updating Requirements..." -ForegroundColor Cyan
         if ($WithCuda) {
-            & $pythonExe -m pip install -r cuda-requirements.txt
+            & python -m pip install -r cuda-requirements.txt
             if ((-not $Force) -and ($LASTEXITCODE -ne 0)) { throw "Failed to install CUDA requirements" }
         } else {
-            & $pythonExe -m pip install -r requirements.txt
+            & python -m pip install -r requirements.txt
             if ((-not $Force) -and ($LASTEXITCODE -ne 0)) { throw "Failed to install requirements" }
         }
     } else {
@@ -92,7 +92,7 @@ try {
     if (Test-Path -Path "./key" -PathType Leaf) {
         Write-Host "Key file found" -ForegroundColor Green
         Write-Host "Generating Model Signatures" -ForegroundColor Cyan
-        & $pythonExe ./build_tools/build_generate_signatures.py key
+        & python ./build_tools/build_generate_signatures.py key
         if ($LASTEXITCODE -ne 0) { throw "Failed to generate model signatures" }
     } else {
         throw "Key file not found"
