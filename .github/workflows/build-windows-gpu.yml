@@ -62,7 +62,7 @@ jobs:
       - name: Make Keyfile
         run: |
           echo "${{ secrets.KEY }}" > ./backend/key
-      - name: Build Frontend
+      - name: Build App
         shell: pwsh
         run: .\bundleApp.ps1 -WithCuda
       - name: Prepare Directory Name
