@@ -2,7 +2,7 @@ name: Build for Windows With CUDA
 
 on:
   push:
-    branches: ["main"]
+    branches: ["main"] 
   workflow_dispatch:
     inputs:
       build_type:
@@ -31,8 +31,19 @@ permissions:
 jobs:
   build_and_package:
     runs-on: [self-hosted, Windows, gpu]
+    env:
+      WIPE_CACHE: ${{ github.event_name == 'push' || inputs.wipe_cache }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          path: |
+            ~/.npm
+            ${{ github.workspace }}/.next/cache
+          # Generate a new cache whenever packages or source files change.
+          key: ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('**/*.js', '**/*.jsx', '**/*.ts', '**/*.tsx') }}
+          # If source files changed but packages didn't, rebuild from a prior cache.
+          restore-keys: |
+            ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-
       - name: Make Keyfile
         run: |
           echo "${{ secrets.KEY }}" > ./backend/key
@@ -60,7 +71,7 @@ jobs:
         if: always()
         shell: pwsh
         run: |
-          if ("${{ inputs.wipe_cache }}" -eq "true") {
+          if ($env:WIPE_CACHE -eq 'false') {
             Remove-Item -Path "backend/home/frontend" -Recurse -Force -ErrorAction SilentlyContinue
             git clean -fdx -e "frontend/.next" -e "frontend/node_modules" -e "backend/venv"
           } else {

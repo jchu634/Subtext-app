@@ -17,12 +17,6 @@ jobs:
           Write-Host "Testing git availability..."
           git --version
           
-      - name: Check Network Commands
-        shell: pwsh
-        run: |
-          Write-Host "Testing network commands..."
-          net help
-          
       - name: Check PowerShell Version
         shell: pwsh
         run: |
