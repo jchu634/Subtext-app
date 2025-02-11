@@ -15,23 +15,32 @@ jobs:
         shell: pwsh
         run: |
           Write-Host "Testing git availability..."
-          git --version
+          git --version | Out-String -Width 4096
           
       - name: Check PowerShell Version
         shell: pwsh
         run: |
           Write-Host "PowerShell Version:"
-          $PSVersionTable
+          $PSVersionTable | Format-Table -AutoSize -Wrap | Out-String -Width 4096
           
       - name: Print Environment Variables
         shell: pwsh
         run: |
           Write-Host "Environment Variables:"
-          Get-ChildItem env:
+          Get-ChildItem env: | Sort-Object Name | Format-Table -AutoSize -Wrap @{
+            Label = "Name"
+            Expression = {$_.Name}
+            Width = 40
+          }, @{
+            Label = "Value"
+            Expression = {$_.Value}
+            Width = 100
+          } | Out-String -Width 4096
           
       - name: Test Required Tools
         shell: pwsh
         run: |
+          $results = @()
           $tools = @(
             "python --version",
             "node --version",
@@ -40,11 +49,21 @@ jobs:
           )
           
           foreach ($cmd in $tools) {
-            Write-Host "Testing: $cmd"
+            Write-Host "Testing: $cmd" -NoNewline
             try {
-              Invoke-Expression $cmd
-              Write-Host "✅ Available"
+              $output = (Invoke-Expression $cmd) 2>&1 | Out-String
+              $results += [PSCustomObject]@{
+                Tool = $cmd
+                Status = "✅ Available"
+                Version = $output.Trim()
+              }
             } catch {
-              Write-Host "❌ Failed: $cmd"
+              $results += [PSCustomObject]@{
+                Tool = $cmd
+                Status = "❌ Failed"
+                Version = $_.Exception.Message
+              }
             }
           }
+          
+          $results | Format-Table -AutoSize -Wrap | Out-String -Width 4096
