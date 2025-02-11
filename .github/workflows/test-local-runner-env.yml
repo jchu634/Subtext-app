@@ -35,7 +35,7 @@ jobs:
             Label = "Value"
             Expression = {$_.Value}
             Width = 100
-          } | Out-String -Width 4096
+          } | Out-String -Width 8192
           
       - name: Test Required Tools
         shell: pwsh
