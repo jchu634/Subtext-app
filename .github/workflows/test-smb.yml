@@ -15,5 +15,6 @@ jobs:
         shell: pwsh
         run: |
           net use Z: \\192.168.2.1\Builds /user:"${{ secrets.SMB_USER }}" "${{ secrets.SMB_PASSWORD }}" /persistent:no
+          net HELPMSG 2250
           net use Z: /delete
 
