@@ -1,0 +1,19 @@
+name: Test SMB
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: write
+
+jobs:
+  test_smb:
+    runs-on: [self-hosted, Windows, gpu]
+    steps:
+      - name: Connect and Copy to SMB
+        shell: pwsh
+        run: |
+          net use Z: \\${{ secrets.server_ip }}\Builds /user:"${{ secrets.SMB_USER }}" "${{ secrets.SMB_PASSWORD }}" /persistent:no
+          net use Z: /delete
+
