@@ -24,7 +24,10 @@ param(
     [switch]$HardCodedPythonPath,
 
     [Parameter()]
-    [switch]$HardCoded7ZipPath
+    [switch]$HardCoded7ZipPath,
+
+    [Parameter()]
+    [switch]$HardCodedInnoPath
 )
 
 # Set strict error handling
@@ -53,6 +56,13 @@ try {
         "${env:ProgramFiles}\7-Zip\7z.exe"
     } else {
         "7z"
+    }
+
+    # Define Inno Setup path
+    $innoExe = if ($HardCodedInnoPath) {
+        "${env:ProgramFiles(x86)}\Inno Setup 6\iscc.exe"
+    } else {
+        "iscc"
     }
 
     if (-not $SkipFrontendBuild) {
@@ -129,7 +139,6 @@ try {
     }
 
     if (-not $SkipInstaller){    
-        Write-Host "INSTALLER NOT READY" -ForegroundColor Red
         if (($backendBuilt) -or ($SkipBackendBuild)){
             Write-Host "Skipping Build step as already built" -ForegroundColor Green
         } else {
@@ -139,7 +148,7 @@ try {
         }
         
         Write-Host "Packaging App" -ForegroundColor Cyan
-        & iscc ./package.iss
+        & $innoExe ./package.iss
         if ((-not $Force) -and ($LASTEXITCODE -ne 0)) { throw "Inno Setup packaging failed" }
 
         Write-Host "Moving packaged setup" -ForegroundColor Cyan
