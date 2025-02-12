@@ -21,7 +21,10 @@ param(
     [switch]$Force,
 
     [Parameter()]
-    [switch]$HardCodedPythonPath
+    [switch]$HardCodedPythonPath,
+
+    [Parameter()]
+    [switch]$HardCoded7ZipPath
 )
 
 # Set strict error handling
@@ -43,6 +46,13 @@ try {
         "C:\Users\build-gpu\AppData\Local\Programs\Python\Python312\python.exe"
     } else {
         "python"
+    }
+
+    # Define 7-Zip path
+    $7zipExe = if ($HardCoded7ZipPath) {
+        "${env:ProgramFiles}\7-Zip\7z.exe"
+    } else {
+        "7z"
     }
 
     if (-not $SkipFrontendBuild) {
@@ -109,7 +119,7 @@ try {
         # Package Executable into 7z
         Write-Host "Packaging executable" -ForegroundColor Cyan
         $7zPath = Join-Path "./dist" $applicationName
-        & 7z a -t7z -m0=lzma2 "$7zPath.7z" "$7zPath/*"
+        & $7zipExe a -t7z -m0=lzma2 "$7zPath.7z" "$7zPath/*"
         if ((-not $Force) -and ($LASTEXITCODE -ne 0)) { throw "7z packaging failed" }
         
         # Move Zipped Executable to Root

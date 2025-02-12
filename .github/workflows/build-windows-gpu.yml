@@ -43,7 +43,7 @@ jobs:
           echo "${{ secrets.KEY }}" > ./backend/key
       - name: Build App
         shell: pwsh
-        run: .\bundleApp.ps1 -WithCuda -HardCodedPythonPath
+        run: .\bundleApp.ps1 -WithCuda -HardCodedPythonPath -HardCoded7ZipPath
       - name: Prepare Directory Name
         id: prepare_dir
         shell: pwsh
