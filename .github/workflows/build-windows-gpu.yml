@@ -50,7 +50,7 @@ jobs:
         run: |
           $date = Get-Date -Format "yyyyMMdd"
           $sha = git rev-parse --short HEAD
-          $dirName = "${date}_${sha}_gpu"
+          $dirName = "${date}-${sha}-Windows_GPU"
           echo "DIR_NAME=$dirName" >> $env:GITHUB_ENV
       - name: Copy to Local Builds Directory
         shell: pwsh
