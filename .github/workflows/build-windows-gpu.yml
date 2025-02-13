@@ -52,15 +52,13 @@ jobs:
           $sha = git rev-parse --short HEAD
           $dirName = "${date}_${sha}_gpu"
           echo "DIR_NAME=$dirName" >> $env:GITHUB_ENV
-      - name: Connect and Copy to SMB
+      - name: Copy to Local Builds Directory
         shell: pwsh
         run: |
-          net use Z: \\192.168.2.1\Builds /user:"${{ secrets.SMB_USER }}" "${{ secrets.SMB_PASSWORD }}" /persistent:no
-          $targetDir = "Z:\Subtext\${{ env.DIR_NAME }}"
+          $targetDir = "C:\Builds\Subtext\${{ env.DIR_NAME }}"
           New-Item -Path $targetDir -ItemType Directory -Force
           Move-Item -Path "*.7z" -Destination $targetDir -ErrorAction SilentlyContinue
           Move-Item -Path "*.exe" -Destination $targetDir -ErrorAction SilentlyContinue
-          net use Z: /delete
       - name: Cleanup Working Directory
         if: always()
         shell: pwsh
