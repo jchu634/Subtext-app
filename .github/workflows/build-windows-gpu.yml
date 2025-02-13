@@ -48,7 +48,7 @@ jobs:
         id: prepare_dir
         shell: pwsh
         run: |
-          $date = Get-Date -Format "yyyyMMdd"
+          $date = Get-Date -Format "yyyy.MM.dd"
           $sha = git rev-parse --short HEAD
           $dirName = "${date}-${sha}-Windows_GPU"
           echo "DIR_NAME=$dirName" >> $env:GITHUB_ENV
