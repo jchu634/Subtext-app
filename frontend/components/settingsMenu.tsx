@@ -437,7 +437,7 @@ export default function SettingsMenu() {
                         checked={field.value}
                         onCheckedChange={field.onChange}
                         defaultChecked={true}
-                        className="hover:bg-slate-50"
+                        className="border-black hover:bg-slate-50 dark:border-white"
                       />
                     </FormControl>
                   </FormItem>
@@ -462,7 +462,7 @@ export default function SettingsMenu() {
                         checked={field.value}
                         onCheckedChange={field.onChange}
                         defaultChecked={true}
-                        className="enabled:hover:bg-slate-50"
+                        className="border-black enabled:hover:bg-slate-50 dark:border-white"
                       />
                     </FormControl>
                   </FormItem>
@@ -475,7 +475,10 @@ export default function SettingsMenu() {
                 >
                   Output Subtitle Format(s):
                 </Label>
-                <div id="subtitleFormat" className="space-y-1 space-x-1">
+                <div
+                  id="subtitleFormat"
+                  className="flex flex-wrap items-center gap-1"
+                >
                   {fields.map(
                     (field, index) =>
                       (!field.isExtended || useExtendedFormats) && (
