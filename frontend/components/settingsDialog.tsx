@@ -63,13 +63,13 @@ export default function SettingsDialog() {
               <Label htmlFor="defaultSaveLocation" className="min-w-40 text-lg">
                 Save Location:
               </Label>
-              <p className="rounded-md border border-black p-1 pr-2 pl-2 dark:bg-white dark:text-black">
+              <p className="rounded-md border border-black p-1 px-4 dark:bg-white dark:text-black">
                 {saveLocation.length == 0 ? "Default Location" : saveLocation}
               </p>
 
               <Button
                 id="defaultSaveLocation"
-                className="font-semibold hover:bg-zinc-600 dark:hover:bg-amber-200"
+                className="font-semibold hover:bg-zinc-600 dark:bg-orange-400 dark:hover:bg-amber-200"
                 onClick={returnPathDirectories}
               >
                 Change Location
@@ -100,21 +100,21 @@ export default function SettingsDialog() {
                 <ToggleGroupItem
                   value="dark"
                   onClick={() => setTheme("dark")}
-                  className="border-black text-black hover:bg-amber-200 hover:font-extrabold data-[state=on]:bg-orange-300 data-[state=on]:font-bold dark:bg-white dark:hover:bg-amber-200 dark:hover:text-black dark:data-[state=on]:bg-orange-300 dark:data-[state=on]:text-black"
+                  className="w-15 border-black text-black hover:bg-amber-200 hover:font-bold data-[state=on]:bg-orange-300 data-[state=on]:font-bold dark:bg-white dark:hover:bg-amber-200 dark:hover:text-black dark:data-[state=on]:bg-orange-300 dark:data-[state=on]:text-black"
                 >
                   Dark
                 </ToggleGroupItem>
                 <ToggleGroupItem
                   value="light"
                   onClick={() => setTheme("light")}
-                  className="border-black text-black hover:bg-amber-200 hover:font-extrabold data-[state=on]:bg-orange-300 data-[state=on]:font-bold dark:bg-white dark:hover:bg-amber-200 dark:hover:text-black dark:data-[state=on]:bg-orange-300 dark:data-[state=on]:text-black"
+                  className="w-15 border-black text-black hover:bg-amber-200 hover:font-bold data-[state=on]:bg-orange-300 data-[state=on]:font-bold dark:bg-white dark:hover:bg-amber-200 dark:hover:text-black dark:data-[state=on]:bg-orange-300 dark:data-[state=on]:text-black"
                 >
                   Light
                 </ToggleGroupItem>
                 <ToggleGroupItem
                   value="system"
                   onClick={() => setTheme("system")}
-                  className="border-black text-black hover:bg-amber-200 hover:font-extrabold data-[state=on]:bg-orange-300 data-[state=on]:font-bold dark:bg-white dark:hover:bg-amber-200 dark:hover:text-black dark:data-[state=on]:bg-orange-300 dark:data-[state=on]:text-black"
+                  className="w-20 border-black text-black hover:bg-amber-200 hover:font-bold data-[state=on]:bg-orange-300 data-[state=on]:font-bold dark:bg-white dark:hover:bg-amber-200 dark:hover:text-black dark:data-[state=on]:bg-orange-300 dark:data-[state=on]:text-black"
                 >
                   System
                 </ToggleGroupItem>
