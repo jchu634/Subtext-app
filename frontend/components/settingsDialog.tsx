@@ -47,9 +47,9 @@ export default function SettingsDialog() {
             <Cog strokeWidth={2} />
           </Button>
         </DialogTrigger>
-        <DialogContent className="flex h-[80vh] w-[80vw] max-w-screen-2xl flex-col bg-slate-100/95 text-black ring-4 ring-white/15 ring-offset-0 dark:bg-black/80 dark:text-white">
+        <DialogContent className="flex h-[80vh] max-w-(--breakpoint-2xl) min-w-[80vw] flex-col bg-slate-100/95 text-black ring-4 ring-white/15 ring-offset-0 dark:bg-black/80 dark:text-white">
           <DialogHeader>
-            <DialogTitle className={`text-3xl ${funnel.className}`}>
+            <DialogTitle className={`text-3xl ${funnel.className} font-bold`}>
               Settings
             </DialogTitle>
             <DialogDescription className="text-gray-800 dark:text-slate-400">
@@ -63,7 +63,7 @@ export default function SettingsDialog() {
               <Label htmlFor="defaultSaveLocation" className="min-w-40 text-lg">
                 Save Location:
               </Label>
-              <p className="rounded-md border border-black p-1 pl-2 pr-2 dark:bg-white dark:text-black">
+              <p className="rounded-md border border-black p-1 pr-2 pl-2 dark:bg-white dark:text-black">
                 {saveLocation.length == 0 ? "Default Location" : saveLocation}
               </p>
 

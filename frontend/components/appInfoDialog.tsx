@@ -51,7 +51,7 @@ function mapLicenses(
           </div>
         </CollapsibleTrigger>
         <CollapsibleContent ref={parent}>
-          <pre className="max-h-96 overflow-auto whitespace-pre-wrap text-sm">
+          <pre className="max-h-96 overflow-auto text-sm whitespace-pre-wrap">
             {license.licenseDetails}
           </pre>
         </CollapsibleContent>
@@ -74,9 +74,9 @@ export default function AppInfoDialog({}) {
         <DialogTrigger asChild>
           <span>About the app</span>
         </DialogTrigger>
-        <DialogContent className="flex h-[80vh] w-[80vw] max-w-screen-2xl flex-col bg-slate-100/95 text-black ring-4 ring-white/15 ring-offset-0 dark:bg-black/80 dark:text-white">
+        <DialogContent className="flex h-[80vh] max-w-(--breakpoint-2xl) min-w-[80svw] flex-col bg-slate-100/95 text-black ring-4 ring-white/15 ring-offset-0 dark:bg-black/80 dark:text-white">
           <DialogHeader className={`${funnel.className}`}>
-            <DialogTitle className={`text-3xl ${funnel.className}`}>
+            <DialogTitle className={`text-3xl font-bold ${funnel.className}`}>
               Subtext Desktop {appVersion}
             </DialogTitle>
             <DialogDescription className="text-md flex items-center gap-x-2 text-gray-800 dark:text-slate-400">

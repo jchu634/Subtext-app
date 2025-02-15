@@ -1,5 +1,4 @@
 "use client";
-import { funnel } from "@/lib/fonts";
 import SettingsMenu from "@/components/settingsMenu";
 import FilesMenu from "@/components/fileMenu";
 
@@ -50,7 +49,7 @@ export default function Home() {
                 <Button
                   type="submit"
                   form="settings-form"
-                  className={`${funnel.className} h-16 bg-[#1f4739] align-middle text-3xl text-white hover:text-black dark:bg-[#297a5f]`}
+                  className="h-16 bg-[#1f4739] align-middle text-3xl text-white hover:text-black dark:bg-[#297a5f]"
                 >
                   Start Job
                 </Button>
