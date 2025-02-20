@@ -1,7 +1,7 @@
 import { Check, ChevronsUpDown, Undo2Icon } from "lucide-react";
 import { funnel } from "@/lib/fonts";
 import { cn } from "@/lib/utils";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 // Component Stuff
 import { Button } from "@/components/ui/button";
@@ -47,9 +47,6 @@ import { store } from "@/lib/stores";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, useFieldArray } from "react-hook-form";
-
-// Query Stuff
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 // interface modelSize {
 //   modelName: string;
@@ -202,22 +199,7 @@ export default function SettingsMenu() {
     form.reset();
   };
 
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
-    const temp = store.getSnapshot().context;
-    const outputFormats = values.outputFormats
-      .filter((item) => item.active && (!item.isExtended || useExtendedFormats))
-      .map((item) => item.value);
-
-    const formData = {
-      filePaths: Array.from(temp.files).map((file) => file.fullPath),
-      model: values.model,
-      modelSize: values.modelSize,
-      language: values.language,
-      embedSubtitles: values.embedSubtitles,
-      overWriteFiles: values.overWriteFiles,
-      outputFormats: outputFormats,
-      saveLocation: temp.saveLocation,
-    };
+  const onSubmit = () => {
     toast({
       className: "bg-blue-800",
       title: "Success",
@@ -269,7 +251,7 @@ export default function SettingsMenu() {
                         field.onChange(value);
                         setSelectedModel(value);
                       }}
-                      defaultValue={models[0]}
+                      defaultValue={selectedModel}
                       value={field.value}
                     >
                       <FormControl>

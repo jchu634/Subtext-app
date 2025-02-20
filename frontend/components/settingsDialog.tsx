@@ -18,25 +18,11 @@ import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Switch } from "@/components/ui/switch";
 import { funnel } from "@/lib/fonts";
 
-async function returnPathDirectories() {
-  const folder = await window.pywebview.api.spawnFolderDialog();
-  if (typeof folder == null) {
-    // User cancelled operation
-    return;
-  }
-  store.send({ type: "changeSaveLocation", newLocation: folder });
-  return folder;
-}
-
 export default function SettingsDialog() {
   const { theme, setTheme } = useTheme();
   const useExtendedFormats = useSelector(
     store,
     (state) => state.context.extendedSubtitlesFormats,
-  );
-  const saveLocation = useSelector(
-    store,
-    (state) => state.context.saveLocation,
   );
 
   return (
@@ -64,7 +50,7 @@ export default function SettingsDialog() {
                 Save Location:
               </Label>
               <p className="rounded-md border border-black p-1 pl-2 pr-2 dark:bg-white dark:text-black">
-                {saveLocation.length == 0 ? "Default Location" : saveLocation}
+                Default Location
               </p>
 
               <Button
