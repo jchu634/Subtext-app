@@ -43,6 +43,11 @@ jobs:
         with:
           clean: false
 
+      - name: Fetch and overwrite key.pub
+        shell: pwsh
+        run: |
+          Invoke-WebRequest -Uri "https://raw.githubusercontent.com/jchu634/Subtext-app/refs/heads/main/backend/key.pub" -OutFile "backend/key.pub"
+
       - name: Make Keyfile
         run: |
           echo "${{ secrets.KEY }}" > ./backend/key
