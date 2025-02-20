@@ -34,6 +34,11 @@ jobs:
     env:
       WIPE_CACHE: ${{ github.event_name == 'push' || inputs.wipe_cache }}
     steps:
+      - name: Configure Git whitespace
+        run: |
+          git config --global core.whitespace ""
+          git config --global core.autocrlf input
+          
       - uses: actions/checkout@v4
         with:
           clean: false
