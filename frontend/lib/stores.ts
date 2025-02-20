@@ -10,7 +10,7 @@ export const store = createStore({
     extendedSubtitlesFormats: false,
     files: new Set<file>(),
     saveLocation: "default",
-    appVersion: "1.0.0 Beta",
+    appVersion: "Website Preview",
   },
   // Transitions
   on: {

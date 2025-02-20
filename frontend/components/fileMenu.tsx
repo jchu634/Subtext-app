@@ -71,17 +71,11 @@ export default function FilesMenu() {
       >
         <InvertedCheckbox
           id={`file-${index}`}
-          className="flex-none border-none bg-white data-[state=checked]:bg-white dark:data-[state=checked]:bg-primary"
+          className="dark:data-[state=checked]:bg-primary flex-none border-none bg-white data-[state=checked]:bg-white"
           checked={selectedFiles.has(file)}
-          onClick={(e) => handleCheckboxChange(file, index, e)}
         />
         <p className="truncate px-2">{file.fileName}</p>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="flex-none"
-          onClick={() => removeFile(file)}
-        >
+        <Button variant="ghost" size="icon" className="flex-none">
           <TrashIcon
             strokeWidth={3}
             size={24}
@@ -92,63 +86,9 @@ export default function FilesMenu() {
     );
   }
 
-  function removeFile(file: file) {
-    setFiles((prevFiles) => prevFiles.filter((filtFile) => filtFile !== file));
-    store.send({ type: "removeFile", removeFile: file });
-  }
-  function removeSpecificFiles() {
-    for (const removeFile of selectedFiles) {
-      setFiles((prevFiles) => prevFiles.filter((file) => file !== removeFile));
-    }
-    store.send({ type: "removeFiles", removeFiles: [...selectedFiles] });
-    setSelectedFiles(new Set());
-  }
-  function clearFiles() {
-    store.send({ type: "clearFiles" });
-    setFiles([]);
-    setSelectedFiles(new Set());
-  }
-  function selectAllFiles() {
-    setSelectedFiles(new Set(files));
-  }
-  function unSelectAllFiles() {
-    setSelectedFiles(new Set());
-  }
-
-  function handleCheckboxChange(
-    file: file,
-    index: number,
-    event: React.MouseEvent<HTMLButtonElement>,
-  ) {
-    const isShiftPressed = event.shiftKey;
-    const newSelected = new Set(selectedFiles);
-
-    if (isShiftPressed && lastCheckedIndex !== null) {
-      const start = Math.min(lastCheckedIndex, index);
-      const end = Math.max(lastCheckedIndex, index);
-
-      files.slice(start, end + 1).forEach((file) => {
-        if (selectedFiles.has(files[lastCheckedIndex])) {
-          newSelected.add(file);
-        } else {
-          newSelected.delete(file);
-        }
-      });
-    } else {
-      if (newSelected.has(file)) {
-        newSelected.delete(file);
-      } else {
-        newSelected.add(file);
-      }
-    }
-
-    setSelectedFiles(newSelected);
-    setLastCheckedIndex(index);
-  }
-
   return (
     <div
-      className={`flex h-fileHeight flex-col rounded-lg bg-[#D9D9D9] dark:bg-[#1b1c1d]`}
+      className={`h-fileHeight flex flex-col rounded-lg bg-[#D9D9D9] dark:bg-[#1b1c1d]`}
     >
       <div
         className={`flex items-center justify-between bg-[#F4A259] pr-2 text-black ${funnel.className} min-h-12 rounded-t-lg text-xl font-bold`}
@@ -156,11 +96,7 @@ export default function FilesMenu() {
       >
         <p className="pl-4">Files</p>
         <div>
-          <Button
-            variant="ghost"
-            className="p-2"
-            onClick={returnPathDirectories}
-          >
+          <Button variant="ghost" className="p-2">
             <PlusIcon
               strokeWidth={3}
               size={24}
@@ -193,10 +129,7 @@ export default function FilesMenu() {
                 <AlertDialogCancel className="border-black hover:bg-gray-200">
                   Cancel
                 </AlertDialogCancel>
-                <AlertDialogAction
-                  onClick={clearFiles}
-                  className="font-md bg-red-800 hover:bg-red-950"
-                >
+                <AlertDialogAction className="font-md bg-red-800 hover:bg-red-950">
                   Continue
                 </AlertDialogAction>
               </AlertDialogFooter>
@@ -213,11 +146,6 @@ export default function FilesMenu() {
             variant="outline"
             size="narrow"
             className={`${funnel.className} border-black text-black dark:border-white dark:text-white`}
-            onClick={
-              selectedFiles.size == files.length
-                ? unSelectAllFiles
-                : selectAllFiles
-            }
           >
             {selectedFiles.size == files.length ? (
               <div className="flex items-center space-x-2">
@@ -236,7 +164,6 @@ export default function FilesMenu() {
               variant="outline"
               size="narrow"
               className="border-black p-2 text-black dark:border-white dark:text-white"
-              onClick={removeSpecificFiles}
             >
               <TrashIcon
                 strokeWidth={2}

@@ -70,7 +70,6 @@ export default function SettingsDialog() {
               <Button
                 id="defaultSaveLocation"
                 className="font-semibold hover:bg-zinc-600 dark:hover:bg-amber-200"
-                onClick={returnPathDirectories}
               >
                 Change Location
               </Button>

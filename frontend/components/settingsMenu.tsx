@@ -78,7 +78,84 @@ const formSchema = z.object({
 
 export default function SettingsMenu() {
   // eslint-disable-next-line
-  const queryClient = useQueryClient();
+
+  const models = ["Whisper"];
+  const modelSizes = [
+    "tiny.en",
+    "tiny",
+    "base.en",
+    "base",
+    "small.en",
+    "small",
+    "medium.en",
+    "medium",
+    "large-v1",
+    "large-v2",
+    "large-v3",
+    "large",
+    "large-v3-turbo",
+    "turbo",
+  ];
+  const modelLanguages = [
+    { code: "auto", lang: "Auto Detect" },
+    { code: "af", lang: "Afrikaans" },
+    { code: "ar", lang: "Arabic" },
+    { code: "hy", lang: "Armenian" },
+    { code: "az", lang: "Azerbaijani" },
+    { code: "be", lang: "Belarusian" },
+    { code: "bs", lang: "Bosnian" },
+    { code: "bg", lang: "Bulgarian" },
+    { code: "ca", lang: "Catalan" },
+    { code: "zh", lang: "Chinese" },
+    { code: "hr", lang: "Croatian" },
+    { code: "cs", lang: "Czech" },
+    { code: "da", lang: "Danish" },
+    { code: "nl", lang: "Dutch" },
+    { code: "en", lang: "English" },
+    { code: "et", lang: "Estonian" },
+    { code: "fi", lang: "Finnish" },
+    { code: "fr", lang: "French" },
+    { code: "gl", lang: "Galician" },
+    { code: "de", lang: "German" },
+    { code: "el", lang: "Greek" },
+    { code: "he", lang: "Hebrew" },
+    { code: "hi", lang: "Hindi" },
+    { code: "hu", lang: "Hungarian" },
+    { code: "is", lang: "Icelandic" },
+    { code: "id", lang: "Indonesian" },
+    { code: "it", lang: "Italian" },
+    { code: "ja", lang: "Japanese" },
+    { code: "kn", lang: "Kannada" },
+    { code: "kk", lang: "Kazakh" },
+    { code: "ko", lang: "Korean" },
+    { code: "lv", lang: "Latvian" },
+    { code: "lt", lang: "Lithuanian" },
+    { code: "mk", lang: "Macedonian" },
+    { code: "ms", lang: "Malay" },
+    { code: "mr", lang: "Marathi" },
+    { code: "mi", lang: "Maori" },
+    { code: "ne", lang: "Nepali" },
+    { code: "no", lang: "Norwegian" },
+    { code: "fa", lang: "Persian" },
+    { code: "pl", lang: "Polish" },
+    { code: "pt", lang: "Portuguese" },
+    { code: "ro", lang: "Romanian" },
+    { code: "ru", lang: "Russian" },
+    { code: "sr", lang: "Serbian" },
+    { code: "sk", lang: "Slovak" },
+    { code: "sl", lang: "Slovenian" },
+    { code: "es", lang: "Spanish" },
+    { code: "sw", lang: "Swahili" },
+    { code: "sv", lang: "Swedish" },
+    { code: "tl", lang: "Tagalog" },
+    { code: "ta", lang: "Tamil" },
+    { code: "th", lang: "Thai" },
+    { code: "tr", lang: "Turkish" },
+    { code: "uk", lang: "Ukrainian" },
+    { code: "ur", lang: "Urdu" },
+    { code: "vi", lang: "Vietnamese" },
+    { code: "cy", lang: "Welsh" },
+  ];
 
   const [selectedModel, setSelectedModel] = useState<string>("whisper");
   const [open, setOpen] = useState(false);
@@ -125,89 +202,11 @@ export default function SettingsMenu() {
     form.reset();
   };
 
-  type FormData = {
-    filePaths: string[];
-    model: string;
-    modelSize: string;
-    language: string;
-    embedSubtitles: boolean;
-    outputFormats: string[];
-    saveLocation: string;
-  };
-
-  const mutation = useMutation({
-    mutationFn: (formData: FormData) => {
-      return fetch("http://127.0.0.1:6789/transcribe", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      }).then((res) => {
-        if (!res.ok) {
-          throw new Error("Network response was not ok");
-        }
-        return res.json();
-      });
-    },
-    onMutate: () => {
-      toast({
-        className: "bg-blue-800",
-        title: "Job Sent",
-        description: "Submitted job successfully",
-        duration: 2000,
-      });
-    },
-    onSuccess: () => {
-      toast({
-        className: "bg-purple-800",
-        title: "Job Success",
-        description: "Job is complete",
-        duration: 2000,
-      });
-    },
-    onError: (error) => {
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: error.message,
-        duration: 2000,
-      });
-    },
-  });
-
   const onSubmit = (values: z.infer<typeof formSchema>) => {
     const temp = store.getSnapshot().context;
     const outputFormats = values.outputFormats
       .filter((item) => item.active && (!item.isExtended || useExtendedFormats))
       .map((item) => item.value);
-
-    if (temp.files.size == 0) {
-      toast({
-        variant: "destructive",
-        duration: 2000,
-        title: "Error: No Files",
-        description: "No Files in job",
-      });
-      return;
-    } else if (outputFormats.length == 0 && values.embedSubtitles == false) {
-      toast({
-        variant: "destructive",
-        duration: 2000,
-        title: "Error: No Output",
-        description:
-          "Embed subtitles is off and no Output formats are selected",
-      });
-      return;
-    } else if (values.modelSize == "") {
-      toast({
-        variant: "destructive",
-        duration: 2000,
-        title: "Error: No Model Size",
-        description: "Please select a model size",
-      });
-      return;
-    }
 
     const formData = {
       filePaths: Array.from(temp.files).map((file) => file.fullPath),
@@ -219,47 +218,13 @@ export default function SettingsMenu() {
       outputFormats: outputFormats,
       saveLocation: temp.saveLocation,
     };
-    mutation.mutate(formData);
-    console.log("test");
     toast({
       className: "bg-blue-800",
       title: "Success",
-      description: "Form submitted successfully",
+      description: "Job submitted successfully",
       duration: 2000,
     });
   };
-
-  const { data: models = [], isLoading: isModelsLoading } = useQuery({
-    queryKey: ["models"],
-    queryFn: () =>
-      fetch("http://127.0.0.1:6789/available_models").then((res) => res.json()),
-  });
-
-  const { data: modelSizes = [], isLoading: isModelSizesLoading } = useQuery({
-    queryKey: ["modelSizes", selectedModel],
-    queryFn: () =>
-      fetch(
-        `http://127.0.0.1:6789/supported_model_sizes?model=${selectedModel}`,
-      ).then((res) => res.json()),
-    enabled: !!selectedModel,
-  });
-
-  useEffect(() => {
-    if (modelSizes.length > 0) {
-      form.setValue("modelSize", modelSizes[0]);
-    }
-  }, [modelSizes, form]);
-
-  const { data: modelLanguages = [], isLoading: isLanguagesLoading } = useQuery(
-    {
-      queryKey: ["modelLanguages", selectedModel],
-      queryFn: () =>
-        fetch(
-          `http://127.0.0.1:6789/supported_languages?model=${selectedModel}`,
-        ).then((res) => res.json()),
-      enabled: !!selectedModel,
-    },
-  );
 
   return (
     <div
@@ -304,20 +269,15 @@ export default function SettingsMenu() {
                         field.onChange(value);
                         setSelectedModel(value);
                       }}
-                      defaultValue={field.value}
+                      defaultValue={models[0]}
                       value={field.value}
-                      disabled={isModelsLoading}
                     >
                       <FormControl>
                         <SelectTrigger
                           id="model"
                           className="dark:border-1 w-[180px] border-2 border-black hover:bg-slate-50 dark:border-white dark:hover:bg-slate-500"
                         >
-                          <SelectValue
-                            placeholder={
-                              isModelsLoading ? "Loading..." : "Select Model"
-                            }
-                          />
+                          <SelectValue placeholder={"Select Model"} />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
@@ -343,21 +303,13 @@ export default function SettingsMenu() {
                     <FormLabel className="min-w-28 text-lg font-bold dark:font-medium">
                       Model Size:
                     </FormLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                      value={field.value}
-                      disabled={isModelSizesLoading}
-                    >
+                    <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
                         <SelectTrigger
                           id="modelSize"
                           className="dark:border-1 w-[180px] border-2 border-black hover:bg-slate-50 dark:border-white dark:hover:bg-slate-500"
                         >
-                          <SelectValue
-                            placeholder={
-                              isModelSizesLoading ? "Loading..." : "Select Size"
-                            }
-                          />
+                          <SelectValue placeholder={"Select Size"} />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
@@ -390,7 +342,6 @@ export default function SettingsMenu() {
                           variant="outline"
                           role="combobox"
                           aria-expanded={open}
-                          disabled={isLanguagesLoading}
                           className={cn(
                             "dark:border-1 w-[200px] justify-between border-2 border-black dark:border-white dark:hover:bg-slate-500",
                             !field.value && "text-muted-foreground",
