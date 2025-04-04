@@ -92,7 +92,7 @@ export default function SettingsMenu() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      model: "whisper",
+      model: "whisper (CPU)",
       modelSize: "tiny",
       embedSubtitles: false,
       overWriteFiles: false,
