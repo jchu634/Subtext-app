@@ -98,7 +98,7 @@ def getSupportedFormats(model):
 
 
 @transcription_router.get("/supported_languages")
-def getsupportedLanguages(model):
+def getSupportedLanguages(model):
     try:
         getLanguages = load_source('supportedLanguages', f'./inference/{model}/api.py')
         return getLanguages.supportedLanguages()
