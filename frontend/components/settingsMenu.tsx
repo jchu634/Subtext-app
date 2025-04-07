@@ -80,7 +80,7 @@ export default function SettingsMenu() {
   // eslint-disable-next-line
   const queryClient = useQueryClient();
 
-  const [selectedModel, setSelectedModel] = useState<string>("whisper");
+  const [selectedModel, setSelectedModel] = useState<string>("whisper (CPU)");
   const [open, setOpen] = useState(false);
   const { toast } = useToast();
 
