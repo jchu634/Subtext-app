@@ -39,9 +39,26 @@ export default function SettingsDialog() {
     (state) => state.context.saveLocation,
   );
 
+  const suppressDragDrop = (e: DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+  };
+
+  const handleOpenChange = (open: boolean) => {
+    if (open) {
+      document.addEventListener("dragenter", suppressDragDrop, true);
+      document.addEventListener("dragover", suppressDragDrop, true);
+      document.addEventListener("drop", suppressDragDrop, true);
+    } else {
+      document.removeEventListener("dragenter", suppressDragDrop, true);
+      document.removeEventListener("dragover", suppressDragDrop, true);
+      document.removeEventListener("drop", suppressDragDrop, true);
+    }
+  };
+
   return (
     <div>
-      <Dialog>
+      <Dialog onOpenChange={handleOpenChange}>
         <DialogTrigger asChild>
           <Button variant="ghost" size="icon" className="[&_svg]:size-7">
             <Cog strokeWidth={2} />
