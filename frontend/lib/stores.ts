@@ -19,29 +19,50 @@ export const store = createStore({
     },
     addFiles: {
       files: (context, event: { newFiles: file[] }) => {
-        return new Set<file>([...context.files, ...event.newFiles]);
+        const fileMap = new Map<string, file>();
+
+        // Process existing files
+        Array.from(context.files).forEach((file) => {
+          fileMap.set(file.fullPath, file);
+        });
+
+        // Process new files
+        event.newFiles.forEach((file) => {
+          fileMap.set(file.fullPath, file);
+        });
+
+        return new Set(fileMap.values());
       },
     },
     addFile: {
       files: (context, event: { newFile: file }) => {
-        context.files.add(event.newFile);
-        return context.files;
+        const fileMap = new Map<string, file>();
+
+        Array.from(context.files).forEach((file) => {
+          fileMap.set(file.fullPath, file);
+        });
+
+        fileMap.set(event.newFile.fullPath, event.newFile);
+        return new Set(fileMap.values());
       },
     },
     removeFiles: {
       files: (context, event: { removeFiles: file[] }) => {
-        const removalSet = new Set(event.removeFiles);
-
+        const removalPaths = new Set(event.removeFiles.map((f) => f.fullPath));
         return new Set(
-          Array.from(context.files).filter((item) => !removalSet.has(item)),
+          Array.from(context.files).filter(
+            (item) => !removalPaths.has(item.fullPath),
+          ),
         );
       },
     },
     removeFile: {
       files: (context, event: { removeFile: file }) => {
-        context.files.delete(event.removeFile);
-
-        return context.files;
+        return new Set(
+          Array.from(context.files).filter(
+            (item) => item.fullPath !== event.removeFile.fullPath,
+          ),
+        );
       },
     },
     clearFiles: {
