@@ -27,8 +27,8 @@ PROGRESS Frontend
         DONE Make Settings form submit send request to backend
         TODO File format validation
         DONE Dark mode colourScheme
-        PROGRESS Drag + Drop File Functionality
-            TODO Fix drag + drop errors when menus are open by suppressing drag + drop events when menus are open.
+        DONE Drag + Drop File Functionality
+            
     
     PROGRESS React 19 Migration
         TODO Migrate shadCN components
