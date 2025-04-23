@@ -36,6 +36,7 @@ declare global {
 export default function Home() {
   const [isDragging, setIsDragging] = useState(false);
 
+  /* eslint-disable @typescript-eslint/no-unused-vars */
   const handleDragOver = (e: React.DragEvent) => {
     setIsDragging(true);
   };
@@ -47,6 +48,7 @@ export default function Home() {
   const handleDrop = (e: React.DragEvent) => {
     setIsDragging(false);
   };
+  /* eslint-enable */
 
   return (
     <div
