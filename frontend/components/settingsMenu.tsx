@@ -76,6 +76,23 @@ const formSchema = z.object({
   filePaths: z.array(z.string()),
 });
 
+const suppressDragDrop = (e: DragEvent) => {
+  e.preventDefault();
+  e.stopPropagation();
+};
+
+const handleOpenChange = (open: boolean) => {
+  if (open) {
+    document.addEventListener("dragenter", suppressDragDrop, true);
+    document.addEventListener("dragover", suppressDragDrop, true);
+    document.addEventListener("drop", suppressDragDrop, true);
+  } else {
+    document.removeEventListener("dragenter", suppressDragDrop, true);
+    document.removeEventListener("dragover", suppressDragDrop, true);
+    document.removeEventListener("drop", suppressDragDrop, true);
+  }
+};
+
 export default function SettingsMenu() {
   // eslint-disable-next-line
   const queryClient = useQueryClient();
@@ -384,7 +401,13 @@ export default function SettingsMenu() {
                       Input Video Language:
                     </FormLabel>
 
-                    <Popover open={open} onOpenChange={setOpen}>
+                    <Popover
+                      open={open}
+                      onOpenChange={(value) => {
+                        setOpen(value);
+                        handleOpenChange(value);
+                      }}
+                    >
                       <PopoverTrigger asChild>
                         <Button
                           variant="outline"

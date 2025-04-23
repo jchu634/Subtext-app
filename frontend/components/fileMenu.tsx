@@ -30,6 +30,17 @@ interface file {
   fileName: string;
 }
 
+interface pywebviewFiles {
+  name: string;
+  pywebviewFullPath: string;
+}
+// Extend the Window interface to include our custom function
+declare global {
+  interface Window {
+    dragDropFiles: (files: pywebviewFiles[]) => void;
+  }
+}
+
 export default function FilesMenu() {
   const [parent] = useAutoAnimate(/* optional config */);
   const [files, setFiles] = useState<file[]>([]);
@@ -60,6 +71,33 @@ export default function FilesMenu() {
     });
     store.send({ type: "addFiles", newFiles: newFiles });
     return newFiles;
+  }
+
+  async function dragDropFiles(files: pywebviewFiles[]) {
+    if (!files || files.length === 0) {
+      return;
+    }
+
+    const newFiles = files.map((file: pywebviewFiles) => {
+      return { fullPath: file.pywebviewFullPath, fileName: file.name };
+    });
+
+    setFiles((prevFiles) => {
+      const allFiles = prevFiles.concat(newFiles);
+      const uniqueFiles = allFiles.filter(
+        (file, index, self) =>
+          index === self.findIndex((f) => f.fullPath === file.fullPath),
+      );
+      return uniqueFiles;
+    });
+
+    store.send({ type: "addFiles", newFiles: newFiles });
+    return newFiles;
+  }
+
+  // Add the function to the window object
+  if (typeof window !== "undefined") {
+    window.dragDropFiles = dragDropFiles;
   }
 
   function mapFiles(file: file, index: number) {

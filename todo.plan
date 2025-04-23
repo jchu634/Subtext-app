@@ -27,9 +27,16 @@ PROGRESS Frontend
         DONE Make Settings form submit send request to backend
         TODO File format validation
         DONE Dark mode colourScheme
+        DONE Drag + Drop File Functionality
+            
     
+    PROGRESS React 19 Migration
+        TODO Migrate shadCN components
+            TODO Fix forwardrefs
+
+
     PROGRESS File Menu
-        DONE_WILL_NOT_IMPLEMENT File exists dialog
+        DONE (WILL NOT IMPLEMENT) File exists dialog
         DONE File Checkbox
         PROGRESS Mass File Selection deletion
             DONE Remove Selection Button
@@ -37,7 +44,7 @@ PROGRESS Frontend
 
         DONE File removal confirmation
 
-    PROGRESS Settings Menu
+    DONE Settings Menu
         DONE Migrate Settings to a external file
         DONE Make Reset Settings button functional
         DONE_WILL_NOT_IMPLEMENT Default Open location
@@ -76,8 +83,8 @@ TODO Cohesive Application
     PROGRESS Packaging
     TODO Testing
     TODO Documentation
-    TODO Deployment
-    TODO CI/CD
-    TODO Versioning
+    DONE Deployment
+    DONE CI/CD
+    DONE Versioning
     DONE Licensing
 

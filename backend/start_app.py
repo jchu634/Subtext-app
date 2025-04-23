@@ -1,5 +1,6 @@
 from init import create_app
 import webview
+from webview.dom import DOMEventHandler
 import sys
 import threading
 import uvicorn
@@ -52,7 +53,6 @@ class Api():
                       'Audio Files (*.mp3;*.mpga;*.wav)', 'All files (*.*)')
         multipleFilenames = window.create_file_dialog(
             webview.OPEN_DIALOG, allow_multiple=True, file_types=file_types
-
         )
         return multipleFilenames
 
@@ -61,6 +61,27 @@ class Api():
             webview.FOLDER_DIALOG
         )
         return folder
+
+
+def on_drag(e):
+    pass
+
+
+def on_drop(e):
+    files = e['dataTransfer']['files']
+    if len(files) == 0:
+        return
+
+    print(f'Event: {e["type"]}. Dropped files:')
+
+    window.run_js(f"dragDropFiles({files})")
+
+
+def bind(window):
+    window.dom.document.events.dragenter += DOMEventHandler(on_drag, True, True)
+    window.dom.document.events.dragstart += DOMEventHandler(on_drag, True, True)
+    window.dom.document.events.dragover += DOMEventHandler(on_drag, True, True, debounce=500)
+    window.dom.document.events.drop += DOMEventHandler(on_drop, True, True)
 
 
 if __name__ == "__main__":
@@ -78,8 +99,8 @@ if __name__ == "__main__":
         "Whisper Subtitler", f"{Settings.backendUrl}", js_api=api_instance, background_color="#5B8E7D", min_size=(660, 400), width=880)
     window.events.closed += on_closed
     if Settings.debuggingEnabled == True:
-        webview.start(private_mode=False, debug=True)  # Persist settings
+        webview.start(bind, window, private_mode=False, debug=True)  # Persist settings
     else:
-        webview.start(private_mode=False)  # Persist settings
+        webview.start(bind, window, private_mode=False)  # Persist settings
 
     os._exit(0)
