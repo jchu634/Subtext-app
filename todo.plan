@@ -44,7 +44,7 @@ PROGRESS Frontend
 
         DONE File removal confirmation
 
-    PROGRESS Settings Menu
+    DONE Settings Menu
         DONE Migrate Settings to a external file
         DONE Make Reset Settings button functional
         DONE_WILL_NOT_IMPLEMENT Default Open location
