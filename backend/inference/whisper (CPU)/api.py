@@ -20,12 +20,11 @@ def supportedFormats():
 def generateSubtitle(path, model, language):
     if language == "en" and model in ["tiny", "base", "small", "medium",]:
         model = model + ".en"
-    model = whisper.load_model(model)
+    model = whisper.load_model(model, device="cpu")
     if language == "auto":
         return model.transcribe(path)
     else:
         return model.transcribe(path, language=language)
-
 
 def supportedLanguages():
     return [

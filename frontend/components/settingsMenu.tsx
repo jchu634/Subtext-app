@@ -97,7 +97,7 @@ export default function SettingsMenu() {
   // eslint-disable-next-line
   const queryClient = useQueryClient();
 
-  const [selectedModel, setSelectedModel] = useState<string>("whisper");
+  const [selectedModel, setSelectedModel] = useState<string>("whisper (CPU)");
   const [open, setOpen] = useState(false);
   const { toast } = useToast();
 
@@ -109,7 +109,7 @@ export default function SettingsMenu() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      model: "whisper",
+      model: "whisper (CPU)",
       modelSize: "tiny",
       embedSubtitles: false,
       overWriteFiles: false,
