@@ -6,7 +6,7 @@ hiddenimports += collect_submodules('numba')
 
 datas = [
         ('key.pub', '.'), ('home/frontend', 'home/frontend'), 
-        ('inference/whisper', 'inference/whisper'),
+        ('inference/', 'inference/'),
         ('venv/lib/site-packages/whisper/assets', './whisper/assets')
         ]
 
