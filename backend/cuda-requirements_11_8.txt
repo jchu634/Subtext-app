@@ -1,0 +1,15 @@
+--index-url https://download.pytorch.org/whl/cu118
+--extra-index-url=https://pypi.org/simple
+uvicorn
+pydantic_settings
+pywebview
+orjson
+fastapi
+pysubs2
+ffmpy
+torch
+openai-whisper
+platformdirs
+cryptography
+pytest
+pyinstaller
