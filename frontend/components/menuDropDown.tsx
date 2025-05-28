@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import AppInfoDialog from "@/components/appInfoDialog";
 
-export function MenuDropDown() {
+export default function MenuDropDown() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger className="flex h-9 w-9 items-center justify-center [&_svg]:size-7">
