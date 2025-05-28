@@ -69,7 +69,7 @@ export default function FilesMenu() {
       );
       return uniqueFiles;
     });
-    store.send({ type: "addFiles", newFiles: newFiles });
+    store.send({ type: "ADD_FILES", newFiles: newFiles });
     return newFiles;
   }
 
@@ -91,7 +91,7 @@ export default function FilesMenu() {
       return uniqueFiles;
     });
 
-    store.send({ type: "addFiles", newFiles: newFiles });
+    store.send({ type: "ADD_FILES", newFiles: newFiles });
     return newFiles;
   }
 
@@ -132,17 +132,17 @@ export default function FilesMenu() {
 
   function removeFile(file: file) {
     setFiles((prevFiles) => prevFiles.filter((filtFile) => filtFile !== file));
-    store.send({ type: "removeFile", removeFile: file });
+    store.send({ type: "REMOVE_FILE", removeFile: file });
   }
   function removeSpecificFiles() {
     for (const removeFile of selectedFiles) {
       setFiles((prevFiles) => prevFiles.filter((file) => file !== removeFile));
     }
-    store.send({ type: "removeFiles", removeFiles: [...selectedFiles] });
+    store.send({ type: "REMOVE_FILES", removeFiles: [...selectedFiles] });
     setSelectedFiles(new Set());
   }
   function clearFiles() {
-    store.send({ type: "clearFiles" });
+    store.send({ type: "CLEAR_FILES" });
     setFiles([]);
     setSelectedFiles(new Set());
   }

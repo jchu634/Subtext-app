@@ -5,19 +5,29 @@ interface file {
   fileName: string;
 }
 
+type ProgressType = {
+  percentage: number;
+  status: "pending" | "running" | "complete" | "error";
+  message?: string;
+};
+interface JobProgressState {
+  [filename: string]: number;
+}
+
 export const store = createStore({
   context: {
     extendedSubtitlesFormats: false,
     files: new Set<file>(),
+    jobProgress: {},
     saveLocation: "default",
     appVersion: "1.0.0 Beta",
   },
   // Transitions
   on: {
-    toggleExtentedSubtitles: {
+    TOGGLE_EXTENDED_SUBTITLES: {
       extendedSubtitlesFormats: (context) => !context.extendedSubtitlesFormats,
     },
-    addFiles: {
+    ADD_FILES: {
       files: (context, event: { newFiles: file[] }) => {
         const fileMap = new Map<string, file>();
 
@@ -30,11 +40,10 @@ export const store = createStore({
         event.newFiles.forEach((file) => {
           fileMap.set(file.fullPath, file);
         });
-
         return new Set(fileMap.values());
       },
     },
-    addFile: {
+    ADD_FILE: {
       files: (context, event: { newFile: file }) => {
         const fileMap = new Map<string, file>();
 
@@ -46,7 +55,7 @@ export const store = createStore({
         return new Set(fileMap.values());
       },
     },
-    removeFiles: {
+    REMOVE_FILES: {
       files: (context, event: { removeFiles: file[] }) => {
         const removalPaths = new Set(event.removeFiles.map((f) => f.fullPath));
         return new Set(
@@ -56,7 +65,7 @@ export const store = createStore({
         );
       },
     },
-    removeFile: {
+    REMOVE_FILE: {
       files: (context, event: { removeFile: file }) => {
         return new Set(
           Array.from(context.files).filter(
@@ -65,10 +74,22 @@ export const store = createStore({
         );
       },
     },
-    clearFiles: {
+    CLEAR_FILES: {
       files: (context) => new Set<file>(), // eslint-disable-line
     },
-    changeSaveLocation: {
+    UPDATE_JOB_PROGRESS: {
+      jobProgress: (context, event: { job: JobProgressState }) => {
+        const filename = Object.keys(event.job)[0];
+        return {
+          ...context.jobProgress,
+          [filename]: event.job[filename],
+        };
+      },
+    },
+    RESET_JOB_PROGRESS: {
+      jobProgress: () => ({}),
+    },
+    CHANGE_SAVE_LOCATION: {
       saveLocation: (context, event: { newLocation: string }) => {
         if (event.newLocation) {
           return event.newLocation[0];

@@ -24,7 +24,7 @@ async function returnPathDirectories() {
     // User cancelled operation
     return;
   }
-  store.send({ type: "changeSaveLocation", newLocation: folder });
+  store.send({ type: "CHANGE_SAVE_LOCATION", newLocation: folder });
   return folder;
 }
 
@@ -145,7 +145,9 @@ export default function SettingsDialog() {
               </Label>
               <Switch
                 defaultChecked={useExtendedFormats}
-                onClick={() => store.send({ type: "toggleExtentedSubtitles" })}
+                onClick={() =>
+                  store.send({ type: "TOGGLE_EXTENDED_SUBTITLES" })
+                }
                 className="outline outline-1 outline-gray-700 dark:bg-slate-200 dark:data-[state=checked]:bg-orange-400"
               ></Switch>
             </div>

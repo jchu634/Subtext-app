@@ -98,6 +98,7 @@ export default function SettingsMenu() {
   const queryClient = useQueryClient();
 
   const [selectedModel, setSelectedModel] = useState<string>("whisper (CPU)");
+
   const [open, setOpen] = useState(false);
   const { toast } = useToast();
 
@@ -120,7 +121,8 @@ export default function SettingsMenu() {
         { value: "WebVTT", active: false, isExtended: false },
         { value: "MPL2", active: false, isExtended: true },
         { value: "TMP", active: false, isExtended: true },
-        //SAMI is not fully suppported in PySub2 { value: "SAMI", active: false, isExtended: true },
+        // SAMI is not fully suppported in PySub2
+        // { value: "SAMI", active: false, isExtended: true },
         { value: "TTML", active: false, isExtended: true },
         { value: "MicroDVD", active: false, isExtended: true },
       ],
@@ -148,6 +150,7 @@ export default function SettingsMenu() {
     modelSize: string;
     language: string;
     embedSubtitles: boolean;
+    overWriteFiles: boolean;
     outputFormats: string[];
     saveLocation: string;
   };
@@ -160,35 +163,125 @@ export default function SettingsMenu() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(formData),
-      }).then((res) => {
-        if (!res.ok) {
-          throw new Error("Network response was not ok");
-        }
-        return res.json();
-      });
+      })
+        .then((res) => {
+          if (!res.ok) {
+            return res
+              .json()
+              .then((errData) => {
+                throw new Error(
+                  errData.detail || `Server error: ${res.status}`,
+                );
+              })
+              .catch(() => {
+                throw new Error(`Server error: ${res.status}`);
+              });
+          }
+          return res.json();
+        })
+        .then((data) => {
+          if (data && data[0] && data[0].task_id) {
+            const taskId = data[0].task_id;
+            console.log("Job submitted with task ID:", taskId);
+            const eventSource = new EventSource(
+              `http://127.0.0.1:6789/progress/${taskId}`,
+            );
+
+            eventSource.onmessage = (event) => {
+              console.log("SSE Message:", event.data);
+              try {
+                const parsedData = JSON.parse(event.data);
+                if (
+                  parsedData.type === "status" &&
+                  (parsedData.status === "DONE" ||
+                    parsedData.status === "ERROR")
+                ) {
+                  store.send({
+                    type: "UPDATE_JOB_PROGRESS",
+                    job: { [taskId]: 100 },
+                  });
+                  console.log(
+                    "SSE stream finished with status:",
+                    parsedData.status,
+                  );
+                  eventSource.close();
+                  if (parsedData.status === "DONE") {
+                    toast({
+                      className: "bg-purple-800",
+                      title: "Job Complete",
+                      description: "Transcription job finished successfully.",
+                      duration: 3000,
+                    });
+                  } else if (parsedData.status === "ERROR") {
+                    toast({
+                      variant: "destructive",
+                      title: "Job Error",
+                      description:
+                        parsedData.error ||
+                        "An error occurred during transcription.",
+                      duration: 5000,
+                    });
+                  }
+                } else if (parsedData.type === "progress") {
+                  store.send({
+                    type: "UPDATE_JOB_PROGRESS",
+                    job: { [taskId]: parsedData.percentage },
+                  });
+                }
+              } catch (e) {
+                console.error("Failed to parse SSE message JSON:", e);
+              }
+            };
+
+            eventSource.onerror = (error) => {
+              console.error("SSE Error:", error);
+              toast({
+                variant: "destructive",
+                title: "SSE Connection Error",
+                description:
+                  "Failed to connect to progress stream. Check server status.",
+                duration: 5000,
+              });
+              // store.send({ type: "RESET_JOB_PROGRESS" });
+              eventSource.close();
+            };
+            return data;
+          } else {
+            console.error(
+              "Invalid response from server, missing task_id:",
+              data,
+            );
+            throw new Error("Invalid response from server, missing task_id");
+          }
+        });
     },
     onMutate: () => {
       toast({
         className: "bg-blue-800",
-        title: "Job Sent",
-        description: "Submitted job successfully",
+        title: "Job Submitted",
+        description: "Transcription job has been submitted to the server.",
         duration: 2000,
       });
     },
-    onSuccess: () => {
-      toast({
-        className: "bg-purple-800",
-        title: "Job Success",
-        description: "Job is complete",
-        duration: 2000,
-      });
+    onSuccess: (data) => {
+      if (data && data[0] && data[0].task_id) {
+        console.log(
+          "Mutation for job submission successful, SSE connection initiated for task:",
+          data[0].task_id,
+        );
+      } else {
+        console.log(
+          "Mutation for job submission successful, but task_id might be missing in returned data:",
+          data,
+        );
+      }
     },
-    onError: (error) => {
+    onError: (error: Error) => {
       toast({
         variant: "destructive",
-        title: "Error",
-        description: error.message,
-        duration: 2000,
+        title: "Submission Error",
+        description: error.message || "Failed to submit transcription job.",
+        duration: 5000,
       });
     },
   });
@@ -226,7 +319,7 @@ export default function SettingsMenu() {
       return;
     }
 
-    const formData = {
+    const formData: FormData = {
       filePaths: Array.from(temp.files).map((file) => file.fullPath),
       model: values.model,
       modelSize: values.modelSize,
@@ -237,13 +330,6 @@ export default function SettingsMenu() {
       saveLocation: temp.saveLocation,
     };
     mutation.mutate(formData);
-    console.log("test");
-    toast({
-      className: "bg-blue-800",
-      title: "Success",
-      description: "Form submitted successfully",
-      duration: 2000,
-    });
   };
 
   const { data: models = [], isLoading: isModelsLoading } = useQuery({
