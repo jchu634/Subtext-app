@@ -851,6 +851,19 @@ wheels = [
 ]
 
 [[package]]
+name = "sse-starlette"
+version = "2.3.5"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "anyio" },
+    { name = "starlette" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/10/5f/28f45b1ff14bee871bacafd0a97213f7ec70e389939a80c60c0fb72a9fc9/sse_starlette-2.3.5.tar.gz", hash = "sha256:228357b6e42dcc73a427990e2b4a03c023e2495ecee82e14f07ba15077e334b2", size = 17511, upload-time = "2025-05-12T18:23:52.601Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/c8/48/3e49cf0f64961656402c0023edbc51844fe17afe53ab50e958a6dbbbd499/sse_starlette-2.3.5-py3-none-any.whl", hash = "sha256:251708539a335570f10eaaa21d1848a10c42ee6dc3a9cf37ef42266cdb1c52a8", size = 10233, upload-time = "2025-05-12T18:23:50.722Z" },
+]
+
+[[package]]
 name = "starlette"
 version = "0.46.2"
 source = { registry = "https://pypi.org/simple" }
@@ -879,6 +892,7 @@ dependencies = [
     { name = "pysubs2" },
     { name = "pytest" },
     { name = "pywebview" },
+    { name = "sse-starlette" },
     { name = "torch" },
     { name = "uvicorn" },
 ]
@@ -897,6 +911,7 @@ requires-dist = [
     { name = "pysubs2", specifier = ">=1.8.0" },
     { name = "pytest", specifier = ">=8.3.5" },
     { name = "pywebview", specifier = ">=5.4" },
+    { name = "sse-starlette", specifier = ">=2.3.5" },
     { name = "torch", specifier = ">=2.6.0" },
     { name = "uvicorn", specifier = ">=0.34.2" },
 ]
