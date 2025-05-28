@@ -1,7 +1,18 @@
 from config import Settings
+from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+# --- FastAPI Lifespan for Broadcaster ---
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    print("Lifespan: Connecting broadcaster...")
+    await Settings.broadcast.connect()
+    print("Lifespan: Broadcaster connected.")
+    yield
+    print("Lifespan: Disconnecting broadcaster...")
+    await Settings.broadcast.disconnect()
+    print("Lifespan: Broadcaster disconnected.")
 
 def create_app():
     tags_metadata = [
@@ -20,9 +31,9 @@ def create_app():
 
     ]
     if Settings.debuggingEnabled == True:
-        app = FastAPI(openapi_tags=tags_metadata)
+        app = FastAPI(openapi_tags=tags_metadata, lifespan=lifespan)
     else:
-        app = FastAPI(openapi_tags=tags_metadata, docs_url=None, redoc_url=None)
+        app = FastAPI(openapi_tags=tags_metadata, docs_url=None, redoc_url=None, lifespan=lifespan)
 
     app.add_middleware(
         CORSMiddleware,
