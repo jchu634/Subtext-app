@@ -1,6 +1,6 @@
-from fastapi import APIRouter, Request, HTTPException
+from fastapi import APIRouter, Request, HTTPException, BackgroundTasks
+from fastapi.responses import ORJSONResponse
 from pydantic import BaseModel
-import logging
 import os
 import subprocess
 from pathlib import Path
@@ -12,13 +12,18 @@ import importlib.machinery
 import sys
 
 import base64
-from cryptography.hazmat.primitives import hashes, serialization
+from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.asymmetric import padding
 from cryptography.exceptions import InvalidSignature
 
 from config import Settings
 from time import sleep
 import pysubs2
+
+import asyncio
+import uuid
+import json
+from sse_starlette import EventSourceResponse
 
 
 class PublicKeyError(Exception):
@@ -75,7 +80,7 @@ def load_source(modname, filename):
     spec = importlib.util.spec_from_file_location(modname, filename, loader=loader)
     module = importlib.util.module_from_spec(spec)
 
-    sys.modules[module.__name__] = module  # Cache the module in sys.modules
+    # sys.modules[module.__name__] = module  # Cache the module in sys.modules
     loader.exec_module(module)
     return module
 
@@ -126,17 +131,19 @@ class TranscriptionRequest(BaseModel):
     saveLocation: str
 
 
-@transcription_router.post("/transcribe")
-def transcribe(req: TranscriptionRequest):
-    print(req)
+async def transcribeWorker(path, task_id: str, req: TranscriptionRequest):
+    loop = asyncio.get_running_loop()
+    generator = load_source('generateSubtitle', os.path.join(".", "inference", req.model, "api.py"))
     try:
-        generator = load_source('generateSubtitle', os.path.join(".", "inference", req.model, "api.py"))
-    except (FileSignatureError, PublicKeyError) as e:
-        raise HTTPException(status_code=500, detail=e.args[0])
+        generator._broadcaster_for_tqdm = Settings.broadcast
+        generator._task_id_for_tqdm = task_id
+        generator._loop_for_tqdm = loop
 
-    unprocessables = []
-    for path in req.filePaths:
-        subs = pysubs2.load_from_whisper(generator.generateSubtitle(path, req.modelSize, req.language))
+        unprocessables = []
+        result = await asyncio.to_thread(
+            generator.generateSubtitle, path, req.modelSize, req.language
+        )
+        subs = pysubs2.load_from_whisper(result)
         assLocation = ""
         for format in req.outputFormats:
             baseLocation = os.path.join(user_downloads_dir(), Path(
@@ -201,7 +208,7 @@ def transcribe(req: TranscriptionRequest):
                 )
             else:
                 unprocessables.append((path, "Unable to embed subtitles into this file format"))
-                continue
+                return False, "Unable to embed subtitles into this file format"
             if req.overWriteFiles:
                 try:
                     os.replace(outPath, path)
@@ -214,33 +221,72 @@ def transcribe(req: TranscriptionRequest):
 
             print(ff.cmd)
             ff.run()
-
-    return {200, "OK"}
-
-
-## Test ##
-
-
-@transcription_router.get("/testWhile")
-def test():
-    count = 0
-    while Settings.testEnable:
-        print(f"This is running, count={count}")
-        count += 1
-        sleep(10)
-    print("This Stopped Running")
-    Settings.testEnable = True
-    return 1
+        return True, "Success"
+    except Exception as e:
+        print(f"Task {task_id}: Error during transcription: {e}")
+    finally:
+        generator._task_id_for_tqdm = None
+        generator._broadcaster_for_tqdm = None
+        generator._loop_for_tqdm = None
+        print(f"Task {task_id}: Cleaned up worker module globals.")
 
 
-@transcription_router.get("/test")
-def test_interrupt():
-    Settings.testEnable = False
-    return 1
+@transcription_router.post("/transcribe")
+def transcribe(background_tasks: BackgroundTasks, req: TranscriptionRequest):
+    print(req)
+
+    task_id = str(uuid.uuid4())
+    for path in req.filePaths:
+        background_tasks.add_task(transcribeWorker, path, task_id, req)
+
+    final_message = json.dumps({
+        "type": "status",
+        "status": "DONE",
+    })
+
+    background_tasks.add_task(Settings.broadcast.publish, channel=task_id, message=final_message)
+    print(f"Scheduled transcription task with ID: {task_id}")
+
+    return ORJSONResponse([{"task_id": task_id}], status_code=202)
 
 
-@transcription_router.post("/dummypath")
-async def get_body(request: Request):
-    temp = await request.json()
-    print(temp)
-    return temp
+@transcription_router.get("/progress/{task_id}")
+async def progress_stream(request: Request, task_id: str):
+    """
+    SSE endpoint to stream progress updates for a given task_id.
+    """
+    print(f"SSE connection requested for task: {task_id}")
+
+    async def event_generator():
+        async with Settings.broadcast.subscribe(channel=task_id) as subscriber:
+            print(f"SSE subscribed to channel: {task_id}")
+            try:
+                if await request.is_disconnected():
+                    print(f"SSE client for {task_id} disconnected immediately.")
+                    return
+
+                async for event in subscriber:
+                    message_data = event.message
+                    # print(f"SSE sending for {task_id}: {message_data}") # Debug
+                    yield {"data": message_data}
+
+                    if await request.is_disconnected():
+                        print(f"SSE client for {task_id} disconnected.")
+                        break
+
+                    try:
+                        # Check for final status message to close stream gracefully
+                        payload = json.loads(message_data)
+                        if payload.get("type") == "status" and payload.get("status") in ["DONE", "ERROR"]:
+                            print(f"SSE received terminal status for {task_id}, closing stream.")
+                            break
+                    except json.JSONDecodeError:
+                        pass  # Ignore non-JSON messages if any
+
+            except asyncio.CancelledError:
+                print(f"SSE connection for {task_id} cancelled/closed.")
+                raise
+            finally:
+                print(f"SSE finished for task: {task_id}")
+
+    return EventSourceResponse(event_generator())
