@@ -6,6 +6,7 @@ from pydantic import Field
 from hashlib import sha256
 from sys import exit
 import os
+from broadcaster import Broadcast
 
 library_path = os.path.dirname(os.path.abspath(__file__))
 
@@ -23,6 +24,7 @@ class settingsModel(BaseSettings):
     allowUnsignedCode: bool = False
     debuggingEnabled: bool = False
     publicKey: PublicKeyTypes
+    broadcast: Broadcast = Broadcast("memory://")
 
     if os.path.exists("key.pub"):
 
