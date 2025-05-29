@@ -220,10 +220,10 @@ export default function FilesMenu() {
                 </p>
               </Button>
             </AlertDialogTrigger>
-            <AlertDialogContent className="bg-slate-100 text-black">
+            <AlertDialogContent className="border-2 border-red-700 bg-slate-100 text-black dark:bg-slate-800 dark:text-white">
               <AlertDialogHeader>
                 <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                <AlertDialogDescription className="text-gray-700">
+                <AlertDialogDescription className="text-gray-700 dark:text-white">
                   Are you sure that you want to remove all files?
                 </AlertDialogDescription>
               </AlertDialogHeader>
@@ -233,7 +233,7 @@ export default function FilesMenu() {
                 </AlertDialogCancel>
                 <AlertDialogAction
                   onClick={clearFiles}
-                  className="font-md bg-red-800 hover:bg-red-950"
+                  className="font-md bg-red-800 hover:bg-red-950 dark:text-white"
                 >
                   Continue
                 </AlertDialogAction>
