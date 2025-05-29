@@ -41,7 +41,7 @@ import { useToast } from "@/hooks/use-toast";
 
 // Store Stuff
 import { useSelector } from "@xstate/store/react";
-import { store } from "@/lib/stores";
+import { store, JobProgressState } from "@/lib/stores";
 
 // Form Stuff
 import { z } from "zod";
@@ -51,10 +51,6 @@ import { useForm, useFieldArray } from "react-hook-form";
 // Query Stuff
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
-// interface modelSize {
-//   modelName: string;
-//   suggestedVRAM: number;
-// }
 interface languageType {
   code: string;
   lang: string;
@@ -182,6 +178,34 @@ export default function SettingsMenu() {
         .then((data) => {
           if (data && data[0] && data[0].task_id) {
             const taskId = data[0].task_id;
+
+            const firstFilePath =
+              formData.filePaths.length > 0 ? formData.filePaths[0] : "";
+            let jobName = firstFilePath
+              ? firstFilePath.split(/[\\/]/).pop() || `Task ${taskId}`
+              : `Task ${taskId}`;
+
+            jobName =
+              jobName.substring(0, 24) +
+              (formData.filePaths.length > 1
+                ? " + " +
+                  (formData.filePaths.length - 1) +
+                  " more file" +
+                  (formData.filePaths.length == 2 ? "" : "s")
+                : "");
+
+            store.send({
+              type: "ADD_JOB",
+              job: {
+                [taskId]: {
+                  jobName: jobName,
+                  percentage: 0,
+                  status: "Pending",
+                  message: "Job submitted, awaiting progress...",
+                },
+              },
+            });
+
             console.log("Job submitted with task ID:", taskId);
             const eventSource = new EventSource(
               `http://127.0.0.1:6789/progress/${taskId}`,
@@ -198,7 +222,14 @@ export default function SettingsMenu() {
                 ) {
                   store.send({
                     type: "UPDATE_JOB_PROGRESS",
-                    job: { [taskId]: 100 },
+                    job: {
+                      [taskId]: {
+                        jobName: jobName,
+                        percentage: 100,
+                        status: "Complete",
+                        message: "Transcription job finished successfully.",
+                      },
+                    },
                   });
                   console.log(
                     "SSE stream finished with status:",
@@ -225,7 +256,13 @@ export default function SettingsMenu() {
                 } else if (parsedData.type === "progress") {
                   store.send({
                     type: "UPDATE_JOB_PROGRESS",
-                    job: { [taskId]: parsedData.percentage },
+                    job: {
+                      [taskId]: {
+                        jobName: jobName,
+                        percentage: parsedData.percentage,
+                        status: "Running",
+                      },
+                    },
                   });
                 }
               } catch (e) {
@@ -242,7 +279,20 @@ export default function SettingsMenu() {
                   "Failed to connect to progress stream. Check server status.",
                 duration: 5000,
               });
-              // store.send({ type: "RESET_JOB_PROGRESS" });
+              const currentJobStateOnError = (
+                store.getSnapshot().context.jobProgress as JobProgressState
+              )[taskId];
+              store.send({
+                type: "UPDATE_JOB_PROGRESS",
+                job: {
+                  [taskId]: {
+                    jobName: jobName,
+                    percentage: currentJobStateOnError?.percentage || 0,
+                    status: "Error",
+                    message: "SSE connection error. Check server status.",
+                  },
+                },
+              });
               eventSource.close();
             };
             return data;
