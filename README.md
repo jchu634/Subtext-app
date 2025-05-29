@@ -6,8 +6,7 @@ Subtext is an easy to use subtitling app, which allows an user to utilise AI mod
 
 ## Development Setup Notes:
 ### Backend:
-- Install dependencies using `pip install -r requirements.txt`
-    - For CUDA Suport, instead install dependencies using `pip install -r cuda-requirements.txt`
+- Install dependencies and start app using using `uv run start_app.py`
       
 - There are some flags which are useful for development
     - The recommended way to enable these flags is to 
