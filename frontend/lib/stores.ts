@@ -5,19 +5,31 @@ interface file {
   fileName: string;
 }
 
+export type ProgressType = {
+  jobName: string;
+  percentage: number;
+  status: "Pending" | "Running" | "Complete" | "Error";
+  message?: string;
+};
+export interface JobProgressState {
+  [sse_id: string]: ProgressType;
+}
+
 export const store = createStore({
   context: {
     extendedSubtitlesFormats: false,
     files: new Set<file>(),
+    jobProgress: {} as JobProgressState,
+    multiJob: false,
     saveLocation: "default",
     appVersion: "1.0.0 Beta",
   },
   // Transitions
   on: {
-    toggleExtentedSubtitles: {
+    TOGGLE_EXTENDED_SUBTITLES: {
       extendedSubtitlesFormats: (context) => !context.extendedSubtitlesFormats,
     },
-    addFiles: {
+    ADD_FILES: {
       files: (context, event: { newFiles: file[] }) => {
         const fileMap = new Map<string, file>();
 
@@ -30,11 +42,10 @@ export const store = createStore({
         event.newFiles.forEach((file) => {
           fileMap.set(file.fullPath, file);
         });
-
         return new Set(fileMap.values());
       },
     },
-    addFile: {
+    ADD_FILE: {
       files: (context, event: { newFile: file }) => {
         const fileMap = new Map<string, file>();
 
@@ -46,7 +57,7 @@ export const store = createStore({
         return new Set(fileMap.values());
       },
     },
-    removeFiles: {
+    REMOVE_FILES: {
       files: (context, event: { removeFiles: file[] }) => {
         const removalPaths = new Set(event.removeFiles.map((f) => f.fullPath));
         return new Set(
@@ -56,7 +67,7 @@ export const store = createStore({
         );
       },
     },
-    removeFile: {
+    REMOVE_FILE: {
       files: (context, event: { removeFile: file }) => {
         return new Set(
           Array.from(context.files).filter(
@@ -65,10 +76,45 @@ export const store = createStore({
         );
       },
     },
-    clearFiles: {
+    CLEAR_FILES: {
       files: (context) => new Set<file>(), // eslint-disable-line
     },
-    changeSaveLocation: {
+    ADD_JOB: {
+      jobProgress: (context, event: { job: JobProgressState }) => {
+        return {
+          ...context.jobProgress,
+          ...event.job,
+        };
+      },
+    },
+    UPDATE_JOB_PROGRESS: {
+      jobProgress: (context, event: { job: JobProgressState }) => {
+        return {
+          ...context.jobProgress,
+          ...event.job, // Update existing jobs with new values from event.job
+        };
+      },
+    },
+    CLEAR_INACTIVE_JOBS: {
+      jobProgress: (context) => {
+        const activeJobs: JobProgressState = {};
+        for (const jobId in context.jobProgress) {
+          if (
+            Object.prototype.hasOwnProperty.call(context.jobProgress, jobId)
+          ) {
+            const job = context.jobProgress[jobId];
+            if (job.status !== "Complete" && job.status !== "Error") {
+              activeJobs[jobId] = job;
+            }
+          }
+        }
+        return activeJobs;
+      },
+    },
+    TOGGLE_MULTI_JOB: {
+      multiJob: (context) => !context.multiJob,
+    },
+    CHANGE_SAVE_LOCATION: {
       saveLocation: (context, event: { newLocation: string }) => {
         if (event.newLocation) {
           return event.newLocation[0];
