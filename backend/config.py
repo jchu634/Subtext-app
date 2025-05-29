@@ -25,6 +25,7 @@ class settingsModel(BaseSettings):
     debuggingEnabled: bool = False
     publicKey: PublicKeyTypes
     broadcast: Broadcast = Broadcast("memory://")
+    enable_multi_job: bool = False
 
     if os.path.exists("key.pub"):
 

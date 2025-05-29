@@ -1,11 +1,11 @@
-import whisper.transcribe
 import whisper
-import os
 import sys
 import tqdm
 import asyncio
 import json
 from broadcaster import Broadcast
+import threading
+from config import Settings
 
 # --- Globals to be set by the main app ---
 # These will be specific to the background task instance
@@ -40,6 +40,7 @@ class _tqdmProgressShim(tqdm.tqdm):
                 )
                 message = json.dumps({
                     "type": "progress",
+                    "task_id": _task_id_for_tqdm,
                     "current": current_val,
                     "total": total_val,
                     "percentage": progress_percent,
@@ -70,23 +71,57 @@ def getModels():
     return whisper.available_models()
 
 
-def generateSubtitle(path, model, language):
+def generateSubtitle(path, model, language, task_id_param, broadcaster_param, loop_param, patch_lock_param: threading.Lock):
+    global _task_id_for_tqdm, _broadcaster_for_tqdm, _loop_for_tqdm
+
+    _task_id_for_tqdm = task_id_param
+    _broadcaster_for_tqdm = broadcaster_param
+    _loop_for_tqdm = loop_param
+
+    print(_task_id_for_tqdm)
+
     original_tqdm = None
     transcribe_module = sys.modules.get('whisper.transcribe')
-    if transcribe_module and hasattr(transcribe_module, 'tqdm'):
-        original_tqdm = transcribe_module.tqdm.tqdm
-        transcribe_module.tqdm.tqdm = _tqdmProgressShim
-        print(f"TQDM Patched for task {_task_id_for_tqdm}")  # Debug
-    else:
-        print("Warning: Could not find whisper.transcribe.tqdm to patch.")
 
-    if language == "en" and model in ["tiny", "base", "small", "medium",]:
-        model = model + ".en"
-    model = whisper.load_model(model, device="cuda")
-    if language == "auto":
-        return model.transcribe(path, verbose=False)
-    else:
-        return model.transcribe(path, language=language, verbose=False)
+    if not Settings.enable_multi_job:
+        # Acquire lock before modifying global whisper.transcribe.tqdm
+        patch_lock_param.acquire()
+    try:
+        if transcribe_module and hasattr(transcribe_module, 'tqdm'):
+            original_tqdm = transcribe_module.tqdm.tqdm
+            transcribe_module.tqdm.tqdm = _tqdmProgressShim
+            # print(f"TQDM Patched for task {_task_id_for_tqdm}")  # Debug
+        else:
+            print("Warning: Could not find whisper.transcribe.tqdm to patch.")
+
+        try:
+            if language == "en" and model in ["tiny", "base", "small", "medium",]:
+                model = model + ".en"
+            model = whisper.load_model(model, device="cuda")
+            if language == "auto":
+                return True, model.transcribe(path, verbose=False)
+            else:
+                return True, model.transcribe(path, language=language, verbose=False)
+        except Exception as e:
+            print(f"Error during transcription for task {_task_id_for_tqdm}: {e}")
+            return False, str(e)                # Return failure and error message
+    finally:
+
+        if transcribe_module and hasattr(transcribe_module, 'tqdm') and hasattr(transcribe_module.tqdm, 'tqdm') and original_tqdm:
+            # Only restore if we actually patched it.
+            # Check if current patch is still ours, though lock should mostly handle this.
+            if transcribe_module.tqdm.tqdm is _tqdmProgressShim:
+                transcribe_module.tqdm.tqdm = original_tqdm
+                print(f"TQDM Restored for task {_task_id_for_tqdm}")
+
+        # Release lock after restoration attempt
+        if not Settings.enable_multi_job:
+            patch_lock_param.release()
+
+        # Clear module globals after use to avoid accidental reuse if module somehow persists
+        _task_id_for_tqdm = None
+        _broadcaster_for_tqdm = None
+        _loop_for_tqdm = None
 
 
 def supportedLanguages():

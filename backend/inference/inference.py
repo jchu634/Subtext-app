@@ -250,6 +250,12 @@ def transcribe(background_tasks: BackgroundTasks, req: TranscriptionRequest):
     return ORJSONResponse([{"task_id": task_id}], status_code=202)
 
 
+@transcription_router.put("/toggle_multi_job")
+def enable_multi_job(toggle: bool):
+    Settings.enable_multi_job = toggle
+    return ORJSONResponse({"message": "ok"}, status_code=200)
+
+
 @transcription_router.get("/progress/{task_id}")
 async def progress_stream(request: Request, task_id: str):
     """
