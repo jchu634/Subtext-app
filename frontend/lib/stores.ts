@@ -20,6 +20,7 @@ export const store = createStore({
     extendedSubtitlesFormats: false,
     files: new Set<file>(),
     jobProgress: {} as JobProgressState,
+    multiJob: false,
     saveLocation: "default",
     appVersion: "1.0.0 Beta",
   },
@@ -110,8 +111,8 @@ export const store = createStore({
         return activeJobs;
       },
     },
-    RESET_JOB_PROGRESS: {
-      jobProgress: () => ({}),
+    TOGGLE_MULTI_JOB: {
+      multiJob: (context) => !context.multiJob,
     },
     CHANGE_SAVE_LOCATION: {
       saveLocation: (context, event: { newLocation: string }) => {
