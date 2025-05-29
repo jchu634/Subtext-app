@@ -5,20 +5,21 @@ interface file {
   fileName: string;
 }
 
-type ProgressType = {
+export type ProgressType = {
+  jobName: string;
   percentage: number;
-  status: "pending" | "running" | "complete" | "error";
+  status: "Pending" | "Running" | "Complete" | "Error";
   message?: string;
 };
-interface JobProgressState {
-  [filename: string]: number;
+export interface JobProgressState {
+  [sse_id: string]: ProgressType;
 }
 
 export const store = createStore({
   context: {
     extendedSubtitlesFormats: false,
     files: new Set<file>(),
-    jobProgress: {},
+    jobProgress: {} as JobProgressState,
     saveLocation: "default",
     appVersion: "1.0.0 Beta",
   },
@@ -77,13 +78,36 @@ export const store = createStore({
     CLEAR_FILES: {
       files: (context) => new Set<file>(), // eslint-disable-line
     },
-    UPDATE_JOB_PROGRESS: {
+    ADD_JOB: {
       jobProgress: (context, event: { job: JobProgressState }) => {
-        const filename = Object.keys(event.job)[0];
         return {
           ...context.jobProgress,
-          [filename]: event.job[filename],
+          ...event.job,
         };
+      },
+    },
+    UPDATE_JOB_PROGRESS: {
+      jobProgress: (context, event: { job: JobProgressState }) => {
+        return {
+          ...context.jobProgress,
+          ...event.job, // Update existing jobs with new values from event.job
+        };
+      },
+    },
+    CLEAR_INACTIVE_JOBS: {
+      jobProgress: (context) => {
+        const activeJobs: JobProgressState = {};
+        for (const jobId in context.jobProgress) {
+          if (
+            Object.prototype.hasOwnProperty.call(context.jobProgress, jobId)
+          ) {
+            const job = context.jobProgress[jobId];
+            if (job.status !== "Complete" && job.status !== "Error") {
+              activeJobs[jobId] = job;
+            }
+          }
+        }
+        return activeJobs;
       },
     },
     RESET_JOB_PROGRESS: {
