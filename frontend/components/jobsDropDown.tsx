@@ -5,30 +5,74 @@ import { LayoutListIcon } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuSeparator,
   DropdownMenuLabel,
   DropdownMenuTrigger,
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
-import AppInfoDialog from "@/components/appInfoDialog";
-import { store } from "@/lib/stores";
+import { Button } from "@/components/ui/button";
+import { Progress } from "@/components/ui/progress";
+import { store, ProgressType, JobProgressState } from "@/lib/stores";
 import { useSelector } from "@xstate/store/react";
+import { cn } from "@/lib/utils";
 
 export default function JobsDropDown() {
-  const jobProgress = useSelector(store, (state) => state.context.jobProgress);
+  const jobProgress = useSelector(
+    store,
+    (state) => state.context.jobProgress as JobProgressState,
+  );
   return (
     <DropdownMenu>
       <DropdownMenuTrigger className="flex h-9 w-9 items-center justify-center [&_svg]:size-7">
         <LayoutListIcon strokeWidth={2} />
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="start" className={`${funnel.className}`}>
-        <DropdownMenuLabel>Jobs</DropdownMenuLabel>
-        {Object.entries(jobProgress).map(([fileName, progress]) => (
-          <DropdownMenuItem key={fileName}>
-            <span>
-              {fileName}: {progress as number}%
-            </span>
+      <DropdownMenuContent
+        align="start"
+        className={`${funnel.className} min-w-40 md:min-w-60`}
+      >
+        <div className="flex items-center justify-between space-x-2 pr-1">
+          <DropdownMenuLabel>Jobs</DropdownMenuLabel>
+          <Button
+            variant="outline"
+            className="border-gray h-7 border-gray-800 p-2 dark:border-gray-400"
+            onClick={() => store.send({ type: "CLEAR_INACTIVE_JOBS" })}
+          >
+            <p className={`${funnel.className} text-sm font-medium`}>Clear</p>
+          </Button>
+        </div>
+        <DropdownMenuSeparator className="bg-gray-400" />
+        {Object.entries(jobProgress).map(
+          ([taskID, progress]: [string, ProgressType]) => (
+            <DropdownMenuItem
+              key={taskID}
+              className="flex flex-col items-start"
+            >
+              <span className="w-40 md:w-72">{progress.jobName}</span>
+              <div className="flex flex-row items-center space-x-4">
+                <div>{progress.status} </div>
+                <div
+                  className={cn(
+                    progress.status == "Complete" && "text-green-700",
+                    progress.status == "Pending" && "text-yellow-500",
+                    progress.status == "Running" && "text-blue-600",
+                    progress.status == "Error" && "text-red-800",
+                  )}
+                >
+                  ⬤
+                </div>
+                <Progress
+                  value={progress.percentage}
+                  className="w-20 md:w-40"
+                />
+              </div>
+            </DropdownMenuItem>
+          ),
+        )}
+        {Object.keys(jobProgress).length == 0 && (
+          <DropdownMenuItem>
+            <p>No Active Jobs</p>
           </DropdownMenuItem>
-        ))}
+        )}
       </DropdownMenuContent>
     </DropdownMenu>
   );
