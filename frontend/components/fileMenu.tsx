@@ -220,7 +220,7 @@ export default function FilesMenu() {
                 </p>
               </Button>
             </AlertDialogTrigger>
-            <AlertDialogContent className="border-2 border-red-700 bg-slate-100 text-black dark:bg-slate-800 dark:text-white">
+            <AlertDialogContent className="border-2 border-red-700 bg-popover text-black dark:text-white">
               <AlertDialogHeader>
                 <AlertDialogTitle>Are you sure?</AlertDialogTitle>
                 <AlertDialogDescription className="text-gray-700 dark:text-white">
@@ -228,7 +228,7 @@ export default function FilesMenu() {
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
-                <AlertDialogCancel className="border-black hover:bg-gray-200">
+                <AlertDialogCancel className="border-black hover:bg-gray-200 dark:border-white dark:hover:bg-zinc-600">
                   Cancel
                 </AlertDialogCancel>
                 <AlertDialogAction
