@@ -212,7 +212,7 @@ export default function SettingsMenu() {
             );
 
             eventSource.onmessage = (event) => {
-              console.log("SSE Message:", event.data);
+              console.log("Task:", taskId, " SSE Message:", event.data);
               try {
                 const parsedData = JSON.parse(event.data);
                 if (
@@ -227,7 +227,6 @@ export default function SettingsMenu() {
                         jobName: jobName,
                         percentage: 100,
                         status: "Complete",
-                        message: "Transcription job finished successfully.",
                       },
                     },
                   });
@@ -240,7 +239,7 @@ export default function SettingsMenu() {
                     toast({
                       className: "bg-purple-800",
                       title: "Job Complete",
-                      description: "Transcription job finished successfully.",
+                      description: `${jobName} complete.`,
                       duration: 3000,
                     });
                   } else if (parsedData.status === "ERROR") {
@@ -248,8 +247,7 @@ export default function SettingsMenu() {
                       variant: "destructive",
                       title: "Job Error",
                       description:
-                        parsedData.error ||
-                        "An error occurred during transcription.",
+                        parsedData.error || `An error occurred for ${jobName}.`,
                       duration: 5000,
                     });
                   }
@@ -274,9 +272,8 @@ export default function SettingsMenu() {
               console.error("SSE Error:", error);
               toast({
                 variant: "destructive",
-                title: "SSE Connection Error",
-                description:
-                  "Failed to connect to progress stream. Check server status.",
+                title: "Internal Server Error",
+                description: "Failed to connect to SSE progress stream.",
                 duration: 5000,
               });
               const currentJobStateOnError = (
@@ -309,7 +306,7 @@ export default function SettingsMenu() {
       toast({
         className: "bg-blue-800",
         title: "Job Submitted",
-        description: "Transcription job has been submitted to the server.",
+        description: "Job submitted.",
         duration: 2000,
       });
     },
@@ -330,7 +327,7 @@ export default function SettingsMenu() {
       toast({
         variant: "destructive",
         title: "Submission Error",
-        description: error.message || "Failed to submit transcription job.",
+        description: error.message || "Failed to submit job.",
         duration: 5000,
       });
     },
