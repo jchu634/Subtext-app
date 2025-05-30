@@ -4,9 +4,7 @@ const nextConfig: NextConfig = {
   /* config options here */
   output: "export",
   reactStrictMode: true,
-  devIndicators: {
-    appIsrStatus: false,
-  },
+  devIndicators: false,
   experimental: {
     reactCompiler: true,
   },

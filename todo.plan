@@ -68,8 +68,9 @@ PROGRESS Frontend
     PROGRESS Backend Communication
         DONE Show toast for backend errors
         DONE Fix toast when job is started
-        TODO Add communication on job progress
-            MAYBE Add Job pane
+        PROGRESS Add communication on job progress
+            PROGRESS Add Job pane
+                DONE Add Job pane to show job progress
                 TODO Add Job animation shake when joh is added
                 TODO Add job cancellation
                 TODO Add job scheduling

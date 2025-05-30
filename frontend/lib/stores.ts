@@ -22,7 +22,7 @@ export const store = createStore({
     jobProgress: {} as JobProgressState,
     multiJob: false,
     saveLocation: "default",
-    appVersion: "1.0.0 Beta",
+    appVersion: "1.2.0",
   },
   // Transitions
   on: {
