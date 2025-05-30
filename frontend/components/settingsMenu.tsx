@@ -1,5 +1,4 @@
 import { Check, ChevronsUpDown, Undo2Icon } from "lucide-react";
-import { funnel } from "@/lib/fonts";
 import { cn } from "@/lib/utils";
 import { useState, useEffect } from "react";
 
@@ -412,21 +411,17 @@ export default function SettingsMenu() {
   );
 
   return (
-    <div
-      className={`flex h-[76vh] flex-col rounded-lg bg-[#D9D9D9] dark:bg-[#1b1c1d]`}
-    >
-      <div
-        className={`flex items-center justify-between bg-[#8CB369] pr-2 text-black ${funnel.className} h-12 rounded-t-lg text-xl font-bold`}
-      >
+    <div className="flex h-[76vh] flex-col rounded-lg bg-[#D9D9D9] dark:bg-[#1b1c1d]">
+      <div className="flex h-12 items-center justify-between rounded-t-lg bg-[#8CB369] pr-2 text-xl font-bold text-black">
         <p className="pl-4">Settings</p>
         <div>
           <Button variant="ghost" className="p-2" onClick={resetSettings}>
             <Undo2Icon
               strokeWidth={3}
               size={24}
-              className="hover:text-accent-foreground"
+              className="hover:text-accent-foreground font-bold"
             />
-            <p className={`${funnel.className} text-xl font-bold`}>Reset</p>
+            <p className="text-xl font-medium">Reset</p>
           </Button>
         </div>
       </div>
@@ -438,14 +433,12 @@ export default function SettingsMenu() {
           className="flex-1 overflow-hidden"
         >
           <ScrollAreaShadow className="h-full rounded-b-lg">
-            <div
-              className={`space-y-3 p-3 text-black dark:text-white ${funnel.className}`}
-            >
+            <div className="space-y-3 p-3 text-black dark:text-white">
               <FormField
                 control={form.control}
                 name="model"
                 render={({ field }) => (
-                  <FormItem className={`flex items-center space-x-2 space-y-0`}>
+                  <FormItem className={`flex items-center space-y-0 space-x-2`}>
                     <FormLabel className="min-w-28 text-lg font-bold dark:font-medium">
                       Model:
                     </FormLabel>
@@ -461,7 +454,7 @@ export default function SettingsMenu() {
                       <FormControl>
                         <SelectTrigger
                           id="model"
-                          className="dark:border-1 w-[180px] border-2 border-black hover:bg-slate-50 dark:border-white dark:hover:bg-slate-500"
+                          className="w-[180px] border-2 border-black hover:bg-slate-50 dark:border-1 dark:border-white dark:hover:bg-slate-500"
                         >
                           <SelectValue
                             placeholder={
@@ -472,11 +465,7 @@ export default function SettingsMenu() {
                       </FormControl>
                       <SelectContent>
                         {models.map((model: string, index: number) => (
-                          <SelectItem
-                            value={`${model}`}
-                            className={`${funnel.className}`}
-                            key={index}
-                          >
+                          <SelectItem value={`${model}`} key={index}>
                             {model}
                           </SelectItem>
                         ))}
@@ -489,7 +478,7 @@ export default function SettingsMenu() {
                 control={form.control}
                 name="modelSize"
                 render={({ field }) => (
-                  <FormItem className="flex items-center space-x-2 space-y-0">
+                  <FormItem className="flex items-center space-y-0 space-x-2">
                     <FormLabel className="min-w-28 text-lg font-bold dark:font-medium">
                       Model Size:
                     </FormLabel>
@@ -501,7 +490,7 @@ export default function SettingsMenu() {
                       <FormControl>
                         <SelectTrigger
                           id="modelSize"
-                          className="dark:border-1 w-[180px] border-2 border-black hover:bg-slate-50 dark:border-white dark:hover:bg-slate-500"
+                          className="w-[180px] border-2 border-black hover:bg-slate-50 dark:border-1 dark:border-white dark:hover:bg-slate-500"
                         >
                           <SelectValue
                             placeholder={
@@ -512,11 +501,7 @@ export default function SettingsMenu() {
                       </FormControl>
                       <SelectContent>
                         {modelSizes.map((size: string, index: number) => (
-                          <SelectItem
-                            value={`${size}`}
-                            className={`${funnel.className}`}
-                            key={index}
-                          >
+                          <SelectItem value={`${size}`} key={index}>
                             {size}
                           </SelectItem>
                         ))}
@@ -529,7 +514,7 @@ export default function SettingsMenu() {
                 control={form.control}
                 name="language"
                 render={({ field }) => (
-                  <FormItem className="flex items-center space-x-2 space-y-0">
+                  <FormItem className="flex items-center space-y-0 space-x-2">
                     <FormLabel className="text-lg font-bold dark:font-medium">
                       Input Video Language:
                     </FormLabel>
@@ -548,7 +533,7 @@ export default function SettingsMenu() {
                           aria-expanded={open}
                           disabled={isLanguagesLoading}
                           className={cn(
-                            "dark:border-1 w-[200px] justify-between border-2 border-black dark:border-white dark:hover:bg-slate-500",
+                            "w-[200px] justify-between border-2 border-black dark:border-1 dark:border-white dark:hover:bg-slate-500",
                             !field.value && "text-muted-foreground",
                           )}
                         >
@@ -599,7 +584,7 @@ export default function SettingsMenu() {
                 control={form.control}
                 name="embedSubtitles"
                 render={({ field }) => (
-                  <FormItem className="flex items-center space-x-2 space-y-0">
+                  <FormItem className="flex items-center space-y-0 space-x-2">
                     <FormLabel className="min-w-60 text-lg font-bold dark:font-medium">
                       Embed Subtitles into Video
                     </FormLabel>
@@ -608,7 +593,7 @@ export default function SettingsMenu() {
                         checked={field.value}
                         onCheckedChange={field.onChange}
                         defaultChecked={true}
-                        className="hover:bg-slate-50"
+                        className="border-black hover:bg-slate-50 dark:border-white"
                       />
                     </FormControl>
                   </FormItem>
@@ -618,7 +603,7 @@ export default function SettingsMenu() {
                 control={form.control}
                 name="overWriteFiles"
                 render={({ field }) => (
-                  <FormItem className="flex items-center space-x-2 space-y-0">
+                  <FormItem className="flex items-center space-y-0 space-x-2">
                     <FormLabel
                       className={`min-w-60 text-lg font-bold dark:font-medium ${
                         !form.getValues("embedSubtitles") ? "text-gray-600" : ""
@@ -633,7 +618,7 @@ export default function SettingsMenu() {
                         checked={field.value}
                         onCheckedChange={field.onChange}
                         defaultChecked={true}
-                        className="enabled:hover:bg-slate-50"
+                        className="border-black enabled:hover:bg-slate-50 dark:border-white"
                       />
                     </FormControl>
                   </FormItem>
@@ -646,7 +631,10 @@ export default function SettingsMenu() {
                 >
                   Output Subtitle Format(s):
                 </Label>
-                <div id="subtitleFormat" className="space-x-1 space-y-1">
+                <div
+                  id="subtitleFormat"
+                  className="flex flex-wrap items-center gap-1"
+                >
                   {fields.map(
                     (field, index) =>
                       (!field.isExtended || useExtendedFormats) && (

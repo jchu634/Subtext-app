@@ -109,7 +109,7 @@ export default function FilesMenu() {
       >
         <InvertedCheckbox
           id={`file-${index}`}
-          className="flex-none border-none bg-white data-[state=checked]:bg-white dark:data-[state=checked]:bg-primary"
+          className="dark:data-[state=checked]:bg-primary flex-none border-none bg-white data-[state=checked]:bg-white"
           checked={selectedFiles.has(file)}
           onClick={(e) => handleCheckboxChange(file, index, e)}
         />
@@ -186,10 +186,10 @@ export default function FilesMenu() {
 
   return (
     <div
-      className={`flex h-fileHeight flex-col rounded-lg bg-[#D9D9D9] dark:bg-[#1b1c1d]`}
+      className={`flex h-[calc(100vh-70px)] flex-col rounded-lg bg-[#D9D9D9] dark:bg-[#1b1c1d]`}
     >
       <div
-        className={`flex items-center justify-between bg-[#F4A259] pr-2 text-black ${funnel.className} min-h-12 rounded-t-lg text-xl font-bold`}
+        className="flex min-h-12 items-center justify-between rounded-t-lg bg-[#F4A259] pr-2 text-xl font-bold text-black"
         ref={parent}
       >
         <p className="pl-4">Files</p>
@@ -204,7 +204,7 @@ export default function FilesMenu() {
               size={24}
               className="hover:text-accent-foreground"
             />
-            <p className={`${funnel.className} text-xl font-bold`}>Add New</p>
+            <p className="text-xl font-medium">Add New</p>
           </Button>
 
           <AlertDialog>
@@ -215,9 +215,7 @@ export default function FilesMenu() {
                   size={24}
                   className="hover:text-accent-foreground"
                 />
-                <p className={`${funnel.className} text-xl font-bold`}>
-                  Remove All
-                </p>
+                <p className="text-xl font-medium">Remove All</p>
               </Button>
             </AlertDialogTrigger>
             <AlertDialogContent className="border-2 border-red-700 bg-popover text-black dark:text-white">
