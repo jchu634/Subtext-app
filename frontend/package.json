@@ -44,7 +44,6 @@
     "react-icons": "^5.4.0",
     "react-resizable-panels": "^2.1.7",
     "tailwind-merge": "^2.5.5",
-    "tailwindcss-animate": "^1.0.7",
     "zod": "^3.24.1"
   },
   "devDependencies": {
@@ -60,6 +59,7 @@
     "prettier": "^3.4.2",
     "prettier-plugin-tailwindcss": "^0.6.11",
     "tailwindcss": "^4.0.0",
+    "tw-animate-css": "^1.3.2",
     "typescript": "^5"
   }
 }
