@@ -95,7 +95,7 @@ export default function SettingsDialog() {
         </DialogTrigger>
         <DialogContent className="flex h-[80vh] max-w-(--breakpoint-2xl) min-w-[80vw] flex-col bg-slate-100/95 text-black ring-4 ring-white/15 ring-offset-0 dark:bg-black/80 dark:text-white">
           <DialogHeader>
-            <DialogTitle className={`text-3xl ${funnel.className} font-bold`}>
+            <DialogTitle className={`text-3xl ${funnel.className}`}>
               Settings
             </DialogTitle>
             <DialogDescription className="text-gray-800 dark:text-slate-400">
@@ -109,13 +109,13 @@ export default function SettingsDialog() {
               <Label htmlFor="defaultSaveLocation" className="min-w-40 text-lg">
                 Save Location:
               </Label>
-              <p className="rounded-md border border-black p-1 px-4 dark:bg-white dark:text-black">
+              <p className="rounded-md border border-black p-1 pr-2 pl-2 dark:bg-white dark:text-black">
                 {saveLocation.length == 0 ? "Default Location" : saveLocation}
               </p>
 
               <Button
                 id="defaultSaveLocation"
-                className="font-semibold hover:bg-zinc-600 dark:bg-orange-400 dark:hover:bg-amber-200"
+                className="font-semibold hover:bg-zinc-600 dark:hover:bg-amber-200"
                 onClick={returnPathDirectories}
               >
                 Change Location
@@ -146,21 +146,21 @@ export default function SettingsDialog() {
                 <ToggleGroupItem
                   value="dark"
                   onClick={() => setTheme("dark")}
-                  className="w-15 border-black text-black hover:bg-amber-200 hover:font-bold data-[state=on]:bg-orange-300 data-[state=on]:font-bold dark:bg-white dark:hover:bg-amber-200 dark:hover:text-black dark:data-[state=on]:bg-orange-300 dark:data-[state=on]:text-black"
+                  className="border-black text-black hover:bg-amber-200 hover:font-extrabold data-[state=on]:bg-orange-300 data-[state=on]:font-bold dark:bg-white dark:hover:bg-amber-200 dark:hover:text-black dark:data-[state=on]:bg-orange-300 dark:data-[state=on]:text-black"
                 >
                   Dark
                 </ToggleGroupItem>
                 <ToggleGroupItem
                   value="light"
                   onClick={() => setTheme("light")}
-                  className="w-15 border-black text-black hover:bg-amber-200 hover:font-bold data-[state=on]:bg-orange-300 data-[state=on]:font-bold dark:bg-white dark:hover:bg-amber-200 dark:hover:text-black dark:data-[state=on]:bg-orange-300 dark:data-[state=on]:text-black"
+                  className="border-black text-black hover:bg-amber-200 hover:font-extrabold data-[state=on]:bg-orange-300 data-[state=on]:font-bold dark:bg-white dark:hover:bg-amber-200 dark:hover:text-black dark:data-[state=on]:bg-orange-300 dark:data-[state=on]:text-black"
                 >
                   Light
                 </ToggleGroupItem>
                 <ToggleGroupItem
                   value="system"
                   onClick={() => setTheme("system")}
-                  className="w-20 border-black text-black hover:bg-amber-200 hover:font-bold data-[state=on]:bg-orange-300 data-[state=on]:font-bold dark:bg-white dark:hover:bg-amber-200 dark:hover:text-black dark:data-[state=on]:bg-orange-300 dark:data-[state=on]:text-black"
+                  className="border-black text-black hover:bg-amber-200 hover:font-extrabold data-[state=on]:bg-orange-300 data-[state=on]:font-bold dark:bg-white dark:hover:bg-amber-200 dark:hover:text-black dark:data-[state=on]:bg-orange-300 dark:data-[state=on]:text-black"
                 >
                   System
                 </ToggleGroupItem>
@@ -177,7 +177,7 @@ export default function SettingsDialog() {
                 onClick={() =>
                   store.send({ type: "TOGGLE_EXTENDED_SUBTITLES" })
                 }
-                className="outline outline-1 outline-gray-700 dark:bg-slate-200 dark:data-[state=checked]:bg-orange-400"
+                className="outline-1 outline-gray-700 dark:bg-slate-200 dark:data-[state=checked]:bg-orange-400"
               ></Switch>
             </div>
             <div
@@ -192,7 +192,7 @@ export default function SettingsDialog() {
                 onCheckedChange={(newCheckedState) => {
                   toggleMultiJobMutation.mutate(newCheckedState);
                 }}
-                className="outline outline-1 outline-gray-700 dark:bg-slate-200 dark:data-[state=checked]:bg-orange-400"
+                className="outline-1 outline-gray-700 dark:bg-slate-200 dark:data-[state=checked]:bg-orange-400"
               ></Switch>
             </div>
           </div>
