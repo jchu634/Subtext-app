@@ -1,7 +1,7 @@
 import React from "react";
 
 export function useWatchScrollAreaOverflow(
-  ref: React.MutableRefObject<HTMLDivElement | null>,
+  ref: React.RefObject<HTMLDivElement | null>,
 ) {
   const [overflown, setOverflown] = React.useState(false);
   const observer = React.useRef<ResizeObserver | null>(null);
@@ -10,7 +10,7 @@ export function useWatchScrollAreaOverflow(
     if (ref.current) {
       setOverflown(ref.current.scrollHeight > ref.current.clientHeight);
     }
-  }, []);
+  }, [ref]);
 
   React.useEffect(() => {
     if (typeof window === "undefined" || !ref.current) return;
@@ -29,7 +29,7 @@ export function useWatchScrollAreaOverflow(
       observer.current?.disconnect();
       window.removeEventListener("resize", checkOverflow);
     };
-  }, [ref.current]);
+  }, [ref, checkOverflow]);
 
   return overflown;
 }

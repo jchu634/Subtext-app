@@ -30,6 +30,17 @@ interface file {
   fileName: string;
 }
 
+interface pywebviewFiles {
+  name: string;
+  pywebviewFullPath: string;
+}
+// Extend the Window interface to include our custom function
+declare global {
+  interface Window {
+    dragDropFiles: (files: pywebviewFiles[]) => void;
+  }
+}
+
 export default function FilesMenu() {
   const [parent] = useAutoAnimate(/* optional config */);
   const [files, setFiles] = useState<file[]>([]);
@@ -58,8 +69,35 @@ export default function FilesMenu() {
       );
       return uniqueFiles;
     });
-    store.send({ type: "addFiles", newFiles: newFiles });
+    store.send({ type: "ADD_FILES", newFiles: newFiles });
     return newFiles;
+  }
+
+  async function dragDropFiles(files: pywebviewFiles[]) {
+    if (!files || files.length === 0) {
+      return;
+    }
+
+    const newFiles = files.map((file: pywebviewFiles) => {
+      return { fullPath: file.pywebviewFullPath, fileName: file.name };
+    });
+
+    setFiles((prevFiles) => {
+      const allFiles = prevFiles.concat(newFiles);
+      const uniqueFiles = allFiles.filter(
+        (file, index, self) =>
+          index === self.findIndex((f) => f.fullPath === file.fullPath),
+      );
+      return uniqueFiles;
+    });
+
+    store.send({ type: "ADD_FILES", newFiles: newFiles });
+    return newFiles;
+  }
+
+  // Add the function to the window object
+  if (typeof window !== "undefined") {
+    window.dragDropFiles = dragDropFiles;
   }
 
   function mapFiles(file: file, index: number) {
@@ -94,17 +132,17 @@ export default function FilesMenu() {
 
   function removeFile(file: file) {
     setFiles((prevFiles) => prevFiles.filter((filtFile) => filtFile !== file));
-    store.send({ type: "removeFile", removeFile: file });
+    store.send({ type: "REMOVE_FILE", removeFile: file });
   }
   function removeSpecificFiles() {
     for (const removeFile of selectedFiles) {
       setFiles((prevFiles) => prevFiles.filter((file) => file !== removeFile));
     }
-    store.send({ type: "removeFiles", removeFiles: [...selectedFiles] });
+    store.send({ type: "REMOVE_FILES", removeFiles: [...selectedFiles] });
     setSelectedFiles(new Set());
   }
   function clearFiles() {
-    store.send({ type: "clearFiles" });
+    store.send({ type: "CLEAR_FILES" });
     setFiles([]);
     setSelectedFiles(new Set());
   }
@@ -180,20 +218,20 @@ export default function FilesMenu() {
                 <p className="text-xl font-medium">Remove All</p>
               </Button>
             </AlertDialogTrigger>
-            <AlertDialogContent className="bg-slate-100 text-black">
+            <AlertDialogContent className="border-2 border-red-700 bg-popover text-black dark:text-white">
               <AlertDialogHeader>
                 <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                <AlertDialogDescription className="text-gray-700">
+                <AlertDialogDescription className="text-gray-700 dark:text-white">
                   Are you sure that you want to remove all files?
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
-                <AlertDialogCancel className="border-black hover:bg-gray-200">
+                <AlertDialogCancel className="border-black hover:bg-gray-200 dark:border-white dark:hover:bg-zinc-600">
                   Cancel
                 </AlertDialogCancel>
                 <AlertDialogAction
                   onClick={clearFiles}
-                  className="font-md bg-red-800 hover:bg-red-950"
+                  className="font-md bg-red-800 hover:bg-red-950 dark:text-white"
                 >
                   Continue
                 </AlertDialogAction>

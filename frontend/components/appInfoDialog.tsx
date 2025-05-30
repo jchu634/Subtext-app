@@ -67,10 +67,28 @@ export default function AppInfoDialog({}) {
   const [isOpenGeneral, setIsOpenGeneral] = useState(false);
   const [isOpenBackend, setIsOpenBackend] = useState(false);
   const [isOpenFrontend, setIsOpenFrontend] = useState(false);
+
+  const suppressDragDrop = (e: DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+  };
+
+  const handleOpenChange = (open: boolean) => {
+    if (open) {
+      document.addEventListener("dragenter", suppressDragDrop, true);
+      document.addEventListener("dragover", suppressDragDrop, true);
+      document.addEventListener("drop", suppressDragDrop, true);
+    } else {
+      document.removeEventListener("dragenter", suppressDragDrop, true);
+      document.removeEventListener("dragover", suppressDragDrop, true);
+      document.removeEventListener("drop", suppressDragDrop, true);
+    }
+  };
+
   return (
     <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
       {/* Disables Dropdown box immediately closing the dialog */}
-      <Dialog>
+      <Dialog onOpenChange={handleOpenChange}>
         <DialogTrigger asChild>
           <span>About the app</span>
         </DialogTrigger>

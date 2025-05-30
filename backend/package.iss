@@ -1,6 +1,6 @@
 #define AppName "Subtext"
-#define AppVersion "1.0.0"
-#define AppPublisher "Joshua Chung"
+#define AppVersion "1.2.0"
+#define AppPublisher "JCHU634"
 #define AppExeName "Subtext"
 #define AppIcon "home\frontend\favicon.ico"
 

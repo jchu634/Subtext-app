@@ -5,49 +5,116 @@ interface file {
   fileName: string;
 }
 
+export type ProgressType = {
+  jobName: string;
+  percentage: number;
+  status: "Pending" | "Running" | "Complete" | "Error";
+  message?: string;
+};
+export interface JobProgressState {
+  [sse_id: string]: ProgressType;
+}
+
 export const store = createStore({
   context: {
     extendedSubtitlesFormats: false,
     files: new Set<file>(),
+    jobProgress: {} as JobProgressState,
+    multiJob: false,
     saveLocation: "default",
-    appVersion: "1.0.0 Beta",
+    appVersion: "1.2.0",
   },
   // Transitions
   on: {
-    toggleExtentedSubtitles: {
+    TOGGLE_EXTENDED_SUBTITLES: {
       extendedSubtitlesFormats: (context) => !context.extendedSubtitlesFormats,
     },
-    addFiles: {
+    ADD_FILES: {
       files: (context, event: { newFiles: file[] }) => {
-        return new Set<file>([...context.files, ...event.newFiles]);
-      },
-    },
-    addFile: {
-      files: (context, event: { newFile: file }) => {
-        context.files.add(event.newFile);
-        return context.files;
-      },
-    },
-    removeFiles: {
-      files: (context, event: { removeFiles: file[] }) => {
-        const removalSet = new Set(event.removeFiles);
+        const fileMap = new Map<string, file>();
 
+        // Process existing files
+        Array.from(context.files).forEach((file) => {
+          fileMap.set(file.fullPath, file);
+        });
+
+        // Process new files
+        event.newFiles.forEach((file) => {
+          fileMap.set(file.fullPath, file);
+        });
+        return new Set(fileMap.values());
+      },
+    },
+    ADD_FILE: {
+      files: (context, event: { newFile: file }) => {
+        const fileMap = new Map<string, file>();
+
+        Array.from(context.files).forEach((file) => {
+          fileMap.set(file.fullPath, file);
+        });
+
+        fileMap.set(event.newFile.fullPath, event.newFile);
+        return new Set(fileMap.values());
+      },
+    },
+    REMOVE_FILES: {
+      files: (context, event: { removeFiles: file[] }) => {
+        const removalPaths = new Set(event.removeFiles.map((f) => f.fullPath));
         return new Set(
-          Array.from(context.files).filter((item) => !removalSet.has(item)),
+          Array.from(context.files).filter(
+            (item) => !removalPaths.has(item.fullPath),
+          ),
         );
       },
     },
-    removeFile: {
+    REMOVE_FILE: {
       files: (context, event: { removeFile: file }) => {
-        context.files.delete(event.removeFile);
-
-        return context.files;
+        return new Set(
+          Array.from(context.files).filter(
+            (item) => item.fullPath !== event.removeFile.fullPath,
+          ),
+        );
       },
     },
-    clearFiles: {
+    CLEAR_FILES: {
       files: (context) => new Set<file>(), // eslint-disable-line
     },
-    changeSaveLocation: {
+    ADD_JOB: {
+      jobProgress: (context, event: { job: JobProgressState }) => {
+        return {
+          ...context.jobProgress,
+          ...event.job,
+        };
+      },
+    },
+    UPDATE_JOB_PROGRESS: {
+      jobProgress: (context, event: { job: JobProgressState }) => {
+        return {
+          ...context.jobProgress,
+          ...event.job, // Update existing jobs with new values from event.job
+        };
+      },
+    },
+    CLEAR_INACTIVE_JOBS: {
+      jobProgress: (context) => {
+        const activeJobs: JobProgressState = {};
+        for (const jobId in context.jobProgress) {
+          if (
+            Object.prototype.hasOwnProperty.call(context.jobProgress, jobId)
+          ) {
+            const job = context.jobProgress[jobId];
+            if (job.status !== "Complete" && job.status !== "Error") {
+              activeJobs[jobId] = job;
+            }
+          }
+        }
+        return activeJobs;
+      },
+    },
+    TOGGLE_MULTI_JOB: {
+      multiJob: (context) => !context.multiJob,
+    },
+    CHANGE_SAVE_LOCATION: {
       saveLocation: (context, event: { newLocation: string }) => {
         if (event.newLocation) {
           return event.newLocation[0];

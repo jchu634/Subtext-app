@@ -15,6 +15,9 @@ param(
     [switch]$WithCuda,
 
     [Parameter()]
+    [switch]$LegacyCuda,
+
+    [Parameter()]
     [switch]$SkipDependencies,
 
     [Parameter()]
@@ -95,7 +98,13 @@ try {
         
         Write-Host "Installing/Updating Requirements..." -ForegroundColor Cyan
         if ($WithCuda) {
-            & python -m pip install -r cuda-requirements.txt
+            if ($LegacyCuda){
+                & python -m pip install -r cuda-requirements_11_8.txt
+            } else {
+                & python -m pip install -r cuda-requirements.txt
+            }
+            
+            
             if ((-not $Force) -and ($LASTEXITCODE -ne 0)) { throw "Failed to install CUDA requirements" }
         } else {
             & python -m pip install -r requirements.txt

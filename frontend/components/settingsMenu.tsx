@@ -40,7 +40,7 @@ import { useToast } from "@/hooks/use-toast";
 
 // Store Stuff
 import { useSelector } from "@xstate/store/react";
-import { store } from "@/lib/stores";
+import { store, JobProgressState } from "@/lib/stores";
 
 // Form Stuff
 import { z } from "zod";
@@ -50,10 +50,6 @@ import { useForm, useFieldArray } from "react-hook-form";
 // Query Stuff
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
-// interface modelSize {
-//   modelName: string;
-//   suggestedVRAM: number;
-// }
 interface languageType {
   code: string;
   lang: string;
@@ -75,11 +71,29 @@ const formSchema = z.object({
   filePaths: z.array(z.string()),
 });
 
+const suppressDragDrop = (e: DragEvent) => {
+  e.preventDefault();
+  e.stopPropagation();
+};
+
+const handleOpenChange = (open: boolean) => {
+  if (open) {
+    document.addEventListener("dragenter", suppressDragDrop, true);
+    document.addEventListener("dragover", suppressDragDrop, true);
+    document.addEventListener("drop", suppressDragDrop, true);
+  } else {
+    document.removeEventListener("dragenter", suppressDragDrop, true);
+    document.removeEventListener("dragover", suppressDragDrop, true);
+    document.removeEventListener("drop", suppressDragDrop, true);
+  }
+};
+
 export default function SettingsMenu() {
   // eslint-disable-next-line
   const queryClient = useQueryClient();
 
-  const [selectedModel, setSelectedModel] = useState<string>("whisper");
+  const [selectedModel, setSelectedModel] = useState<string>("whisper (CPU)");
+
   const [open, setOpen] = useState(false);
   const { toast } = useToast();
 
@@ -91,7 +105,7 @@ export default function SettingsMenu() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      model: "whisper",
+      model: "whisper (CPU)",
       modelSize: "tiny",
       embedSubtitles: false,
       overWriteFiles: false,
@@ -102,7 +116,8 @@ export default function SettingsMenu() {
         { value: "WebVTT", active: false, isExtended: false },
         { value: "MPL2", active: false, isExtended: true },
         { value: "TMP", active: false, isExtended: true },
-        //SAMI is not fully suppported in PySub2 { value: "SAMI", active: false, isExtended: true },
+        // SAMI is not fully suppported in PySub2
+        // { value: "SAMI", active: false, isExtended: true },
         { value: "TTML", active: false, isExtended: true },
         { value: "MicroDVD", active: false, isExtended: true },
       ],
@@ -130,6 +145,7 @@ export default function SettingsMenu() {
     modelSize: string;
     language: string;
     embedSubtitles: boolean;
+    overWriteFiles: boolean;
     outputFormats: string[];
     saveLocation: string;
   };
@@ -142,35 +158,176 @@ export default function SettingsMenu() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(formData),
-      }).then((res) => {
-        if (!res.ok) {
-          throw new Error("Network response was not ok");
-        }
-        return res.json();
-      });
+      })
+        .then((res) => {
+          if (!res.ok) {
+            return res
+              .json()
+              .then((errData) => {
+                throw new Error(
+                  errData.detail || `Server error: ${res.status}`,
+                );
+              })
+              .catch(() => {
+                throw new Error(`Server error: ${res.status}`);
+              });
+          }
+          return res.json();
+        })
+        .then((data) => {
+          if (data && data[0] && data[0].task_id) {
+            const taskId = data[0].task_id;
+
+            const firstFilePath =
+              formData.filePaths.length > 0 ? formData.filePaths[0] : "";
+            let jobName = firstFilePath
+              ? firstFilePath.split(/[\\/]/).pop() || `Task ${taskId}`
+              : `Task ${taskId}`;
+
+            jobName =
+              jobName.substring(0, 24) +
+              (formData.filePaths.length > 1
+                ? " + " +
+                  (formData.filePaths.length - 1) +
+                  " more file" +
+                  (formData.filePaths.length == 2 ? "" : "s")
+                : "");
+
+            store.send({
+              type: "ADD_JOB",
+              job: {
+                [taskId]: {
+                  jobName: jobName,
+                  percentage: 0,
+                  status: "Pending",
+                  message: "Job submitted, awaiting progress...",
+                },
+              },
+            });
+
+            console.log("Job submitted with task ID:", taskId);
+            const eventSource = new EventSource(
+              `http://127.0.0.1:6789/progress/${taskId}`,
+            );
+
+            eventSource.onmessage = (event) => {
+              console.log("Task:", taskId, " SSE Message:", event.data);
+              try {
+                const parsedData = JSON.parse(event.data);
+                if (
+                  parsedData.type === "status" &&
+                  (parsedData.status === "DONE" ||
+                    parsedData.status === "ERROR")
+                ) {
+                  store.send({
+                    type: "UPDATE_JOB_PROGRESS",
+                    job: {
+                      [taskId]: {
+                        jobName: jobName,
+                        percentage: 100,
+                        status: "Complete",
+                      },
+                    },
+                  });
+                  console.log(
+                    "SSE stream finished with status:",
+                    parsedData.status,
+                  );
+                  eventSource.close();
+                  if (parsedData.status === "DONE") {
+                    toast({
+                      className: "bg-purple-800",
+                      title: "Job Complete",
+                      description: `${jobName} complete.`,
+                      duration: 3000,
+                    });
+                  } else if (parsedData.status === "ERROR") {
+                    toast({
+                      variant: "destructive",
+                      title: "Job Error",
+                      description:
+                        parsedData.error || `An error occurred for ${jobName}.`,
+                      duration: 5000,
+                    });
+                  }
+                } else if (parsedData.type === "progress") {
+                  store.send({
+                    type: "UPDATE_JOB_PROGRESS",
+                    job: {
+                      [taskId]: {
+                        jobName: jobName,
+                        percentage: parsedData.percentage,
+                        status: "Running",
+                      },
+                    },
+                  });
+                }
+              } catch (e) {
+                console.error("Failed to parse SSE message JSON:", e);
+              }
+            };
+
+            eventSource.onerror = (error) => {
+              console.error("SSE Error:", error);
+              toast({
+                variant: "destructive",
+                title: "Internal Server Error",
+                description: "Failed to connect to SSE progress stream.",
+                duration: 5000,
+              });
+              const currentJobStateOnError = (
+                store.getSnapshot().context.jobProgress as JobProgressState
+              )[taskId];
+              store.send({
+                type: "UPDATE_JOB_PROGRESS",
+                job: {
+                  [taskId]: {
+                    jobName: jobName,
+                    percentage: currentJobStateOnError?.percentage || 0,
+                    status: "Error",
+                    message: "SSE connection error. Check server status.",
+                  },
+                },
+              });
+              eventSource.close();
+            };
+            return data;
+          } else {
+            console.error(
+              "Invalid response from server, missing task_id:",
+              data,
+            );
+            throw new Error("Invalid response from server, missing task_id");
+          }
+        });
     },
     onMutate: () => {
       toast({
         className: "bg-blue-800",
-        title: "Job Sent",
-        description: "Submitted job successfully",
+        title: "Job Submitted",
+        description: "Job submitted.",
         duration: 2000,
       });
     },
-    onSuccess: () => {
-      toast({
-        className: "bg-purple-800",
-        title: "Job Success",
-        description: "Job is complete",
-        duration: 2000,
-      });
+    onSuccess: (data) => {
+      if (data && data[0] && data[0].task_id) {
+        console.log(
+          "Mutation for job submission successful, SSE connection initiated for task:",
+          data[0].task_id,
+        );
+      } else {
+        console.log(
+          "Mutation for job submission successful, but task_id might be missing in returned data:",
+          data,
+        );
+      }
     },
-    onError: (error) => {
+    onError: (error: Error) => {
       toast({
         variant: "destructive",
-        title: "Error",
-        description: error.message,
-        duration: 2000,
+        title: "Submission Error",
+        description: error.message || "Failed to submit job.",
+        duration: 5000,
       });
     },
   });
@@ -208,7 +365,7 @@ export default function SettingsMenu() {
       return;
     }
 
-    const formData = {
+    const formData: FormData = {
       filePaths: Array.from(temp.files).map((file) => file.fullPath),
       model: values.model,
       modelSize: values.modelSize,
@@ -219,13 +376,6 @@ export default function SettingsMenu() {
       saveLocation: temp.saveLocation,
     };
     mutation.mutate(formData);
-    console.log("test");
-    toast({
-      className: "bg-blue-800",
-      title: "Success",
-      description: "Form submitted successfully",
-      duration: 2000,
-    });
   };
 
   const { data: models = [], isLoading: isModelsLoading } = useQuery({
@@ -369,7 +519,13 @@ export default function SettingsMenu() {
                       Input Video Language:
                     </FormLabel>
 
-                    <Popover open={open} onOpenChange={setOpen}>
+                    <Popover
+                      open={open}
+                      onOpenChange={(value) => {
+                        setOpen(value);
+                        handleOpenChange(value);
+                      }}
+                    >
                       <PopoverTrigger asChild>
                         <Button
                           variant="outline"

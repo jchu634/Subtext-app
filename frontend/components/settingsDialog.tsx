@@ -18,30 +18,76 @@ import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Switch } from "@/components/ui/switch";
 import { funnel } from "@/lib/fonts";
 
+// Query Stuff
+import { useQueryClient, useMutation } from "@tanstack/react-query";
+
 async function returnPathDirectories() {
   const folder = await window.pywebview.api.spawnFolderDialog();
   if (typeof folder == null) {
     // User cancelled operation
     return;
   }
-  store.send({ type: "changeSaveLocation", newLocation: folder });
+  store.send({ type: "CHANGE_SAVE_LOCATION", newLocation: folder });
   return folder;
 }
 
 export default function SettingsDialog() {
+  // eslint-disable-next-line
+  const queryClient = useQueryClient();
+
   const { theme, setTheme } = useTheme();
   const useExtendedFormats = useSelector(
     store,
     (state) => state.context.extendedSubtitlesFormats,
   );
+  const useMultiJob = useSelector(store, (state) => state.context.multiJob);
   const saveLocation = useSelector(
     store,
     (state) => state.context.saveLocation,
   );
 
+  const suppressDragDrop = (e: DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+  };
+
+  const handleOpenChange = (open: boolean) => {
+    if (open) {
+      document.addEventListener("dragenter", suppressDragDrop, true);
+      document.addEventListener("dragover", suppressDragDrop, true);
+      document.addEventListener("drop", suppressDragDrop, true);
+    } else {
+      document.removeEventListener("dragenter", suppressDragDrop, true);
+      document.removeEventListener("dragover", suppressDragDrop, true);
+      document.removeEventListener("drop", suppressDragDrop, true);
+    }
+  };
+
+  const toggleMultiJobMutation = useMutation({
+    mutationFn: async (newToggleState: boolean) => {
+      const response = await fetch(
+        `http://127.0.0.1:6789/toggle_multi_job?toggle=${newToggleState}`,
+        {
+          method: "PUT",
+        },
+      );
+      if (!response.ok) {
+        throw new Error("Failed to toggle multi-job");
+      }
+      return response.json();
+    },
+    onSuccess: () => {
+      store.send({ type: "TOGGLE_MULTI_JOB" });
+    },
+    onError: (error) => {
+      // Handle error, e.g., show a notification
+      console.error("Error toggling multi-job:", error);
+    },
+  });
+
   return (
     <div>
-      <Dialog>
+      <Dialog onOpenChange={handleOpenChange}>
         <DialogTrigger asChild>
           <Button variant="ghost" size="icon" className="[&_svg]:size-7">
             <Cog strokeWidth={2} />
@@ -128,7 +174,24 @@ export default function SettingsDialog() {
               </Label>
               <Switch
                 defaultChecked={useExtendedFormats}
-                onClick={() => store.send({ type: "toggleExtentedSubtitles" })}
+                onClick={() =>
+                  store.send({ type: "TOGGLE_EXTENDED_SUBTITLES" })
+                }
+                className="outline outline-1 outline-gray-700 dark:bg-slate-200 dark:data-[state=checked]:bg-orange-400"
+              ></Switch>
+            </div>
+            <div
+              className={`flex flex-row items-center space-x-5 ${funnel.className}`}
+            >
+              <Label htmlFor="viewModeToggle" className="text-lg">
+                Enable Simultaneous Multiple Jobs
+              </Label>
+              <Switch
+                defaultChecked={useMultiJob}
+                checked={useMultiJob}
+                onCheckedChange={(newCheckedState) => {
+                  toggleMultiJobMutation.mutate(newCheckedState);
+                }}
                 className="outline outline-1 outline-gray-700 dark:bg-slate-200 dark:data-[state=checked]:bg-orange-400"
               ></Switch>
             </div>

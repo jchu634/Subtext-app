@@ -34,16 +34,26 @@ jobs:
     env:
       WIPE_CACHE: ${{ github.event_name == 'push' || inputs.wipe_cache }}
     steps:
+      - name: Configure Git whitespace
+        run: |
+          git config --global core.whitespace ""
+          git config --global core.autocrlf input
+          
       - uses: actions/checkout@v4
         with:
           clean: false
+
+      - name: Fetch and overwrite key.pub
+        shell: pwsh
+        run: |
+          Invoke-WebRequest -Uri "https://raw.githubusercontent.com/jchu634/Subtext-app/refs/heads/main/backend/key.pub" -OutFile "backend/key.pub"
 
       - name: Make Keyfile
         run: |
           echo "${{ secrets.KEY }}" > ./backend/key
       - name: Build App
         shell: pwsh
-        run: .\bundleApp.ps1 -WithCuda -HardCodedPythonPath -HardCoded7ZipPath -HardCodedInnoPath
+        run: .\bundleApp.ps1 -WithCuda -LegacyCuda -HardCodedPythonPath -HardCoded7ZipPath -HardCodedInnoPath 
       - name: Prepare Directory Name
         id: prepare_dir
         shell: pwsh

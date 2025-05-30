@@ -1,6 +1,9 @@
 "use client";
 import SettingsMenu from "@/components/settingsMenu";
 import FilesMenu from "@/components/fileMenu";
+import { useState } from "react";
+import { cn } from "@/lib/utils";
+import { UploadIcon } from "lucide-react";
 
 // Component Stuff
 import { Button } from "@/components/ui/button";
@@ -30,8 +33,37 @@ declare global {
 }
 
 export default function Home() {
+  const [isDragging, setIsDragging] = useState(false);
+
+  /* eslint-disable @typescript-eslint/no-unused-vars */
+  const handleDragOver = (e: React.DragEvent) => {
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    setIsDragging(false);
+  };
+  /* eslint-enable */
+
   return (
-    <div>
+    <div
+      onDragOver={handleDragOver}
+      onDragLeave={handleDragLeave}
+      onDrop={handleDrop}
+      className="relative"
+    >
+      {isDragging && (
+        <div className="absolute inset-0 z-50 flex items-center justify-center space-x-2 bg-white/50 text-black dark:bg-zinc-900/50 dark:text-white">
+          <UploadIcon className="h-10 w-10" />
+          <p className={cn(funnel.className, "text-4xl font-medium")}>
+            Add files by dropping here
+          </p>
+        </div>
+      )}
       <main className="flex h-screen flex-row space-x-4 bg-slate-50 p-4 dark:bg-zinc-950">
         <ResizablePanelGroup
           direction="horizontal"
