@@ -59,7 +59,7 @@ export default function Home() {
       {isDragging && (
         <div className="absolute inset-0 z-50 flex items-center justify-center space-x-2 bg-white/50 text-black dark:bg-zinc-900/50 dark:text-white">
           <UploadIcon className="h-10 w-10" />
-          <p className={cn(funnel.className, "text-4xl font-medium")}>
+          <p className={cn("text-4xl font-medium")}>
             Add files by dropping here
           </p>
         </div>
